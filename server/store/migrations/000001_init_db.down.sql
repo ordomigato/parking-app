@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS client;
+DROP TABLE IF EXISTS workspace;
+DROP TABLE IF EXISTS client_workspace;
+DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS permit_form;
+DROP TABLE IF EXISTS submission_constraint_type;
+DROP TABLE IF EXISTS form_notice;
+DROP TABLE IF EXISTS consumer;
+DROP TABLE IF EXISTS permit;
+DROP TABLE IF EXISTS field_type;
+DROP TABLE IF EXISTS question;
+
