@@ -1,11 +1,31 @@
 version: "3.7"
 services:
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    ports:
+      - "8080:8080"
+    volumes:
+     - type: bind
+       source: ./client
+       target: /app
+  # client:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./client
+  #   ports:
+  #     - "8080:80"
+  #   depends_on:
+  #     - server
+  #   env_file:
+  #     - ".env"
   server:
     build:
       dockerfile: Dockerfile
       context: ./server
     ports:
-      - "8080:8080"
+      - "3000:3000"
     depends_on:
       - postgres
     env_file:
