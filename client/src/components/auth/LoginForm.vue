@@ -1,7 +1,7 @@
 <template>
     <div>
         <header class="pb-6 text-center">
-            <h1 class="text-lg font-semibold">Welcome to ParkSecure</h1>
+            <h1 class="text-lg font-semibold">Welcome to SecurePark</h1>
             <p>Create and manage parking spaces with ease</p>
         </header>
         <text-input label="Email" type="email" autocomplete="email" />

@@ -4,32 +4,32 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 	"github.com/ordomigato/parking-app/models"
 	"github.com/ordomigato/parking-app/utils"
 )
 
-func (r *Repository) RegisterClient(context *fiber.Ctx) {
+func (r *Repository) RegisterClient(context *fiber.Ctx) error {
 	var payload *models.ClientRegisterRequest
 
 	err := context.BodyParser(&payload)
 	if err != nil {
 		context.Status(http.StatusUnprocessableEntity).JSON(
 			&fiber.Map{"message": "request failed"})
-		return
+		return err
 	}
 
 	if payload.Password != payload.PasswordConfirm {
 		context.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "passwords do not match"})
-		return
+		return err
 	}
 
 	hashedPassword, err := utils.HashPassword(payload.Password)
 	if err != nil {
 		context.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": err.Error()})
-		return
+		return err
 	}
 
 	now := time.Now()
@@ -47,6 +47,8 @@ func (r *Repository) RegisterClient(context *fiber.Ctx) {
 	if err != nil {
 		context.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "could not register account"})
-		return
+		return err
 	}
+
+	return nil
 }

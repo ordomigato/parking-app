@@ -1,16 +1,22 @@
 version: "3.7"
 services:
   client:
+    container_name: client
     build:
       dockerfile: Dockerfile.dev
       context: ./client
     ports:
       - "8080:8080"
+    depends_on:
+      - server
+    env_file:
+      - ".env"
     volumes:
      - type: bind
        source: ./client
        target: /app
   # client:
+  #   container_name: client
   #   build:
   #     dockerfile: Dockerfile
   #     context: ./client
@@ -21,6 +27,7 @@ services:
   #   env_file:
   #     - ".env"
   server:
+    container_name: server
     build:
       dockerfile: Dockerfile
       context: ./server

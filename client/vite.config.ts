@@ -18,6 +18,7 @@ export default defineConfig({
     port: 8080,
     watch: {
       usePolling: true
-    }
+    },
+    cors: false,
   },
 })
