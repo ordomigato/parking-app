@@ -14,4 +14,6 @@ func (r *Repository) SetupRoutes(app *fiber.App) {
 	app.Use(cors.New())
 	api := app.Group("/api")
 	api.Post("/register", r.RegisterClient)
+	// api.Post("/login", r.LoginClient)
+	// api.Post("/logout", r.LogoutClient)
 }

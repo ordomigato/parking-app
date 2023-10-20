@@ -9,25 +9,25 @@ import (
 	"github.com/ordomigato/parking-app/utils"
 )
 
-func (r *Repository) RegisterClient(context *fiber.Ctx) error {
+func (r *Repository) RegisterClient(c *fiber.Ctx) error {
 	var payload *models.ClientRegisterRequest
 
-	err := context.BodyParser(&payload)
+	err := c.BodyParser(&payload)
 	if err != nil {
-		context.Status(http.StatusUnprocessableEntity).JSON(
+		c.Status(http.StatusUnprocessableEntity).JSON(
 			&fiber.Map{"message": "request failed"})
 		return err
 	}
 
 	if payload.Password != payload.PasswordConfirm {
-		context.Status(http.StatusBadRequest).JSON(
+		c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "passwords do not match"})
 		return err
 	}
 
 	hashedPassword, err := utils.HashPassword(payload.Password)
 	if err != nil {
-		context.Status(http.StatusBadRequest).JSON(
+		c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": err.Error()})
 		return err
 	}
@@ -45,10 +45,10 @@ func (r *Repository) RegisterClient(context *fiber.Ctx) error {
 
 	err = r.DB.Create(&newClient).Error
 	if err != nil {
-		context.Status(http.StatusBadRequest).JSON(
+		c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "could not register account"})
 		return err
 	}
 
-	return nil
+	return c.JSON(newClient)
 }
