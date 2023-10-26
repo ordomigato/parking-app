@@ -8,14 +8,14 @@ import (
 )
 
 type Client struct {
-	ClientID         string `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Username         string `gorm:"uniqueIndex;not null"`
-	Password         string `gorm:"not null"`
-	VerificationCode string
-	Verified         bool      `gorm:"not null"`
-	CreatedAt        time.Time `gorm:"not null"`
-	UpdatedAt        time.Time `gorm:"not null"`
-	LastLogin        time.Time `gorm:"not null"`
+	ClientID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"client_id"`
+	Username         string    `gorm:"uniqueIndex;not null" json:"username"`
+	Password         string    `gorm:"not null" json:"password"`
+	VerificationCode string    `json:"verification_code"`
+	Verified         bool      `gorm:"not null" json:"verified"`
+	CreatedAt        time.Time `gorm:"not null" json:"created_at"`
+	UpdatedAt        time.Time `gorm:"not null" json:"updated_at"`
+	LastLogin        time.Time `gorm:"not null" json:"last_login"`
 }
 
 type ClientResponse struct {
@@ -35,6 +35,16 @@ type ClientRegisterRequest struct {
 type ClientLoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+func FilterClientRecord(client *Client) ClientResponse {
+	return ClientResponse{
+		ClientID:  client.ClientID,
+		Username:  client.Username,
+		Verified:  client.Verified,
+		CreatedAt: client.CreatedAt,
+		UpdatedAt: client.UpdatedAt,
+	}
 }
 
 func MigrateClient(db *gorm.DB) error {

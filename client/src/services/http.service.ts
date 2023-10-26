@@ -1,5 +1,7 @@
+import { isServerError, ServerErrorResponse, type ServerError } from "@/utils/error";
 import axios, { AxiosError, type AxiosResponse } from "axios";
 import type { App } from "vue";
+import { logout } from "./account.service";
 
 const instance = axios.create();
 
@@ -7,12 +9,16 @@ const responseHandler = (resp: AxiosResponse): AxiosResponse => {
     return resp;
 }
 
-const responseErrorHandler = (error: AxiosError): AxiosError => {
+const responseErrorHandler = (error: AxiosError): ServerError => {
     if (error.response && error.response.status === 401) {
-        // logout user
+        logout()
     }
 
-    return error;
+    if (error.response && isServerError(error.response.data)) {
+        throw error.response.data
+    }
+
+    throw new ServerErrorResponse();
 };
 
 instance.interceptors.response.use(responseHandler, responseErrorHandler)

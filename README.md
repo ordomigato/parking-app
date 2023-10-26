@@ -10,6 +10,5 @@ Have docker running and run `docker-compose up postgres`
 ### Step 3
 Run `docker-compose up server`. This will also migrate the db on initial load.
 
-#### Migration Notes
-Basic command to create new migration table (in `./server` director):
-`migrate create -ext sql -dir store/migrations/ -seq table_name`
+#### NOTES
+Authentication flow heavily based on https://codevoweb.com/golang-gorm-fiber-jwt-authentication/

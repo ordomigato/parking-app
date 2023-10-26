@@ -17,4 +17,6 @@ dist
 
 # Go workspace file
 go.work
+server/tmp
+.log
 node_modules
