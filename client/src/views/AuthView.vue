@@ -12,5 +12,5 @@ import RegisterForm from "../components/auth/RegisterForm.vue"
 import LoginForm from "../components/auth/LoginForm.vue"
 import { ref } from "vue";
 
-const isRegister = ref(true)
+const isRegister = ref(false)
 </script>

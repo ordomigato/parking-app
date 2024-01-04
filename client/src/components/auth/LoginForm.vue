@@ -14,7 +14,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { loginUser } from '@/services/account.service';
+import { loginUser, getStatus } from '@/services/account.service';
 import { handleError } from '@/utils/error';
 import { ref, type Ref } from 'vue';
 import TextInput from '../global/TextInput.vue';
@@ -45,6 +45,7 @@ const handleLogin = async () => {
         }
 
         await loginUser(userEmail, userPass)
+        await getStatus()
     } catch (e) {
         error.value = handleError(e);
     }

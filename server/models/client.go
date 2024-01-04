@@ -10,7 +10,7 @@ import (
 type Client struct {
 	ClientID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"client_id"`
 	Username         string    `gorm:"uniqueIndex;not null" json:"username"`
-	Password         string    `gorm:"not null" json:"password"`
+	Password         string    `gorm:"not null" json:"password,omitempty"`
 	VerificationCode string    `json:"verification_code"`
 	Verified         bool      `gorm:"not null" json:"verified"`
 	CreatedAt        time.Time `gorm:"not null" json:"created_at"`
@@ -19,11 +19,12 @@ type Client struct {
 }
 
 type ClientResponse struct {
-	ClientID  uuid.UUID `json:"id,omitempty"`
-	Username  string    `json:"name,omitempty"`
-	Verified  bool      `json:"verified"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ClientID  uuid.UUID `json:"user_uuid,omitempty"`
+	Username  string    `json:"username,omitempty"`
+	Verified  bool      `json:"verified,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	LastLogin time.Time `json:"last_login,omitempty"`
 }
 
 type ClientRegisterRequest struct {

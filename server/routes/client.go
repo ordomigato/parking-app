@@ -19,22 +19,19 @@ func (r *Repository) RegisterClient(c *fiber.Ctx) error {
 
 	err := c.BodyParser(&payload)
 	if err != nil {
-		c.Status(http.StatusUnprocessableEntity).JSON(
-			&fiber.Map{"message": "request failed"})
-		return err
+		return c.Status(http.StatusUnprocessableEntity).JSON(
+			&fiber.Map{"error_message": "request failed"})
 	}
 
 	if payload.Password != payload.PasswordConfirm {
-		c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message": "passwords do not match"})
-		return err
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": "passwords do not match"})
 	}
 
 	hashedPassword, err := utils.HashPassword(payload.Password)
 	if err != nil {
-		c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message": err.Error()})
-		return err
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": err.Error()})
 	}
 
 	now := time.Now()
@@ -50,12 +47,11 @@ func (r *Repository) RegisterClient(c *fiber.Ctx) error {
 
 	err = r.DB.Create(&newClient).Error
 	if err != nil {
-		c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message": "could not register account"})
-		return err
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": "Account already created"})
 	}
 
-	return c.JSON(newClient)
+	return c.JSON(models.FilterClientRecord(&newClient))
 }
 
 func (r *Repository) LoginClient(c *fiber.Ctx) error {
@@ -63,22 +59,23 @@ func (r *Repository) LoginClient(c *fiber.Ctx) error {
 	// Extract the credentials from the request body
 	if err := c.BodyParser(loginRequest); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
+			"error_message": err.Error(),
 		})
 	}
 
 	// Find the user by credentials
 	client, err := r.FindByCredentials(loginRequest.Username)
+
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "invalid email or password",
+			"error_message": "invalid email or password",
 		})
 	}
 
 	result := utils.CheckPasswordHash(loginRequest.Password, client.Password)
 	if !result {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid email or Password",
+			"error_message": "Invalid email or Password",
 		})
 	}
 
@@ -95,7 +92,7 @@ func (r *Repository) LoginClient(c *fiber.Ctx) error {
 	tokenString, err := tokenByte.SignedString([]byte(os.Getenv("TOKEN_SECRET")))
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
-			"error": fmt.Sprintf("generating JWT Token failed: %v", err)})
+			"error_message": fmt.Sprintf("generating JWT Token failed: %v", err)})
 	}
 
 	c.Cookie(&fiber.Cookie{
@@ -109,14 +106,13 @@ func (r *Repository) LoginClient(c *fiber.Ctx) error {
 	})
 
 	return c.JSON(fiber.Map{
-		"user":  client,
+		"user":  models.FilterClientRecord(client),
 		"token": tokenString,
 	})
 }
 
 func (r *Repository) clientStatus(c *fiber.Ctx) error {
-	client := c.Locals("client").(models.ClientResponse)
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": fiber.Map{"client": client}})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success"})
 }
 
 func (r *Repository) LogoutClient(c *fiber.Ctx) error {
@@ -131,8 +127,7 @@ func (r *Repository) LogoutClient(c *fiber.Ctx) error {
 
 func (r *Repository) FindByCredentials(username string) (*models.Client, error) {
 	user := models.Client{Username: username}
-	result := r.DB.Where("username = ?", strings.ToLower(username)).Find(&user)
-	fmt.Print(result)
+	result := r.DB.First(&user, "username = ?", strings.ToLower(username)).Find(&user)
 	if result.RowsAffected == 0 {
 		return nil, errors.New("user not found")
 	}

@@ -3,7 +3,12 @@ import axios, { AxiosError, type AxiosResponse } from "axios";
 import type { App } from "vue";
 import { logout } from "./account.service";
 
-const instance = axios.create();
+const instance = axios.create({
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    withCredentials: true,
+});
 
 const responseHandler = (resp: AxiosResponse): AxiosResponse => {
     return resp;
@@ -11,7 +16,7 @@ const responseHandler = (resp: AxiosResponse): AxiosResponse => {
 
 const responseErrorHandler = (error: AxiosError): ServerError => {
     if (error.response && error.response.status === 401) {
-        logout()
+        // logout()
     }
 
     if (error.response && isServerError(error.response.data)) {

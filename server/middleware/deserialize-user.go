@@ -22,7 +22,7 @@ func DeserializeClient(c *fiber.Ctx) error {
 	}
 
 	if tokenString == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "You are not logged in"})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error_message": "You are not logged in"})
 	}
 
 	tokenByte, err := jwt.Parse(tokenString, func(jwtToken *jwt.Token) (interface{}, error) {
