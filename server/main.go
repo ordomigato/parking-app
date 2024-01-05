@@ -1,46 +1,32 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
-	"github.com/ordomigato/parking-app/models"
+	"github.com/ordomigato/parking-app/initializers"
 	"github.com/ordomigato/parking-app/routes"
-	"github.com/ordomigato/parking-app/store"
 )
 
-func main() {
+func init() {
 	godotenv.Load(".env")
 
 	// DB SETUP
-	config := &store.Config{
-		Host:     os.Getenv("DB_HOST"),
-		Port:     os.Getenv("DB_PORT"),
-		Password: os.Getenv("DB_PASS"),
-		User:     os.Getenv("DB_USER"),
-		SSLMode:  os.Getenv("DB_SSLMODE"),
-		DBName:   os.Getenv("DB_NAME"),
+	config := &initializers.Config{
+		DBHost:         os.Getenv("DB_HOST"),
+		DBPort:         os.Getenv("DB_PORT"),
+		DBUserPassword: os.Getenv("DB_PASS"),
+		DBUserName:     os.Getenv("DB_USER"),
+		// DBSSLMode:  os.Getenv("DB_SSLMODE"),
+		DBName: os.Getenv("DB_NAME"),
 	}
 
-	db, err := store.NewConnection(config)
+	initializers.ConnectDB(config)
+}
 
-	if err != nil {
-		log.Fatalf("DB Unable to load: %s", err)
-	}
-
-	// MODEL MIGRATIONS
-	err = models.MigrateClient(db)
-	if err != nil {
-		log.Fatal("could not migrate db")
-	}
-
-	r := routes.Repository{
-		DB: db,
-	}
-
+func main() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:8080",
@@ -48,6 +34,6 @@ func main() {
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
 		AllowCredentials: true,
 	}))
-	r.SetupRoutes(app)
+	routes.SetupRoutes(app)
 	app.Listen(":3000")
 }

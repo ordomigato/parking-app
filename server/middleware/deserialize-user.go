@@ -7,8 +7,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
+	"github.com/ordomigato/parking-app/initializers"
 	"github.com/ordomigato/parking-app/models"
-	"github.com/ordomigato/parking-app/store"
 )
 
 func DeserializeClient(c *fiber.Ctx) error {
@@ -43,9 +43,9 @@ func DeserializeClient(c *fiber.Ctx) error {
 	}
 
 	var client models.Client
-	store.DB.First(&client, "id = ?", fmt.Sprint(claims["sub"]))
+	initializers.DB.First(&client, "client_id = ?", fmt.Sprint(claims["sub"]))
 
-	if client.ClientID != claims["sub"] {
+	if client.ClientID.String() != claims["sub"] {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
 	}
 

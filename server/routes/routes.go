@@ -5,19 +5,14 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/ordomigato/parking-app/middleware"
-	"gorm.io/gorm"
 )
 
-type Repository struct {
-	DB *gorm.DB
-}
-
-func (r *Repository) SetupRoutes(app *fiber.App) {
+func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
-	api.Post("/register", r.RegisterClient)
-	api.Post("/login", r.LoginClient)
-	api.Get("/logout", middleware.DeserializeClient, r.LogoutClient)
-	api.Get("/status", middleware.DeserializeClient, r.clientStatus)
+	api.Post("/register", RegisterClient)
+	api.Post("/login", LoginClient)
+	api.Get("/logout", middleware.DeserializeClient, LogoutClient)
+	api.Get("/status", middleware.DeserializeClient, clientStatus)
 
 	api.All("*", func(c *fiber.Ctx) error {
 		path := c.Path()

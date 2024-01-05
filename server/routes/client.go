@@ -10,11 +10,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
+	"github.com/ordomigato/parking-app/initializers"
 	"github.com/ordomigato/parking-app/models"
 	"github.com/ordomigato/parking-app/utils"
 )
 
-func (r *Repository) RegisterClient(c *fiber.Ctx) error {
+func RegisterClient(c *fiber.Ctx) error {
 	var payload *models.ClientRegisterRequest
 
 	err := c.BodyParser(&payload)
@@ -45,7 +46,7 @@ func (r *Repository) RegisterClient(c *fiber.Ctx) error {
 		LastLogin: now,
 	}
 
-	err = r.DB.Create(&newClient).Error
+	err = initializers.DB.Create(&newClient).Error
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": "Account already created"})
@@ -54,7 +55,7 @@ func (r *Repository) RegisterClient(c *fiber.Ctx) error {
 	return c.JSON(models.FilterClientRecord(&newClient))
 }
 
-func (r *Repository) LoginClient(c *fiber.Ctx) error {
+func LoginClient(c *fiber.Ctx) error {
 	loginRequest := new(models.ClientLoginRequest)
 	// Extract the credentials from the request body
 	if err := c.BodyParser(loginRequest); err != nil {
@@ -64,7 +65,7 @@ func (r *Repository) LoginClient(c *fiber.Ctx) error {
 	}
 
 	// Find the user by credentials
-	client, err := r.FindByCredentials(loginRequest.Username)
+	client, err := FindByCredentials(loginRequest.Username)
 
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -111,11 +112,11 @@ func (r *Repository) LoginClient(c *fiber.Ctx) error {
 	})
 }
 
-func (r *Repository) clientStatus(c *fiber.Ctx) error {
+func clientStatus(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success"})
 }
 
-func (r *Repository) LogoutClient(c *fiber.Ctx) error {
+func LogoutClient(c *fiber.Ctx) error {
 	expired := time.Now().Add(-time.Hour * 24)
 	c.Cookie(&fiber.Cookie{
 		Name:    "token",
@@ -125,9 +126,9 @@ func (r *Repository) LogoutClient(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success"})
 }
 
-func (r *Repository) FindByCredentials(username string) (*models.Client, error) {
+func FindByCredentials(username string) (*models.Client, error) {
 	user := models.Client{Username: username}
-	result := r.DB.First(&user, "username = ?", strings.ToLower(username)).Find(&user)
+	result := initializers.DB.First(&user, "username = ?", strings.ToLower(username)).Find(&user)
 	if result.RowsAffected == 0 {
 		return nil, errors.New("user not found")
 	}
