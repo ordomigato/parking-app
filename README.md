@@ -2,12 +2,20 @@
 ## Docker
 
 ### step 1
-Copy contents of `example.env` to `.env` and update values appropriately. Don't forget to update postgres service in `docker-compose.yml`
+Copy contents of `example.env` to `.env` and update values appropriately.
 
-### Step 2
-Have docker running and run `docker-compose up postgres`
+### step 2
+Don't forget to update environemnt variables in postgres service in `docker-compose.yml`
+```
+    POSTGRES_USER: user
+    POSTGRES_PASSWORD: password
+    POSTGRES_DB: dbname
+```
 
 ### Step 3
+Have docker running and run `docker-compose up postgres`
+
+### Step 4
 Run `docker-compose up server`. This will also migrate the db on initial load.
 
 #### NOTES
