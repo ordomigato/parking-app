@@ -27,9 +27,13 @@ export async function loginUser(username: string, password: string): Promise<ILo
     return data;
 }
 
-export async function getStatus(): Promise<IClient> {
-    const { data } = await http.get(`${BASE_URL}/status`)
-    return data
+export async function getStatus(): Promise<boolean> {
+    try {
+        const { data } = await http.get(`${BASE_URL}/status`)
+        return data.status === "success"
+    } catch (e) {
+        return false;
+    }
 }
 
 export async function logout() {

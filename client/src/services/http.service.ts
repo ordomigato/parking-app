@@ -15,9 +15,13 @@ const responseHandler = (resp: AxiosResponse): AxiosResponse => {
 }
 
 const responseErrorHandler = (error: AxiosError): ServerError => {
-    if (error.response && error.response.status === 401) {
+    console.log(error)
+    if (
+        error.response
+        && error.response.status === 401
+        && error.request.responseText !== "{\"error_message\":\"You are not logged in\"}"
+    ) {
         logout()
-        window.location.href = window.origin
     }
 
     if (error.response && isServerError(error.response.data)) {

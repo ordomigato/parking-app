@@ -4,13 +4,13 @@
             <h1 class="text-lg font-semibold">Create an Account</h1>
             <p>Create and manage parking spaces with ease</p>
         </header>
-        <text-input ref="email" label="Email" type="email" autocomplete="email" />
-        <text-input ref="pass" label="Password" type="password" />
-        <text-input ref="confPass" label="Confirm Password" type="password" />
+        <text-input :disabled="busy" ref="email" label="Email" type="email" autocomplete="email" />
+        <text-input :disabled="busy" ref="pass" label="Password" type="password" />
+        <text-input :disabled="busy" ref="confPass" label="Confirm Password" type="password" />
         <error-display :error="error"></error-display>
-        <c-button @click="handleRegister">Register</c-button>
+        <c-button :disabled="busy" fullWidth @click="handleRegister">Register</c-button>
         <footer class="pt-12">
-            <p class="text-center">Already have an account? <c-button @click="handleChangeView" isLink>Login</c-button></p>
+            <p class="text-center">Already have an account? <c-button :disabled="busy" @click="handleChangeView" isLink>Login</c-button></p>
         </footer>
     </div>
 </template>
@@ -27,6 +27,7 @@ const pass = ref<InstanceType<typeof TextInput>>()
 const confPass = ref<InstanceType<typeof TextInput>>()
 
 const error: Ref<Error | null> = ref(null)
+const busy: Ref<boolean> = ref(false)
 
 const handleChangeView = () => {
     emit('changeView')
@@ -34,6 +35,7 @@ const handleChangeView = () => {
 
 const handleRegister = async () => {
     error.value = null
+    busy.value = true
     try {
         const userEmail = email.value?.value
         const userPass = pass.value?.value
@@ -54,6 +56,8 @@ const handleRegister = async () => {
         await registerUser(userEmail, userPass, userConfPass)
     } catch (e) {
         error.value = handleError(e);
+    } finally {
+        busy.value = false
     }
 }
 </script>

@@ -112,7 +112,7 @@ func LoginClient(c *fiber.Ctx) error {
 	})
 }
 
-func clientStatus(c *fiber.Ctx) error {
+func ClientStatus(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success"})
 }
 
