@@ -12,5 +12,10 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     currentWorkspace.value = workspace
   }
 
-  return { workspaces, currentWorkspace, setWorkspaces, setActiveWorkspace }
+  return {
+    workspaces,
+    currentWorkspace,
+    setWorkspaces,
+    setActiveWorkspace
+  }
 })

@@ -33,9 +33,29 @@ const router = createRouter({
           component: () => import('../views/WorkspacesView.vue')
         },
         {
+          path: '/dashboard/workspace/:id',
+          name: routeNames.workspaceSettings,
+          component: () => import('../views/WorkspaceSettings.vue')
+        },
+        {
           path: '/dashboard/workspace/create',
           name: routeNames.createWorkspace,
           component: () => import('../views/CreateWorkspace.vue')
+        },
+        {
+          path: '/dashboard/form',
+          name: routeNames.forms,
+          component: () => import('../views/FormsView.vue')
+        },
+        {
+          path: '/dashboard/form/:id',
+          name: routeNames.form,
+          component: () => import('../views/FormView.vue')
+        },
+        {
+          path: '/dashboard/form/create',
+          name: routeNames.form,
+          component: () => import('../views/CreateForm.vue')
         },
       ]
     }
