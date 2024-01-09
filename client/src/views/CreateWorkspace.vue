@@ -1,10 +1,12 @@
 <template>
     <div>
-        <text-input ref="workspaceName" />
+        <h2 class="text-center">Create Workspace</h2>
+        <text-input ref="workspaceName" label="Workspace Name" />
         <c-button @click="onWorkspaceSubmit">Submit</c-button>
     </div>
 </template>
 <script lang="ts" setup>
+import TextInput from '@/components/global/TextInput.vue';
 import { type Ref, ref } from 'vue';
 import { handleError } from '../utils/error';
 import { createWorkspace } from '../services/workspace.service'
@@ -18,6 +20,9 @@ const onWorkspaceSubmit = async () => {
     error.value = null
     busy.value = true
     try {
+        if (!workspaceName.value?.value){
+            throw new Error('Workspace name cannot be blank')
+        }
         const resp = await createWorkspace(workspaceName.value.value)
         console.log(resp)
     } catch (e) {

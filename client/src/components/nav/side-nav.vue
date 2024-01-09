@@ -26,7 +26,7 @@ class NavItem {
 const navItems = ref([
     new NavItem('Get Started', '/dashboard/workspace/create'),
     new NavItem('Overview', '/dashboard/overview'),
-    new NavItem('Forms', '/dashboard/forms'),
+    // new NavItem('Forms', '/dashboard/forms'),
 ])
 </script>
 <style lang="scss" scoped>

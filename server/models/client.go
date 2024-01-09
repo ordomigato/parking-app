@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type Client struct {
@@ -19,7 +18,7 @@ type Client struct {
 }
 
 type ClientResponse struct {
-	ClientID  uuid.UUID `json:"user_uuid,omitempty"`
+	ClientID  uuid.UUID `json:"client_id,omitempty"`
 	Username  string    `json:"username,omitempty"`
 	Verified  bool      `json:"verified,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
@@ -46,9 +45,4 @@ func FilterClientRecord(client *Client) ClientResponse {
 		CreatedAt: client.CreatedAt,
 		UpdatedAt: client.UpdatedAt,
 	}
-}
-
-func MigrateClient(db *gorm.DB) error {
-	err := db.AutoMigrate(&Client{})
-	return err
 }

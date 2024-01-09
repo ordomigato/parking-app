@@ -17,3 +17,31 @@ h6,
 label {
   color: rgb(38 38 38);
 }
+
+h2 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+table {
+  text-align: left;
+  border: 1px solid #06b6d4;
+  width: 100%;
+}
+
+table thead {
+  background-color: #06b6d4;
+  color: white;
+}
+
+table thead th {
+  padding: 0.5rem 1rem;
+}
+
+table tbody td {
+  padding: 0.5rem 1rem;
+}

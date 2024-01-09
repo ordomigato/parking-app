@@ -1,5 +1,5 @@
 export interface IClient {
-    user_uuid: string,
+    client_id: string,
     username: string,
     created_at: Date,
     updated_at: Date,
@@ -8,6 +8,7 @@ export interface IClient {
 
 export interface IWorkspace {
     workspace_id: string,
+    name: string,
     updated_at: Date,
     created_at: Date,
 }

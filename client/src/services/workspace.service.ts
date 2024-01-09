@@ -10,3 +10,8 @@ export async function createWorkspace(name: string): Promise<IWorkspace> {
     const { data } = await http.post(`${BASE_URL}/workspace`, payload)
     return data;
 }
+
+export async function getWorkspaces(): Promise<IWorkspace[]> {
+    const { data } = await http.get(`${BASE_URL}/workspace`)
+    return data;
+}

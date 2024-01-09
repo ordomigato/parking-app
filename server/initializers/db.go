@@ -29,7 +29,35 @@ func ConnectDB(config *Config) {
 	log.Println("Running Migrations")
 	err = DB.AutoMigrate(&models.Client{})
 	if err != nil {
-		log.Fatal("Migration Failed:  \n", err.Error())
+		log.Fatal("Client Migration Failed:  \n", err.Error())
+		os.Exit(1)
+	}
+
+	err = DB.AutoMigrate(&models.Workspace{})
+	if err != nil {
+		log.Fatal("Workspace Migration Failed:  \n", err.Error())
+		os.Exit(1)
+	}
+
+	err = DB.AutoMigrate(&models.Role{})
+	if err != nil {
+		log.Fatal("Role Migration Failed:  \n", err.Error())
+		os.Exit(1)
+	}
+
+	// newRole := models.Role{
+	// 	RoleName: "Admin",
+	// }
+
+	// err = DB.Create(&newRole).Error
+	// if err != nil {
+	// 	log.Fatal("Admin Role Creation Failed:  \n", err.Error())
+	// 	os.Exit(1)
+	// }
+
+	err = DB.AutoMigrate(&models.ClientWorkspace{})
+	if err != nil {
+		log.Fatal("ClientWorkspace Migration Failed:  \n", err.Error())
 		os.Exit(1)
 	}
 

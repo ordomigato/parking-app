@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AuthView from '../views/AuthView.vue'
 import { routeNames } from './routeNames'
 import { getStatus } from '@/services/account.service'
+import { getWorkspaces } from '@/services/workspace.service'
+import { useWorkspaceStore } from '@/stores/workspaceStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,10 +15,6 @@ const router = createRouter({
     },
     {
       path: '/dashboard',
-      name: routeNames.dashboard,
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../components/layouts/dashboard-layout.vue'),
       children: [
         {
@@ -28,6 +26,11 @@ const router = createRouter({
           path: '/dashboard/overview',
           name: routeNames.overview,
           component: () => import('../views/OverviewView.vue'),
+        },
+        {
+          path: '/dashboard/workspace',
+          name: routeNames.workspaces,
+          component: () => import('../views/WorkspacesView.vue')
         },
         {
           path: '/dashboard/workspace/create',
@@ -47,6 +50,12 @@ router.beforeEach(async(to, from, next) => {
   }
   if (to.name !== routeNames.auth && !isLoggedIn) {
     router.push({ name: routeNames.auth })
+  }
+  if (isLoggedIn) {
+    // get workspaces
+    const workspaceStore = useWorkspaceStore()
+    const wp = await getWorkspaces()
+    workspaceStore.setWorkspaces(wp)
   }
   next()
 })

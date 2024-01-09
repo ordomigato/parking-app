@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type Workspace struct {
@@ -18,7 +17,10 @@ type WorkspaceCreateRequest struct {
 	Name string `json:"name"`
 }
 
-func MigrateWorkspace(db *gorm.DB) error {
-	err := db.AutoMigrate(&Workspace{})
-	return err
+type WorkspaceResponse struct {
+	WorkspaceID uuid.UUID `json:"workspace_id"`
+	Name        string    `json:"name"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Role        string    `json:"role"`
 }
