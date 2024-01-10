@@ -1,12 +1,9 @@
-import type { IWorkspace } from "@/types";
+import type { IWorkspace, IWorkspaceCreateRequest } from "@/types";
 import http from "./http.service"
 
 const BASE_URL = `${import.meta.env.VITE_BASE_API_URL}/api`
 
-export async function createWorkspace(name: string): Promise<IWorkspace> {
-    const payload = {
-        name
-    }
+export async function createWorkspace(payload: IWorkspaceCreateRequest): Promise<IWorkspace> {
     const { data } = await http.post(`${BASE_URL}/workspace`, payload)
     return data;
 }
@@ -20,8 +17,7 @@ export async function updateWorkspace(workspaceId: string, name: string): Promis
     const payload = {
         name
     }
-    const { data } = await http.put(`${BASE_URL}/workspace/${workspaceId}`, payload)
-    return data;
+    await http.put(`${BASE_URL}/workspace/${workspaceId}`, payload)
 }
 
 export async function deleteWorkspace(workspaceId: string): Promise<void> {

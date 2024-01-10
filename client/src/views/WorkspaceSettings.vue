@@ -47,7 +47,7 @@ const onUpdateWorkspace = async () => {
     busy.value = true
     try {
         if (!workspaceStore.currentWorkspace) {
-            throw new Error("Missing workspace ID")
+            throw new Error("Something went wrong")
         }
         if (!workspaceName.value) {
             throw new Error("Something went wrong")

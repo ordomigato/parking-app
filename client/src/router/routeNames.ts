@@ -9,5 +9,5 @@ export enum routeNames {
 
     forms = 'forms',
     form = 'form',
-    createFrom = 'createForm'
+    createForm = 'createForm'
 }

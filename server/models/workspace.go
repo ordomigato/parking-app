@@ -9,6 +9,7 @@ import (
 type Workspace struct {
 	WorkspaceID uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"workspace_id"`
 	Name        string    `gorm:"uniqueIndex;not null" json:"name"`
+	Forms       []Form    `gorm:"foreignKey:WorkspaceID" json:"forms,omitempty"`
 	CreatedAt   time.Time `gorm:"not null" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"not null" json:"updated_at"`
 }

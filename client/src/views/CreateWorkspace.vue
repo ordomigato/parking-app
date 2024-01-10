@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="card">
         <h2 class="text-center">Create Workspace</h2>
         <text-input ref="workspaceName" label="Workspace Name" />
         <c-button @click="onWorkspaceSubmit">Submit</c-button>
@@ -13,6 +13,7 @@ import { createWorkspace } from '../services/workspace.service'
 import { useRouter } from 'vue-router';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { routeNames } from '@/router/routeNames';
+import type { IWorkspaceCreateRequest } from '@/types';
 
 const workspaceStore = useWorkspaceStore()
 
@@ -29,10 +30,12 @@ const onWorkspaceSubmit = async () => {
         if (!workspaceName.value?.value){
             throw new Error('Workspace name cannot be blank')
         }
-        const resp = await createWorkspace(workspaceName.value.value)
+        const payload: IWorkspaceCreateRequest = {
+            name: workspaceName.value.value
+        }
+        const resp = await createWorkspace(payload)
         workspaceStore.setActiveWorkspace(resp)
         router.push({ name: routeNames.dashboard })
-
     } catch (e) {
         error.value = handleError(e)
     } finally {

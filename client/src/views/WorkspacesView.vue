@@ -28,15 +28,11 @@ import { routeNames } from '@/router/routeNames';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import type { IWorkspace } from '@/types';
 import { useRouter } from 'vue-router';
+import { convertDate } from '@/utils/date'
 
 const router = useRouter()
 
 const workspaceStore = useWorkspaceStore()
-
-const convertDate = (date: Date) => {
-    const d = new Date(date)
-    return d.toLocaleString()
-}
 
 const setActiveWorkspace = (ws: IWorkspace) => {
     workspaceStore.setActiveWorkspace(ws)

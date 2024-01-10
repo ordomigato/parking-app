@@ -39,6 +39,12 @@ func ConnectDB(config *Config) {
 		os.Exit(1)
 	}
 
+	err = DB.AutoMigrate(&models.Form{})
+	if err != nil {
+		log.Fatal("Form Migration Failed:  \n", err.Error())
+		os.Exit(1)
+	}
+
 	err = DB.AutoMigrate(&models.Role{})
 	if err != nil {
 		log.Fatal("Role Migration Failed:  \n", err.Error())

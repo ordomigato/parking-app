@@ -46,7 +46,7 @@ func CreateWorkspace(c *fiber.Ctx) error {
 			&fiber.Map{"error_message": "Unable to create client workspace relationship"})
 	}
 
-	return c.JSON(&newWorkspace)
+	return c.JSON(newWorkspace)
 }
 
 func GetWorkspaces(c *fiber.Ctx) error {
@@ -70,7 +70,7 @@ func GetWorkspaces(c *fiber.Ctx) error {
 			&fiber.Map{"error_message": fmt.Sprintf("unable to find workspaces: %v", err)})
 	}
 
-	return c.JSON(&workspaces)
+	return c.JSON(workspaces)
 }
 
 func UpdateWorkspace(c *fiber.Ctx) error {

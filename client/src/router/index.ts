@@ -54,7 +54,7 @@ const router = createRouter({
         },
         {
           path: '/dashboard/form/create',
-          name: routeNames.form,
+          name: routeNames.createForm,
           component: () => import('../views/CreateForm.vue')
         },
       ]
