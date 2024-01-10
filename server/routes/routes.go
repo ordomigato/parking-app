@@ -15,12 +15,14 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/status", middleware.DeserializeClient, ClientStatus)
 	api.Post("/workspace", middleware.DeserializeClient, CreateWorkspace)
 	api.Get("/workspace", middleware.DeserializeClient, GetWorkspaces)
+	api.Put("/workspace/:id", middleware.DeserializeClient, UpdateWorkspace)
+	api.Delete("/workspace/:id", middleware.DeserializeClient, DeleteWorkspace)
 
 	api.All("*", func(c *fiber.Ctx) error {
 		path := c.Path()
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"status":  "fail",
-			"message": fmt.Sprintf("Path: %v does not exists on this server", path),
+			"status":        "fail",
+			"error_message": fmt.Sprintf("Path: %v does not exists on this server", path),
 		})
 	})
 }

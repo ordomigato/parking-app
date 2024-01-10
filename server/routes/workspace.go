@@ -46,9 +46,7 @@ func CreateWorkspace(c *fiber.Ctx) error {
 			&fiber.Map{"error_message": "Unable to create client workspace relationship"})
 	}
 
-	return c.JSON(fiber.Map{
-		"data": newWorkspace,
-	})
+	return c.JSON(&newWorkspace)
 }
 
 func GetWorkspaces(c *fiber.Ctx) error {
@@ -73,4 +71,47 @@ func GetWorkspaces(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(&workspaces)
+}
+
+func UpdateWorkspace(c *fiber.Ctx) error {
+	wpid, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+	}
+
+	payload := new(models.WorkspaceUpdateRequest)
+	if err := c.BodyParser(payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error_message": err.Error(),
+		})
+	}
+	if err := initializers.DB.Model(&models.Workspace{}).Where("workspace_id = ?", wpid).Updates(models.Workspace{Name: payload.Name}).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
+	}
+
+	return c.SendStatus(http.StatusNoContent)
+}
+
+func DeleteWorkspace(c *fiber.Ctx) error {
+
+	// TODO confirm user is admin of this repo
+
+	wpid, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+	}
+
+	if err := initializers.DB.Delete(&models.Workspace{}, wpid).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
+	}
+
+	if err := initializers.DB.Delete(&models.ClientWorkspace{}, "workspace_id = ?", wpid).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete workspace: %v", err)})
+	}
+	return c.SendStatus(http.StatusNoContent)
 }

@@ -44,4 +44,20 @@ table thead th {
 
 table tbody td {
   padding: 0.5rem 1rem;
+  white-space: nowrap;
+}
+
+.card {
+  background: white;
+  padding: 1rem;
+  border: 1px solid #0284c7;
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.danger-text {
+  color: #e11d48;
 }

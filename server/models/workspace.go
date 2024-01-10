@@ -17,6 +17,10 @@ type WorkspaceCreateRequest struct {
 	Name string `json:"name"`
 }
 
+type WorkspaceUpdateRequest struct {
+	Name string `json:"name"`
+}
+
 type WorkspaceResponse struct {
 	WorkspaceID uuid.UUID `json:"workspace_id"`
 	Name        string    `json:"name"`

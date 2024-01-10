@@ -12,7 +12,7 @@
 </template>
 <script setup lang="ts">
 import { useWorkspaceStore } from '@/stores/workspaceStore';
-import { ref, type Ref } from 'vue';
+import { onMounted, ref, type Ref } from 'vue';
 
 const workspaceStore = useWorkspaceStore()
 
@@ -38,6 +38,12 @@ const setNavItems = () => {
 
 workspaceStore.$subscribe((mutation, state) => {
     if (state.currentWorkspace) {
+        setNavItems()
+    }
+})
+
+onMounted(() => {
+    if (workspaceStore.currentWorkspace) {
         setNavItems()
     }
 })

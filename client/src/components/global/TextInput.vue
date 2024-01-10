@@ -25,9 +25,13 @@ const props = defineProps({
         type: String,
         default: 'off',
     },
+    defaultValue: {
+        type: String,
+        default: ''
+    }
 })
 
-const value = ref('')
+const value = ref(props.defaultValue)
 
 defineExpose({
     value,

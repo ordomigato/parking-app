@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="card">
         <header>
             <c-button class="mb-2 ms-auto" @click="$router.push({ name: routeNames.createWorkspace })">+ Create Workspace</c-button>
         </header>
@@ -9,7 +9,6 @@
                     <th>Name</th>
                     <th>Created At</th>
                     <th>Updated At</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
