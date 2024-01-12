@@ -30,13 +30,17 @@ func GetForms(c *fiber.Ctx) error {
 }
 
 func GetForm(c *fiber.Ctx) error {
-	wpid, err := uuid.Parse(c.Params("form-id"))
+	formId, err := uuid.Parse(c.Params("formId"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
 	}
-	fmt.Println(wpid)
-	return c.SendStatus(http.StatusNoContent)
+	form := models.Form{}
+	if err := initializers.DB.Find(&form, formId).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("unable to find form: %v", err)})
+	}
+	return c.JSON(form)
 }
 
 func CreateForm(c *fiber.Ctx) error {
@@ -69,4 +73,49 @@ func CreateForm(c *fiber.Ctx) error {
 			&fiber.Map{"error_message": fmt.Sprintf("unable to find forms: %v", err)})
 	}
 	return c.JSON(form)
+}
+
+func UpdateForm(c *fiber.Ctx) error {
+	formId, err := uuid.Parse(c.Params("formId"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+	}
+	payload := new(models.FormUpdateRequest)
+	if err := c.BodyParser(payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error_message": err.Error(),
+		})
+	}
+
+	form := models.Form{
+		Name:                      payload.Name,
+		SubmissionConstraintType:  payload.SubmissionConstraintType,
+		SubmissionConstraintLimit: payload.SubmissionConstraintLimit,
+	}
+
+	if err := initializers.DB.Model(&models.Form{}).Where("form_id = ?", formId).Updates(form).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("unable to update form: %v", err)})
+	}
+
+	return c.JSON(form)
+}
+
+func DeleteForm(c *fiber.Ctx) error {
+
+	// TODO confirm user is admin of this form
+
+	formId, err := uuid.Parse(c.Params("formId"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("form_id is not a uuid: %v", err)})
+	}
+
+	if err := initializers.DB.Delete(&models.Form{}, formId).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
+	}
+
+	return c.SendStatus(http.StatusNoContent)
 }

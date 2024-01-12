@@ -1,8 +1,21 @@
 <template>
     <div class="card">
         <h2 class="text-center">Create Form</h2>
-        <text-input ref="formName" label="Form Name" />
-        <ConstraintTypeDropdown ref="constraintType" />
+        <text-input
+            ref="formName"
+            label="Form Name"
+            :disabled="busy"
+        />
+        <ConstraintTypeDropdown
+            ref="constraintType"
+            :disabled="busy"
+        />
+        <text-input
+            ref="constraintLimit"
+            label="Constraint Limit"
+            :disabled="busy"
+        ></text-input>
+        <error-display :error="error"></error-display>
         <c-button @click="onFormSubmit">Submit</c-button>
     </div>
 </template>
@@ -23,6 +36,7 @@ const router = useRouter()
 
 const formName = ref<InstanceType<typeof TextInput>>()
 const constraintType = ref<InstanceType<typeof ConstraintTypeDropdown>>()
+const constraintLimit = ref<InstanceType<typeof TextInput>>()
 
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
@@ -36,17 +50,19 @@ const onFormSubmit = async () => {
         if (!workspaceStore.currentWorkspace) {
             throw new Error('Something went wrong')
         }
-        if (!ct) {
+        if ((!ct && ct !== '') || ct === null) {
             throw new Error('Constraint type cannot be blank')
         }
         if (!name){
             throw new Error('Workspace name cannot be blank')
         }
-
+        if (!constraintLimit.value) {
+            throw new Error('Something went wrong')
+        }
         const payload: IFormCreateRequest = {
             name: name,
             submission_constraint_type: ct,
-            submission_constraint_limit: 0
+            submission_constraint_limit: parseInt(constraintLimit.value.value)
         }
         await createForm(workspaceStore.currentWorkspace?.workspace_id, payload)
         router.push({ name: routeNames.forms })

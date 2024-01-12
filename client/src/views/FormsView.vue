@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card" v-if="!busy">
         <header>
             <c-button class="mb-2 ms-auto" @click="$router.push({ name: routeNames.createForm })">+ Create Form</c-button>
         </header>
@@ -21,6 +21,7 @@
                 </tr>
             </tbody>
         </table>
+        <p v-else>No forms found</p>
     </div>
 </template>
 <script setup lang="ts">
@@ -48,7 +49,6 @@ const onGetForms = async () => {
         }
         const resp = await getForms(workspaceStore.currentWorkspace?.workspace_id)
         forms.value = resp
-        console.log(resp)
     } catch (e) {
         error.value = handleError(e)
     } finally {

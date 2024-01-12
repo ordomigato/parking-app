@@ -55,8 +55,18 @@ table tbody td {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   overflow-x: auto;
   margin-bottom: 1rem;
+  animation: 0.1s linear 0s animateIn;
 }
 
 .danger-text {
   color: #e11d48;
+}
+
+@keyframes animateIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

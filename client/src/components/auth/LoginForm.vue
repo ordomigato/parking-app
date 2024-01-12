@@ -7,9 +7,27 @@
         <text-input :disabled="busy" ref="email" label="Email" type="email" autocomplete="email" />
         <text-input :disabled="busy" ref="pass" label="Password" type="password" autocomplete="password" />
         <error-display :error="error"></error-display>
-        <c-button :disabled="busy" fullWidth @click="handleLogin">Login</c-button>
+        <c-button
+            :disabled="busy"
+            fullWidth
+            @click="handleLogin"
+            @keyup.enter="handleLogin"
+        >
+            Login
+        </c-button>
         <footer class="pt-12">
-            <p class="text-center">Don't have an account? <c-button :disabled="busy" @click="handleChangeView" isLink>Register</c-button></p>
+            <p
+                class="text-center"
+            >
+                Don't have an account? <c-button
+                    :disabled="busy"
+                    @click="handleChangeView"
+                    @keyup.enter="handleChangeView"
+                    isLink
+                >
+                    Register
+                </c-button>
+            </p>
         </footer>
     </div>
 </template>

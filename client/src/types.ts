@@ -21,15 +21,21 @@ export interface IForm {
     form_id: string,
     workspace_id: string,
     name: string,
-    submission_constraint_type: string,
-    submission_constraint_limit: string,
+    submission_constraint_type: IFormSubmissionConstraintTypes,
+    submission_constraint_limit: number,
     created_at: Date,
     updated_at: Date,
 }
 
 export interface IFormCreateRequest {
     name: string,
-    submission_constraint_type: string,
+    submission_constraint_type: IFormSubmissionConstraintTypes,
+    submission_constraint_limit: number,
+}
+
+export interface IFormUpdateRequest {
+    name: string,
+    submission_constraint_type: IFormSubmissionConstraintTypes,
     submission_constraint_limit: number,
 }
 
@@ -39,6 +45,7 @@ export interface IDropdownItem<S extends string, T extends string> {
 }
 
 export enum IFormSubmissionConstraintTypes {
+    none = '',
     minutes = 'minutes',
     hours = 'hours',
     days = 'days',

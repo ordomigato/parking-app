@@ -1,14 +1,21 @@
 <template>
     <div class="dropdown-container">
-        <div class="dropdown-btn" @click="toggleOpen">
+        <div
+            tabindex="0"
+            :class="`dropdown-btn ${open ? 'open' : ''}`"
+            @click="toggleOpen"
+            @keyup.enter="toggleOpen"
+        >
             {{ props.selected ? props.selected.name : "Select" }}
         </div>
         <div class="dropdown" v-if="open">
             <ul>
                 <li
+                    tabindex="0"
                     v-for="item in props.items"
                     :key="item.value"
                     @click="() => onSelect(item)"
+                    @keyup.enter="() => onSelect(item)"
                 >
                     {{ item.name }}
                 </li>
@@ -49,16 +56,33 @@ const onSelect = (payload: IDropdownItem<any, any>) => {
 .dropdown-container {
     position: relative;
     user-select: none;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.5rem;
     .dropdown-btn {
-        padding: 0.25rem 1rem;
-        border: 1px solid black;
+        padding: 0.375rem 0.5rem;
+        border-radius: 0.375rem;
+        border: 1px solid rgb(209 213 219);
+        &.open {
+            border-bottom: none;
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
     }
     .dropdown {
-        position: absolute;
+        // position: absolute;
         background-color: white;
-        padding: 0.25rem 1rem;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        padding: 0.375rem 0;
         width: 100%;
+        border: 1px solid rgb(209 213 219);
+        border-top: none;
+        border-radius: 0 0 0.375rem 0.375rem;
+        li {
+            padding: 0 0.5rem;
+            cursor: pointer;
+            &:hover {
+                background-color: rgb(209 213 219);
+            }
+        }
     }
 }
 </style>

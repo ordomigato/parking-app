@@ -30,3 +30,9 @@ type FormCreateRequest struct {
 	SubmissionConstraintType  SubmissionConstraintType `json:"submission_constraint_type"`
 	SubmissionConstraintLimit uint8                    `json:"submission_constraint_limit"`
 }
+
+type FormUpdateRequest struct {
+	Name                      string                   `json:"name"`
+	SubmissionConstraintType  SubmissionConstraintType `json:"submission_constraint_type"`
+	SubmissionConstraintLimit uint8                    `json:"submission_constraint_limit"`
+}

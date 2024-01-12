@@ -25,6 +25,8 @@ import { RouterView } from 'vue-router'
         bottom: 0;
         width: calc(100vw - 200px);
         background-color: #f0fdfa;
+        overflow: hidden;
+        overflow-y: auto;
         main {
             padding: 1rem;
         }

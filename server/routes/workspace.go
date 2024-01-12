@@ -96,7 +96,7 @@ func UpdateWorkspace(c *fiber.Ctx) error {
 
 func DeleteWorkspace(c *fiber.Ctx) error {
 
-	// TODO confirm user is admin of this repo
+	// TODO confirm user is admin of this workspace
 
 	wpid, err := uuid.Parse(c.Params("id"))
 	if err != nil {
