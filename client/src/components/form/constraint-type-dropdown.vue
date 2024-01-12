@@ -3,6 +3,7 @@
     <DropdownInput
         :selected="selected"
         :items="submissionTypes"
+        :disabled="disabled"
         @onSelect="onSelect"
     />
 </template>
@@ -16,6 +17,10 @@ const props = defineProps({
         type: String as () => IFormSubmissionConstraintTypes,
         default: IFormSubmissionConstraintTypes.none
     },
+    disabled: {
+        type: Boolean,
+        default: false
+    }
 })
 
 const selected: Ref<IDropdownItem<IFormSubmissionConstraintTypes, string> | null> = ref(null)

@@ -9,18 +9,26 @@ export interface IClient {
 export interface IWorkspace {
     workspace_id: string,
     name: string,
+    path: string,
     updated_at: Date,
     created_at: Date,
 }
 
 export interface IWorkspaceCreateRequest {
     name: string,
+    path: string,
+}
+
+export interface IWorkspaceUpdateRequest {
+    name: string,
+    path: string,
 }
 
 export interface IForm {
     form_id: string,
     workspace_id: string,
     name: string,
+    path: string,
     submission_constraint_type: IFormSubmissionConstraintTypes,
     submission_constraint_limit: number,
     created_at: Date,
@@ -29,12 +37,14 @@ export interface IForm {
 
 export interface IFormCreateRequest {
     name: string,
+    path: string,
     submission_constraint_type: IFormSubmissionConstraintTypes,
     submission_constraint_limit: number,
 }
 
 export interface IFormUpdateRequest {
     name: string,
+    path: string,
     submission_constraint_type: IFormSubmissionConstraintTypes,
     submission_constraint_limit: number,
 }

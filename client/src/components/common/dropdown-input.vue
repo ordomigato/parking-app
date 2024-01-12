@@ -35,6 +35,10 @@ const props = defineProps({
     items: {
         type: Array as () => IDropdownItem<any, any>[],
         required: true,
+    },
+    disabled: {
+        type: Boolean,
+        default: false,
     }
 })
 

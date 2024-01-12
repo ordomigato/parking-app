@@ -6,6 +6,11 @@
             label="Form Name"
             :disabled="busy"
         />
+        <text-input
+            ref="formPath"
+            label="Path"
+            :disabled="busy"
+        />
         <ConstraintTypeDropdown
             ref="constraintType"
             :disabled="busy"
@@ -29,12 +34,14 @@ import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { routeNames } from '@/router/routeNames';
 import { createForm } from '@/services/form.service';
 import type { IFormCreateRequest } from '@/types';
+import { validatePath } from '@/utils/string'
 
 const workspaceStore = useWorkspaceStore()
 
 const router = useRouter()
 
 const formName = ref<InstanceType<typeof TextInput>>()
+const formPath = ref<InstanceType<typeof TextInput>>()
 const constraintType = ref<InstanceType<typeof ConstraintTypeDropdown>>()
 const constraintLimit = ref<InstanceType<typeof TextInput>>()
 
@@ -46,6 +53,7 @@ const onFormSubmit = async () => {
     busy.value = true
     try {
         const name = formName.value?.value
+        const path = formPath.value?.value
         const ct = constraintType.value?.selected?.value
         if (!workspaceStore.currentWorkspace) {
             throw new Error('Something went wrong')
@@ -56,11 +64,15 @@ const onFormSubmit = async () => {
         if (!name){
             throw new Error('Workspace name cannot be blank')
         }
+        if (!path || !validatePath(path)) {
+            throw new Error('Something went wrong')
+        }
         if (!constraintLimit.value) {
             throw new Error('Something went wrong')
         }
         const payload: IFormCreateRequest = {
-            name: name,
+            name,
+            path,
             submission_constraint_type: ct,
             submission_constraint_limit: parseInt(constraintLimit.value.value)
         }

@@ -1,4 +1,4 @@
-import type { IWorkspace, IWorkspaceCreateRequest } from "@/types";
+import type { IWorkspace, IWorkspaceCreateRequest, IWorkspaceUpdateRequest } from "@/types";
 import http from "./http.service"
 
 const BASE_URL = `${import.meta.env.VITE_BASE_API_URL}/api`
@@ -13,10 +13,7 @@ export async function getWorkspaces(): Promise<IWorkspace[]> {
     return data;
 }
 
-export async function updateWorkspace(workspaceId: string, name: string): Promise<void> {
-    const payload = {
-        name
-    }
+export async function updateWorkspace(workspaceId: string, payload: IWorkspaceUpdateRequest): Promise<void> {
     await http.put(`${BASE_URL}/workspace/${workspaceId}`, payload)
 }
 

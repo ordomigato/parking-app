@@ -18,6 +18,11 @@
                     label="Form Name"
                     :defaultValue="form.name"
                 ></text-input>
+                <text-input
+                    ref="formPath"
+                    label="Path"
+                    :disabled="busy"
+                />
                 <ConstraintTypeDropdown
                     ref="constraintType"
                     :default="form.submission_constraint_type"
@@ -59,11 +64,13 @@ import { type IForm, type IFormUpdateRequest } from '@/types';
 import router from '@/router';
 import { routeNames } from '@/router/routeNames';
 import { convertDate } from '@/utils/date'
+import { validatePath } from '@/utils/string'
 
 const route = useRoute()
 const workspaceStore = useWorkspaceStore()
 
 const formName = ref<InstanceType<typeof TextInput>>()
+const formPath = ref<InstanceType<typeof TextInput>>()
 const constraintType = ref<InstanceType<typeof ConstraintTypeDropdown>>()
 const constraintLimit = ref<InstanceType<typeof TextInput>>()
 
@@ -91,25 +98,33 @@ const onUpdateForm = async () => {
     busy.value = true
     error.value = null
     try {
+        const name = formName.value?.value
+        const path = formPath.value?.value
+        const ct = constraintType.value?.selected?.value
+        const cl = constraintLimit.value?.value
         if (!workspaceStore.currentWorkspace!) {
             throw new Error('Something went wrong')
         }
         if (!form.value) {
             throw new Error('Something went wrong')
         }
-        if (!formName.value) {
+        if (!name) {
             throw new Error('Something went wrong')
         }
-        if ((!constraintType.value && constraintType.value !== '') || constraintType.value.selected === null) {
+        if (!path || !validatePath(path)) {
             throw new Error('Something went wrong')
         }
-        if (!constraintLimit.value) {
+        if (!ct && ct !== '') {
+            throw new Error('Something went wrong')
+        }
+        if (!cl || isNaN(parseInt(cl))) {
             throw new Error('Something went wrong')
         }
         const payload: IFormUpdateRequest = {
-            name: formName.value.value,
-            submission_constraint_type: constraintType.value.selected.value,
-            submission_constraint_limit: parseInt(constraintLimit.value.value),
+            name,
+            path,
+            submission_constraint_type: ct,
+            submission_constraint_limit: parseInt(cl),
         }
         updateForm(workspaceStore.currentWorkspace?.workspace_id, form.value.form_id, payload)
         form.value = {
