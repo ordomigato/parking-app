@@ -24,7 +24,7 @@ import { RouterView } from 'vue-router'
         top: 0;
         bottom: 0;
         width: calc(100vw - 200px);
-        background-color: #f0fdfa;
+        background-color: var(--off-white-color);
         overflow: hidden;
         overflow-y: auto;
         main {

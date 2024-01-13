@@ -1,6 +1,7 @@
 <template>
     <div v-if="workspaceStore.currentWorkspace">
         <div class="card">
+            <h2>Workspace Settings</h2>
             <WorkspaceConfig isUpdate />
         </div>
         <div class="card">
@@ -29,7 +30,6 @@ const router = useRouter()
 
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
-
 
 const onDeleteWorkspace = async () => {
     error.value = null

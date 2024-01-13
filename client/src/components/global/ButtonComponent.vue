@@ -1,6 +1,6 @@
 <template>
     <button
-        :class="btnStyle()"
+        :class="`btn ${props.variant}`"
         :disabled="disabled"
     >
         <slot></slot>
@@ -8,9 +8,10 @@
 </template>
 <script setup lang="ts">
 const props = defineProps({
-    isLink: {
-        type: Boolean,
-        default: false,
+    variant: {
+        type: String,
+        validator: (val: string) => ['block', 'link', 'icon'].includes(val),
+        default: 'block'
     },
     fullWidth: {
         type: Boolean,
@@ -21,12 +22,43 @@ const props = defineProps({
         default: false,
     }
 })
+</script>
+<style lang="scss">
+.btn {
+    &.block {
+        padding: 0.25rem 0.5rem;
+        background-color: var(--main-color);
+        color: white;
+        border: 1px solid var(--main-color);
+        border-radius: 4px;
+        transition: all 0.1s linear;
+        &:hover,
+        &:focus {
+            background-color: white;
+            color: var(--main-color);
+        }
+        &:disabled {
+            opacity: 0.5;
+        }
+    }
 
-const btnStyle = (): string => {
-    if (props.isLink) {
-        return "text-sky-700"
-    } else {
-        return `flex ${props.fullWidth && 'w-full'} whitespace-nowrap justify-center rounded-md bg-sky-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:opacity-50 disabled:bg-sky-700`
+    &.link {
+        color: var(--link-color);
+    }
+
+    &.icon {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        padding: 0.5rem;
+        border-radius: 20px;
+        background-color: var(--main-color-light);
+        transition: all 0.1s linear;
+        svg {
+            fill: var(--main-color);
+        }
+        &:hover,
+        &:focus {
+            background-color: white;
+        }
     }
 }
-</script>
+</style>

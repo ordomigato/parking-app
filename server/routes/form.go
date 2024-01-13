@@ -60,9 +60,10 @@ func CreateForm(c *fiber.Ctx) error {
 	now := time.Now()
 
 	form := models.Form{
-		WorkspaceID:               wpid,
-		Name:                      payload.Name,
-		Path:                      payload.Path,
+		WorkspaceID: wpid,
+		Name:        payload.Name,
+		Path:        payload.Path,
+		// Questions:                 payload.Questions,
 		SubmissionConstraintType:  payload.SubmissionConstraintType,
 		SubmissionConstraintLimit: payload.SubmissionConstraintLimit,
 		CreatedAt:                 now,
@@ -92,8 +93,9 @@ func UpdateForm(c *fiber.Ctx) error {
 	now := time.Now()
 
 	form := models.Form{
-		Name:                      payload.Name,
-		Path:                      payload.Path,
+		Name: payload.Name,
+		Path: payload.Path,
+		// Questions:                 payload.Questions,
 		SubmissionConstraintType:  payload.SubmissionConstraintType,
 		SubmissionConstraintLimit: payload.SubmissionConstraintLimit,
 		UpdatedAt:                 now,

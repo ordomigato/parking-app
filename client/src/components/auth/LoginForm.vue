@@ -4,10 +4,26 @@
             <h1 class="text-lg font-semibold">Welcome to SecurePark</h1>
             <p>Create and manage parking spaces with ease</p>
         </header>
-        <text-input :disabled="busy" ref="email" label="Email" type="email" autocomplete="email" />
-        <text-input :disabled="busy" ref="pass" label="Password" type="password" autocomplete="password" />
+        <text-input
+            :disabled="busy"
+            ref="email"
+            label="Email"
+            type="email"
+            autocomplete="email"
+            :defaultValue="userStore.prevUserEmail"
+            @keyup.enter="handleLogin"
+        />
+        <text-input
+            :disabled="busy"
+            ref="pass"
+            label="Password"
+            type="password"
+            autocomplete="password"
+            @keyup.enter="handleLogin"
+        />
         <error-display :error="error"></error-display>
         <c-button
+            class="w-100"
             :disabled="busy"
             fullWidth
             @click="handleLogin"
@@ -23,7 +39,7 @@
                     :disabled="busy"
                     @click="handleChangeView"
                     @keyup.enter="handleChangeView"
-                    isLink
+                    variant="link"
                 >
                     Register
                 </c-button>
@@ -38,8 +54,11 @@ import { ref, type Ref } from 'vue';
 import TextInput from '../global/TextInput.vue';
 import { useRouter } from 'vue-router';
 import { routeNames } from '@/router/routeNames'
+import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter()
+
+const userStore = useUserStore()
 
 const emit = defineEmits(['changeView'])
 
@@ -68,7 +87,8 @@ const handleLogin = async () => {
             throw new Error("Password cannot be blank")
         }
 
-        await loginUser(userEmail, userPass)
+        const { user } = await loginUser(userEmail, userPass)
+        userStore.setUser(user)
         router.push({
             name: routeNames.overview,
         })

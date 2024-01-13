@@ -2,6 +2,7 @@ export enum routeNames {
     auth = 'auth',
     dashboard = 'dashboard',
     overview = 'overview',
+    profile = 'profile',
 
     workspaces = 'workspaces',
     createWorkspace = 'create-workspace',

@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h2>Form Settings</h2>
         <div>
             <text-input
                 ref="formName"
@@ -41,7 +40,7 @@ import { ref, watch, type Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { IFormSubmissionConstraintTypes, type IForm, type IFormCreateRequest, type IFormUpdateRequest } from '@/types';
-import { validatePath } from '@/utils/string';
+import { formatPath, validatePath } from '@/utils/string';
 import { handleError } from '@/utils/error';
 import { routeNames } from '@/router/routeNames';
 
@@ -94,7 +93,6 @@ const onHandleSubmit = async () => {
         if (props.formInfo) {
             await onUpdateForm(payload)
         } else {
-            console.log('asdasd')
             await onCreateForm(payload)
         }
     } catch (e) {
@@ -127,9 +125,8 @@ const onCreateForm = async (payload: IFormCreateRequest) => {
 }
 
 watch(() => formName.value?.value, (newVal) => {
-    if ((newVal || newVal === '') && formPath.value) {
-        const urlSafeStr = newVal.replace(/[^a-z0-9_]+/gi, "-").replace(/^-|-$/g, '').toLowerCase()
-        formPath.value.value = `/${urlSafeStr}`
+    if (formPath.value) {
+        formPath.value.value = formatPath(newVal || '')
     }
 })
 </script>

@@ -14,7 +14,7 @@
             <tbody>
                 <tr v-for="ws in workspaceStore.workspaces" :key="ws.workspace_id">
                     <td>
-                        <c-button @click="() => setActiveWorkspace(ws)" isLink>{{ ws.name }}</c-button>
+                        <c-button @click="() => setActiveWorkspace(ws)" variant="link">{{ ws.name }}</c-button>
                     </td>
                     <td>{{ convertDate(ws.created_at) }}</td>
                     <td>{{ convertDate(ws.updated_at) }}</td>

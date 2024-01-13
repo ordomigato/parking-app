@@ -51,7 +51,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 nav {
     min-width: 200px;
-    background-color: #083344;
+    background-color: var(--main-color-dark);
     color: white;
     padding: 1rem;
     height: 100vh;

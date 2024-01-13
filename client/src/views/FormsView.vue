@@ -14,7 +14,7 @@
             <tbody>
                 <tr v-for="form in forms" :key="form.form_id">
                     <td>
-                        <c-button @click="$router.push({ name: routeNames.form, params: { id: form.form_id }})" isLink>{{ form.name }}</c-button>
+                        <c-button @click="$router.push({ name: routeNames.form, params: { id: form.form_id }})" variant="link">{{ form.name }}</c-button>
                     </td>
                     <td>{{ convertDate(form.created_at) }}</td>
                     <td>{{ convertDate(form.updated_at) }}</td>

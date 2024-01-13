@@ -4,13 +4,40 @@
             <h1 class="text-lg font-semibold">Create an Account</h1>
             <p>Create and manage parking spaces with ease</p>
         </header>
-        <text-input :disabled="busy" ref="email" label="Email" type="email" autocomplete="email" />
-        <text-input :disabled="busy" ref="pass" label="Password" type="password" />
-        <text-input :disabled="busy" ref="confPass" label="Confirm Password" type="password" />
+        <text-input
+            :disabled="busy"
+            ref="email"
+            label="Email"
+            type="email"
+            autocomplete="email"
+            @keyup.enter="handleRegister"
+        />
+        <text-input
+            :disabled="busy"
+            ref="pass"
+            label="Password"
+            type="password"
+            @keyup.enter="handleRegister"
+        />
+        <text-input
+            :disabled="busy"
+            ref="confPass"
+            label="Confirm Password"
+            type="password"
+            @keyup.enter="handleRegister"
+        />
         <error-display :error="error"></error-display>
-        <c-button :disabled="busy" fullWidth @click="handleRegister">Register</c-button>
+        <c-button
+            class="w-100"
+            :disabled="busy"
+            fullWidth
+            @click="handleRegister"
+            @keyup.enter="handleRegister"
+        >
+            Register
+        </c-button>
         <footer class="pt-12">
-            <p class="text-center">Already have an account? <c-button :disabled="busy" @click="handleChangeView" isLink>Login</c-button></p>
+            <p class="text-center">Already have an account? <c-button :disabled="busy" @click="handleChangeView" variant="link">Login</c-button></p>
         </footer>
     </div>
 </template>
@@ -18,7 +45,11 @@
 import { ref, type Ref } from 'vue';
 import TextInput from '../global/TextInput.vue';
 import { handleError } from '../../utils/error';
-import { registerUser } from '../../services/account.service'
+import { loginUser, registerUser } from '../../services/account.service'
+import { useRouter } from 'vue-router';
+import { routeNames } from '@/router/routeNames';
+
+const router = useRouter()
 
 const emit = defineEmits(['changeView'])
 
@@ -54,6 +85,11 @@ const handleRegister = async () => {
         }
 
         await registerUser(userEmail, userPass, userConfPass)
+        // automatically login after registering
+        await loginUser(userEmail, userPass)
+        router.push({
+            name: routeNames.overview,
+        })
     } catch (e) {
         error.value = handleError(e);
     } finally {

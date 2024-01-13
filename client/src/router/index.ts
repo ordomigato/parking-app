@@ -28,6 +28,11 @@ const router = createRouter({
           component: () => import('../views/OverviewView.vue'),
         },
         {
+          path: '/dashboard/profile',
+          name: routeNames.profile,
+          component: () => import('../views/UserProfile.vue'),
+        },
+        {
           path: '/dashboard/workspace',
           name: routeNames.workspaces,
           component: () => import('../views/WorkspacesView.vue')

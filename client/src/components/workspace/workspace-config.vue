@@ -8,7 +8,7 @@
         />
         <text-input
             ref="workspacePath"
-            label="Path"
+            label="Base Path"
             :default-value="isUpdate ? workspaceStore.currentWorkspace?.path : ''"
             :disabled="busy"
         />
@@ -25,12 +25,12 @@
 <script setup lang="ts">
 import TextInput from '@/components/global/TextInput.vue';
 import { handleError } from '@/utils/error';
-import { ref, type Ref } from 'vue';
+import { ref, watch, type Ref } from 'vue';
 import { updateWorkspace, createWorkspace } from '@/services/workspace.service'
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useRouter } from 'vue-router';
 import { routeNames } from '@/router/routeNames';
-import { validatePath } from '@/utils/string';
+import { formatPath, validatePath } from '@/utils/string';
 import type { IWorkspaceCreateRequest, IWorkspaceUpdateRequest } from '@/types'
 
 const workspaceStore = useWorkspaceStore()
@@ -91,4 +91,9 @@ const onCreateWorkspace = async (payload: IWorkspaceCreateRequest) => {
     router.push({ name: routeNames.dashboard })
 }
 
+watch(() => workspaceName.value?.value, (newVal) => {
+    if (workspacePath.value) {
+        workspacePath.value.value = formatPath(newVal || '')
+    }
+})
 </script>

@@ -5,6 +5,15 @@
 
 * {
   font-family: 'Inter', sans-serif;
+  --font-color: #333;
+  --main-color: #0369a1;
+  --main-color-light: #06b6d4;
+  --main-color-dark: #083344;
+
+  --off-white-color: #f0fdfa;
+  --danger-color: #e11d48;
+
+  --link-color: #0284c7;
 }
 
 p,
@@ -15,7 +24,7 @@ h4,
 h5,
 h6,
 label {
-  color: rgb(38 38 38);
+  color: var(--font-color);
 }
 
 h2 {
@@ -29,12 +38,12 @@ h2 {
 
 table {
   text-align: left;
-  border: 1px solid #06b6d4;
+  border: 1px solid var(--main-color-light);
   width: 100%;
 }
 
 table thead {
-  background-color: #06b6d4;
+  background-color: var(--main-color-light);
   color: white;
 }
 
@@ -50,7 +59,7 @@ table tbody td {
 .card {
   background: white;
   padding: 1rem;
-  border: 1px solid #0284c7;
+  border: 1px solid var(--main-color);
   border-radius: 4px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   overflow-x: auto;
@@ -59,7 +68,11 @@ table tbody td {
 }
 
 .danger-text {
-  color: #e11d48;
+  color: var(--danger-color);
+}
+
+.w-100 {
+  width: 100%;
 }
 
 @keyframes animateIn {

@@ -4,8 +4,8 @@ import http from "./http.service"
 const BASE_URL = `${import.meta.env.VITE_BASE_API_URL}/api`
 
 interface ILoginResponse {
-    "token": string,
-    "user": IClient,
+    token: string,
+    user: IClient,
 }
 
 export async function registerUser(username: string, password: string, password_confirm: string): Promise<IClient> {
