@@ -87,7 +87,15 @@ func UpdateWorkspace(c *fiber.Ctx) error {
 			"error_message": err.Error(),
 		})
 	}
-	if err := initializers.DB.Model(&models.Workspace{}).Where("workspace_id = ?", wpid).Updates(payload).Error; err != nil {
+
+	now := time.Now()
+
+	updatedWorkspace := models.Workspace{
+		Name:      payload.Name,
+		Path:      payload.Path,
+		UpdatedAt: now,
+	}
+	if err := initializers.DB.Model(&models.Workspace{}).Where("workspace_id = ?", wpid).Updates(updatedWorkspace).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
 	}

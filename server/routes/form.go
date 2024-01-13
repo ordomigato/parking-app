@@ -62,6 +62,7 @@ func CreateForm(c *fiber.Ctx) error {
 	form := models.Form{
 		WorkspaceID:               wpid,
 		Name:                      payload.Name,
+		Path:                      payload.Path,
 		SubmissionConstraintType:  payload.SubmissionConstraintType,
 		SubmissionConstraintLimit: payload.SubmissionConstraintLimit,
 		CreatedAt:                 now,
@@ -88,10 +89,14 @@ func UpdateForm(c *fiber.Ctx) error {
 		})
 	}
 
+	now := time.Now()
+
 	form := models.Form{
 		Name:                      payload.Name,
+		Path:                      payload.Path,
 		SubmissionConstraintType:  payload.SubmissionConstraintType,
 		SubmissionConstraintLimit: payload.SubmissionConstraintLimit,
+		UpdatedAt:                 now,
 	}
 
 	if err := initializers.DB.Model(&models.Form{}).Where("form_id = ?", formId).Updates(form).Error; err != nil {

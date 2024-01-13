@@ -1,6 +1,6 @@
 <template>
   <main class="flex items-center justify-center bg-sky-50 h-screen">
-    <CardWrapper class="w-1/2 max-w-md">
+    <CardWrapper class="m-2 max-w-md">
       <RegisterForm v-if="isRegister" @changeView="() => isRegister = false" />
       <LoginForm v-else @changeView="() => isRegister = true" />
     </CardWrapper>
