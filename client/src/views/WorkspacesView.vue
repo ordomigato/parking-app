@@ -3,7 +3,7 @@
         <header>
             <c-button class="mb-2 ms-auto" @click="$router.push({ name: routeNames.createWorkspace })">+ Create Workspace</c-button>
         </header>
-        <table class="text-left">
+        <table class="text-left" v-if="workspaceStore.workspaces.length">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -21,6 +21,9 @@
                 </tr>
             </tbody>
         </table>
+        <div v-else>
+            <p>No workspaces found. Create one to get started!</p>
+        </div>
     </div>
 </template>
 <script setup lang="ts">

@@ -7,6 +7,7 @@
                 <p><strong>ID:</strong> {{ form.form_id }}</p>
                 <p><strong>Create At:</strong> {{ convertDate(form.created_at) }}</p>
                 <p><strong>Updated At:</strong> {{ convertDate(form.updated_at) }}</p>
+                <p><strong>Path:</strong> <a class="link" :href="formPath" target="_blank">{{ formPath }}</a></p>
             </div>
         </div>
         <div class="card">
@@ -30,7 +31,7 @@ import FormConfig from '@/components/form/form-config.vue';
 import { getForm, deleteForm } from '@/services/form.service';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { handleError } from '@/utils/error';
-import { onMounted, ref, type Ref } from 'vue';
+import { computed, onMounted, ref, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { type IForm } from '@/types';
 import router from '@/router';
@@ -44,6 +45,8 @@ const form: Ref<IForm | null> = ref(null)
 
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
+
+const formPath = computed(() => window.location.origin + form.value?.path)
 
 const onGetForm = async () => {
     busy.value = true

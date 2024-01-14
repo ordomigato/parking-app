@@ -9,7 +9,7 @@
             ></text-input>
             <text-input
                 ref="formPath"
-                label="Path"
+                :label="`Path`"
                 :disabled="busy"
                 :defaultValue="form?.path || ''"
             />
@@ -69,13 +69,13 @@ const onHandleSubmit = async () => {
     error.value = null
     try {
         const name = formName.value?.value
-        const path = formPath.value?.value
+        const fPath = formPath.value?.value
         const ct = constraintType.value?.selected?.value
         const cl = constraintLimit.value?.value
         if (!name) {
             throw new Error('name cannot be blank')
         }
-        if (!path || !validatePath(path)) {
+        if (!fPath || !validatePath(fPath)) {
             throw new Error('path cannot be blank')
         }
         if (!ct && ct !== '') {
@@ -86,7 +86,7 @@ const onHandleSubmit = async () => {
         }
         const payload: IFormUpdateRequest | IFormCreateRequest = {
             name,
-            path,
+            path: `${workspaceStore.currentWorkspace?.path}${fPath}`,
             submission_constraint_type: ct,
             submission_constraint_limit: parseInt(cl || '0'),
         }

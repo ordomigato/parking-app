@@ -1,5 +1,7 @@
 <template>
-    <p>test</p>
+    <div class="card">
+        Overview Page: Under Construction
+    </div>
 </template>
 <script setup lang="ts">
 

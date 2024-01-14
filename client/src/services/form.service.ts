@@ -25,3 +25,8 @@ export async function updateForm(workspaceId: string, formId: string, payload: I
 export async function deleteForm(workspaceId: string, formId: string): Promise<void> {
     await http.delete(`${BASE_URL}/workspace/${workspaceId}/form/${formId}`)
 }
+
+export async function getFormInfo(workspacePath: string, formPath: string): Promise<IForm> {
+    const { data } = await http.get(`${BASE_URL}/form/${workspacePath}/${formPath}`)
+    return data;
+}

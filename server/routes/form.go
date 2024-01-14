@@ -126,3 +126,21 @@ func DeleteForm(c *fiber.Ctx) error {
 
 	return c.SendStatus(http.StatusNoContent)
 }
+
+func GetFormInfo(c *fiber.Ctx) error {
+	wpPath := c.Params("workspacePath")
+	formPath := c.Params("formPath")
+
+	path := "/" + wpPath + "/" + formPath
+
+	form := models.Form{}
+
+	fmt.Println(path)
+
+	if err := initializers.DB.Where("path = ?", path).Find(&form).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("unable to find forms: %v", err)})
+	}
+
+	return c.JSON(&form)
+}

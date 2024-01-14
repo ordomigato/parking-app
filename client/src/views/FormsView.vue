@@ -1,7 +1,7 @@
 <template>
     <div class="card" v-if="!busy">
         <header>
-            <c-button class="mb-2 ms-auto" @click="$router.push({ name: routeNames.createForm })">+ Create Form</c-button>
+            <c-button class="mb-2 ms-auto" @click="$router.push({ name: routeNames.createForm })">+ Create Parking Form</c-button>
         </header>
         <table class="text-left" v-if="forms.length">
             <thead>

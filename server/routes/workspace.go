@@ -100,6 +100,8 @@ func UpdateWorkspace(c *fiber.Ctx) error {
 			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
 	}
 
+	// TODO: Update all forms paths if path has changed
+
 	return c.SendStatus(http.StatusNoContent)
 }
 
@@ -113,11 +115,19 @@ func DeleteWorkspace(c *fiber.Ctx) error {
 			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
 	}
 
+	// DELETE ALL FORMS UNDER THIS WORKSPACE
+	if err := initializers.DB.Delete(&models.Form{}, "workspace_id = ?", wpid).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete forms from workspace: %v", err)})
+	}
+
+	// DELETE WORKSPACE
 	if err := initializers.DB.Delete(&models.Workspace{}, wpid).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
 	}
 
+	// DELETE CLIENT WORKSPACE RELATIONSHIP
 	if err := initializers.DB.Delete(&models.ClientWorkspace{}, "workspace_id = ?", wpid).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete workspace: %v", err)})

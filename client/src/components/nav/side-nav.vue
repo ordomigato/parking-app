@@ -31,7 +31,7 @@ const navItems: Ref<NavItem[]> = ref([])
 const setNavItems = () => {
     navItems.value = [
         new NavItem('Overview', '/dashboard/overview'),
-        new NavItem('Forms', '/dashboard/form'),
+        new NavItem('Parking Forms', '/dashboard/form'),
         new NavItem('Settings', `/dashboard/workspace/${workspaceStore.currentWorkspace?.workspace_id}`),
     ]
 }

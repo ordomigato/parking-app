@@ -67,5 +67,11 @@ func ConnectDB(config *Config) {
 		os.Exit(1)
 	}
 
+	err = DB.AutoMigrate(&models.Permit{})
+	if err != nil {
+		log.Fatal("Permit Migration Failed:  \n", err.Error())
+		os.Exit(1)
+	}
+
 	log.Println("🚀 Connected Successfully to the Database")
 }
