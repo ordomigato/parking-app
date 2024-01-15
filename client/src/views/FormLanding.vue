@@ -1,32 +1,39 @@
 <template>
     <div class="form-landing">
         <div class="card">
-            <header>
-                <h2>{{ form.name }}</h2>
-            </header>
-            <form @submit.prevent="submitPermit">
-                <template v-for="(q, i) in questions" :key="i">
-                    <text-input
-                        :label="q.label"
-                        :ref="(el) => (questionRefs[q.id] = el)"
-                        :type="q.type"
-                        :autocomplete="q.autocomplete"
-                        @keyup.enter="submitPermit"
-                    />
-                </template>
-                <error-display :error="error"></error-display>
-                <c-button
-                    class="w-100"
-                >
-                    Submit
-                </c-button>
-            </form>
+            <div v-if="form">
+                <header>
+                    <h2>{{ form.name }}</h2>
+                </header>
+                <form @submit.prevent="submitPermit">
+                    <template v-for="(q, i) in questions" :key="i">
+                        <text-input
+                            :label="q.label"
+                            :ref="(el) => (questionRefs[q.id] = el)"
+                            :type="q.type"
+                            :autocomplete="q.autocomplete"
+                            @keyup.enter="submitPermit"
+                        />
+                    </template>
+                    <error-display :error="error"></error-display>
+                    <c-button
+                        class="w-100"
+                    >
+                        Submit
+                    </c-button>
+                </form>
+            </div>
+            <div v-else>
+                Form could not be found. Please check if URL is correct.
+            </div>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import TextInput from '@/components/global/TextInput.vue';
 import { getFormInfo } from '@/services/form.service';
+import { createPermit } from '@/services/permit.service';
+import type { IForm, IPermit, IPermitCreateRequest } from '@/types';
 import { handleError } from '@/utils/error';
 import { onMounted, ref, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -55,7 +62,8 @@ class Question {
 
 const route = useRoute()
 
-const form = ref()
+const form: Ref<IForm | null> = ref(null)
+const permitResponse: Ref<IPermit | null> = ref(null)
 
 // const questionRefs = ref({})
 const questionRefs = ref<{[k: string]: InstanceType<typeof TextInput> }[]>([])
@@ -69,17 +77,30 @@ const questions = ref([
     new Question('v_make', 'Vehicle Make', 'vMake'),
     new Question('v_Model', 'Vehicle Model', 'vModel'),
     new Question('v_color', 'Vehicle Color', 'vColor'),
+    // new Question('duration', 'Duration', 'duration'),
 ])
 
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
 
-const submitPermit = () => {
+const submitPermit = async () => {
     busy.value = true
     error.value = null
     try {
+        if (!form.value) {
+            throw new Error("something went wrong")
+        }
         // TODO submit permit!
-        let payload: {[k: string]: string} = {}
+        let payload: IPermitCreateRequest = {
+            first_name: '',
+            last_name: '',
+            email: '',
+            primary_phone: '',
+            v_plate: '',
+            v_make: '',
+            v_model: '',
+            v_color: ''
+        }
         questions.value.forEach((q) => {
             const val = questionRefs.value[q.id].value
             if (!val) {
@@ -87,8 +108,7 @@ const submitPermit = () => {
             }
             payload[q.id] = val
         })
-        console.log(payload)
-        // console.log(questionRefs.value['firstName'].value)
+        permitResponse.value = await createPermit(form.value?.form_id, payload)
     } catch (e) {
         error.value = handleError(e)
     } finally {
@@ -101,9 +121,9 @@ const handleGetFormInfo = async () => {
     error.value = null
     try {
         // TODO submit permit
-        const wpId = route.params.workspaceId as string
-        const formPath = route.params.formId as string
-        form.value = await getFormInfo(wpId, formPath)
+        const wpPath = route.params.workspacePath as string
+        const formPath = route.params.formPath as string
+        form.value = await getFormInfo(wpPath, formPath)
     } catch (e) {
         error.value = handleError(e)
     } finally {
@@ -120,7 +140,8 @@ onMounted(async() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 1rem 0;
+    padding: 1rem 0;
+    background-color: var(--off-white-color);
     .card {
         max-width: 400px;
         width: 100%;

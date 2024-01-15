@@ -1,7 +1,7 @@
 import { isServerError, ServerErrorResponse, type ServerError } from "@/utils/error";
 import axios, { AxiosError, type AxiosResponse } from "axios";
 import type { App } from "vue";
-import { logout } from "./account.service";
+import { clearStoreState } from "./account.service";
 
 const instance = axios.create({
     headers: {
@@ -15,13 +15,14 @@ const responseHandler = (resp: AxiosResponse): AxiosResponse => {
 }
 
 const responseErrorHandler = (error: AxiosError): ServerError => {
-    console.log(error)
     if (
         error.response
         && error.response.status === 401
-        && error.request.responseText !== "{\"error_message\":\"You are not logged in\"}"
     ) {
-        logout()
+        const message = JSON.parse(error.request.responseText).error_message
+        if (message === "You are not logged in") {
+            clearStoreState()
+        }
     }
 
     if (error.response && isServerError(error.response.data)) {

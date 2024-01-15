@@ -6,12 +6,14 @@
                 :disabled="busy"
                 label="Form Name"
                 :defaultValue="form?.name || ''"
+                @keyup.enter="onHandleSubmit"
             ></text-input>
             <text-input
                 ref="formPath"
                 :label="`Path`"
                 :disabled="busy"
                 :defaultValue="form?.path || ''"
+                @keyup.enter="onHandleSubmit"
             />
             <ConstraintTypeDropdown
                 ref="constraintType"
@@ -20,12 +22,14 @@
             <text-input
                 ref="constraintLimit"
                 :disabled="busy"
-                label="Constraint Limit"
+                label="Duration Limit"
                 :defaultValue="form?.submission_constraint_limit.toString() || ''"
+                @keyup.enter="onHandleSubmit"
             ></text-input>
             <error-display :error="error"></error-display>
             <c-button
                 @click="onHandleSubmit"
+                @keyup.enter="onHandleSubmit"
             >
                 {{ props.formInfo ? "Save" : "Create" }}
             </c-button>

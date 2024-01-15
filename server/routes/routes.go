@@ -30,11 +30,12 @@ func SetupRoutes(app *fiber.App) {
 	api.Put("/workspace/:id/form/:formId", middleware.DeserializeClient, UpdateForm)
 	api.Delete("/workspace/:id/form/:formId", middleware.DeserializeClient, DeleteForm)
 
+	// permit
+	api.Post("/form/:formId/permit", CreatePermit)
+	api.Get("/form/:formId/permit", GetPermits)
+
 	// get form info
 	api.Get("/form/:workspacePath/:formPath", GetFormInfo)
-
-	// permit
-	api.Post("/workspace/:id/form/:id/permit", CreatePermit)
 
 	api.All("*", func(c *fiber.Ctx) error {
 		path := c.Path()

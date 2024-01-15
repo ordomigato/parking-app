@@ -14,7 +14,7 @@ const router = createRouter({
       component: AuthView
     },
     {
-      path: '/:workspaceId/:formId',
+      path: '/:workspacePath/:formPath',
       name: routeNames.formLanding,
       component: () => import('../views/FormLanding.vue')
     },

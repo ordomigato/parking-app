@@ -1,5 +1,5 @@
 <template>
-    <p class="block text-sm leading-6 font-medium">Constraint Type</p>
+    <p class="block text-sm leading-6 font-medium">Duration Type</p>
     <DropdownInput
         :selected="selected"
         :items="submissionTypes"

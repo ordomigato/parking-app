@@ -57,6 +57,8 @@ func CreateForm(c *fiber.Ctx) error {
 		})
 	}
 
+	// TODO ensure path is unique
+
 	now := time.Now()
 
 	form := models.Form{
@@ -89,6 +91,8 @@ func UpdateForm(c *fiber.Ctx) error {
 			"error_message": err.Error(),
 		})
 	}
+
+	// TODO ensure path is unique within workspace
 
 	now := time.Now()
 

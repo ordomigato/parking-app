@@ -1,5 +1,7 @@
 import type { IClient } from "@/types";
 import http from "./http.service"
+import { useUserStore } from "@/stores/userStore";
+import { useWorkspaceStore } from "@/stores/workspaceStore";
 
 const BASE_URL = `${import.meta.env.VITE_BASE_API_URL}/api`
 
@@ -38,5 +40,15 @@ export async function getStatus(): Promise<boolean> {
 
 export async function logout() {
     const { data } = await http.get(`${BASE_URL}/logout`)
+    clearStoreState()
     return data;
+}
+
+export function clearStoreState() {
+    const userStore = useUserStore()
+    const workspaceStore = useWorkspaceStore()
+
+    userStore.setUser(null)
+    workspaceStore.setWorkspaces([])
+    workspaceStore.setActiveWorkspace(null)
 }

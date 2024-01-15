@@ -5,12 +5,14 @@
             label="Workspace Name"
             :default-value="isUpdate ? workspaceStore.currentWorkspace?.name : ''"
             :disabled="busy"
+            @keyup.enter="handleSubmit"
         />
         <text-input
             ref="workspacePath"
             label="Base Path"
             :default-value="isUpdate ? workspaceStore.currentWorkspace?.path : ''"
             :disabled="busy"
+            @keyup.enter="handleSubmit"
         />
         <error-display :error="error"></error-display>
         <c-button

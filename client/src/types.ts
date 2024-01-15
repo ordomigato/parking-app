@@ -61,3 +61,29 @@ export enum IFormSubmissionConstraintTypes {
     days = 'days',
     months = 'months'
 }
+
+export interface IPermitCreateRequest {
+    first_name: string,
+    last_name: string,
+    email: string,
+    primary_phone: string,
+    v_plate: string,
+    v_make: string,
+    v_model: string,
+    v_color: string,
+}
+
+export interface IPermit {
+    permit_id: string,
+    first_name: string,
+    last_name: string,
+    email: string,
+    primary_phone: string,
+    v_plate: string,
+    v_make: string,
+    v_model: string,
+    v_color: string,
+    expiry: Date,
+    created_at: Date,
+    updated_at: Date,
+}

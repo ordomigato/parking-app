@@ -44,6 +44,8 @@ table {
   text-align: left;
   border: 1px solid var(--main-color-light);
   width: 100%;
+  overflow: hidden;
+  overflow-x: auto;
 }
 
 table thead {
@@ -53,6 +55,7 @@ table thead {
 
 table thead th {
   padding: 0.5rem 1rem;
+  white-space: nowrap;
 }
 
 table tbody td {

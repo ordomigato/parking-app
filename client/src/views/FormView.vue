@@ -11,6 +11,12 @@
             </div>
         </div>
         <div class="card">
+            <h2>Permits</h2>
+            <PermitTable
+                :formId="form.form_id"
+            />
+        </div>
+        <div class="card">
             <h2>Form Settings</h2>
             <FormConfig v-if="form" :formInfo="form" />
         </div>
@@ -28,6 +34,7 @@
 </template>
 <script setup lang="ts">
 import FormConfig from '@/components/form/form-config.vue';
+import PermitTable from '@/components/permit/permit-table.vue'
 import { getForm, deleteForm } from '@/services/form.service';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { handleError } from '@/utils/error';
