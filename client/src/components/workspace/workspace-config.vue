@@ -11,7 +11,7 @@
             ref="workspacePath"
             label="Base Path"
             :default-value="isUpdate ? workspaceStore.currentWorkspace?.path : ''"
-            :disabled="busy"
+            :disabled="busy || isUpdate"
             @keyup.enter="handleSubmit"
         />
         <error-display :error="error"></error-display>
@@ -94,7 +94,7 @@ const onCreateWorkspace = async (payload: IWorkspaceCreateRequest) => {
 }
 
 watch(() => workspaceName.value?.value, (newVal) => {
-    if (workspacePath.value) {
+    if (workspacePath.value && !props.isUpdate) {
         workspacePath.value.value = formatPath(newVal || '')
     }
 })

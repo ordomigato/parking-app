@@ -17,7 +17,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="permit in permits" :key="permit.permit_id">
+            <tr v-for="permit in permits" :key="permit.permit_id" :class="isExpired(permit.expiry) ? 'expired' : ''">
                 <td>{{ permit.permit_id }}</td>
                 <td>{{ permit.v_plate }}</td>
                 <td>{{ permit.v_make }}</td>
@@ -53,6 +53,12 @@ const permits: Ref<IPermit[]> = ref([])
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
 
+const isExpired = (exp: Date): boolean => {
+    const expiry = new Date(exp)
+    const now = new Date(Date.now())
+    return expiry < now
+}
+
 const handleGetPermits = async () => {
     error.value = null
     busy.value = true
@@ -69,3 +75,8 @@ onMounted(async () => {
     await handleGetPermits()
 })
 </script>
+<style lang="scss" scoped>
+.expired {
+    background-color: #fecaca;
+}
+</style>

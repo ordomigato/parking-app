@@ -26,6 +26,8 @@ func CreatePermit(c *fiber.Ctx) error {
 		})
 	}
 
+	// TODO: Pull up all other permits that have the same Vplate in the specific form submission constraint type and see if they still can
+
 	now := time.Now()
 
 	newPermit := models.Permit{

@@ -1,8 +1,10 @@
 <template>
     <div class="dashboard-container">
-        <SideNav />
+        <SideNav class="side-nav" />
         <div class="main-container">
-            <TopNav />
+            <div class="top-nav">
+                <TopNav />
+            </div>
             <main>
                 <RouterView :key="$route.fullPath" />
             </main>
@@ -15,20 +17,39 @@ import TopNav from '../nav/top-nav.vue'
 import { RouterView } from 'vue-router'
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .dashboard-container {
+    position: relative;
     display: flex;
+    .side-nav {
+        display: none;
+    }
     .main-container {
         position: fixed;
         right: 0;
         top: 0;
         bottom: 0;
-        width: calc(100vw - 200px);
+        width: 100%;
         background-color: var(--off-white-color);
         overflow: hidden;
         overflow-y: auto;
+        .top-nav {
+            position: sticky;
+            top: 0;
+        }
         main {
             padding: 1rem;
+        }
+    }
+}
+
+@media (min-width: 992px) {
+    .dashboard-container {
+        .main-container {
+            width: calc(100vw - 200px);
+        }
+        .side-nav {
+            display: block;
         }
     }
 }

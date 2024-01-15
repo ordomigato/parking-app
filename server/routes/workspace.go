@@ -91,8 +91,8 @@ func UpdateWorkspace(c *fiber.Ctx) error {
 	now := time.Now()
 
 	updatedWorkspace := models.Workspace{
-		Name:      payload.Name,
-		Path:      payload.Path,
+		Name: payload.Name,
+		// Path:      payload.Path,
 		UpdatedAt: now,
 	}
 	if err := initializers.DB.Model(&models.Workspace{}).Where("workspace_id = ?", wpid).Updates(updatedWorkspace).Error; err != nil {

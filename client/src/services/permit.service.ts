@@ -9,8 +9,6 @@ export async function createPermit(formId: string, payload: IPermitCreateRequest
 }
 
 export async function getPermits(formId: string): Promise<IPermit[]> {
-    console.log('Getting permits')
     const { data } = await http.get(`${BASE_URL}/form/${formId}/permit`)
-    console.log(data)
     return data;
 }

@@ -1,16 +1,25 @@
 <template>
-    <nav>
+    <nav :class="`side-nav ${props.mobileView ? 'mobile' : ''}`">
         <div>
+            <div v-if="props.mobileView" class="cross-container">
+                <c-button
+                    variant="icon"
+                    @click="() => emit('close')"
+                >
+                    <CrossIcon />
+                </c-button>
+            </div>
             <p class="text-sm">MENU</p>
             <ul v-if="workspaceStore.currentWorkspace">
                 <li class="nav-item" v-for="i in navItems" :key="i.to">
-                    <router-link class="text-sm" :to="i.to">{{ i.name }}</router-link>
+                    <router-link class="text-sm" :to="i.to" @click="() => emit('close')">{{ i.name }}</router-link>
                 </li>
             </ul>
         </div>
     </nav>
 </template>
 <script setup lang="ts">
+import CrossIcon from '@/components/icons/cross-icon.vue'
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { onMounted, ref, type Ref } from 'vue';
 
@@ -25,6 +34,15 @@ class NavItem {
         this.to = to
     }
 }
+
+const props = defineProps({
+    mobileView: {
+        type: Boolean,
+        default: false,
+    }
+})
+
+const emit = defineEmits(['close'])
 
 const navItems: Ref<NavItem[]> = ref([])
 
@@ -49,13 +67,26 @@ onMounted(() => {
 })
 </script>
 <style lang="scss" scoped>
-nav {
+.side-nav {
     min-width: 200px;
     background-color: var(--main-color-dark);
     color: white;
     padding: 1rem;
     height: 100vh;
     position: fixed;
+    &.mobile {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        padding: 0.5rem 1rem;
+    }
+    .cross-container {
+        display: flex;
+        justify-content: end;
+    }
     .nav-item a {
         display: block;
         padding: 0.25rem 0.5rem;

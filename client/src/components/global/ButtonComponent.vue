@@ -48,7 +48,13 @@ const props = defineProps({
 
     &.icon {
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        padding: 0.5rem;
+        // padding: 0.5rem;
+        height: 2rem;
+        max-width: 2rem;
+        min-width: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 20px;
         background-color: var(--main-color-light);
         transition: all 0.1s linear;
