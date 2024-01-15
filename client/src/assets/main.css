@@ -95,6 +95,25 @@ table tbody td {
   width: 100%;
 }
 
+.d-flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.title-btn-combo {
+  display: flex;
+  align-items: center;
+}
+
+.title-btn-combo h2 {
+  padding: 0;
+  margin: 0;
+  margin-right: 1rem;
+}
+
 @keyframes animateIn {
   from {
     opacity: 0;

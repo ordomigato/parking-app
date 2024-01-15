@@ -26,6 +26,7 @@ const props = defineProps({
 <style lang="scss">
 .btn {
     &.block {
+        white-space: nowrap;
         padding: 0.25rem 0.5rem;
         background-color: var(--main-color);
         color: white;

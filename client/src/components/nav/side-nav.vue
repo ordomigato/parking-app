@@ -74,6 +74,7 @@ onMounted(() => {
     padding: 1rem;
     height: 100vh;
     position: fixed;
+    z-index: 10;
     &.mobile {
         position: absolute;
         top: 0;

@@ -1,7 +1,9 @@
 <template>
     <div v-if="form">
         <div class="card">
-            <h2>Form Info</h2>
+            <header>
+                <h2>Form Info</h2>
+            </header>
             <div class="text-sm">
                 <p><strong>Name:</strong> {{ form.name }}</p>
                 <p><strong>ID:</strong> {{ form.form_id }}</p>
@@ -11,17 +13,23 @@
             </div>
         </div>
         <div class="card">
-            <h2>Permits</h2>
+            <header>
+                <h2>Parking Permits</h2>
+            </header>
             <PermitTable
                 :formId="form.form_id"
             />
         </div>
         <div class="card">
-            <h2>Form Settings</h2>
+            <header>
+                <h2>Form Settings</h2>
+            </header>
             <FormConfig v-if="form" :formInfo="form" />
         </div>
         <div class="card">
-            <h2 class="danger-text">Danger Zone</h2>
+            <header>
+                <h2 class="danger-text">Danger Zone</h2>
+            </header>
             <c-button
                 :disabled="busy"
                 @click="onDeleteForm"
