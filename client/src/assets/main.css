@@ -78,6 +78,15 @@ table tbody td {
   margin-bottom: 1rem;
 }
 
+.notice {
+  background-color: #f7fee7;
+  border: 1px solid #d9f99d;
+  border-radius: 4px;
+  padding: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
 .danger-text {
   color: var(--danger-color);
 }

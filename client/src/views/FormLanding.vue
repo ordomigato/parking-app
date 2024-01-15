@@ -5,7 +5,10 @@
                 <header>
                     <h2>{{ form.name }}</h2>
                 </header>
-                <form @submit.prevent="submitPermit">
+                <form
+                    v-if="!permitResponse"
+                    @submit.prevent="submitPermit"
+                >
                     <template v-for="(q, i) in questions" :key="i">
                         <text-input
                             :label="q.label"
@@ -22,6 +25,18 @@
                         Submit
                     </c-button>
                 </form>
+                <div v-else>
+                    <div class="notice">
+                        <p>Your parking permit has been created!</p>
+                    </div>
+                    <p><strong>Expiry: </strong>{{ convertDate(permitResponse.expiry) }}</p>
+                    <p><strong>Plate Number: </strong>{{ permitResponse.v_plate }}</p>
+                    <p><strong>Vehicle: </strong>{{ permitResponse.v_make }} {{ permitResponse.v_model }} ({{ permitResponse.v_color }})</p>
+                    <p><strong>Name: </strong>{{ permitResponse.first_name }} {{ permitResponse.last_name }}</p>
+                    <p><strong>Email: </strong>{{ permitResponse.email }}</p>
+                    <p><strong>Phone: </strong>{{ permitResponse.primary_phone }}</p>
+                    <p><strong>Created: </strong>{{ convertDate(permitResponse.created_at) }}</p>
+                </div>
             </div>
             <div v-else>
                 Form could not be found. Please check if URL is correct.
@@ -31,6 +46,7 @@
 </template>
 <script setup lang="ts">
 import TextInput from '@/components/global/TextInput.vue';
+import { convertDate } from '@/utils/date';
 import { getFormInfo } from '@/services/form.service';
 import { createPermit } from '@/services/permit.service';
 import type { IForm, IPermit, IPermitCreateRequest } from '@/types';
@@ -138,13 +154,14 @@ onMounted(async() => {
 <style lang="scss" scoped>
 .form-landing {
     display: flex;
-    align-items: center;
+    min-height: 100vh;
     justify-content: center;
-    padding: 1rem 0;
+    padding: 1rem;
     background-color: var(--off-white-color);
     .card {
         max-width: 400px;
         width: 100%;
+        height: 100%;
     }
 }
 </style>

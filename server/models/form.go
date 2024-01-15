@@ -12,8 +12,8 @@ type Form struct {
 	Name        string    `gorm:"not null" json:"name,omitempty"`
 	Path        string    `gorm:"not null" json:"path"`
 	// Questions                 []Question               `gorm:"not null" json:"questions"`
-	SubmissionConstraintType  SubmissionConstraintType `gorm:"not null" json:"submission_constraint_type"`
-	SubmissionConstraintLimit uint8                    `gorm:"not null" json:"submission_constraint_limit"`
+	SubmissionConstraintType  SubmissionConstraintType `json:"submission_constraint_type"`
+	SubmissionConstraintLimit uint8                    `json:"submission_constraint_limit"`
 	CreatedAt                 time.Time                `gorm:"not null" json:"created_at"`
 	UpdatedAt                 time.Time                `gorm:"not null" json:"updated_at"`
 }
