@@ -141,7 +141,7 @@ func GetFormInfo(c *fiber.Ctx) error {
 
 	fmt.Println(path)
 
-	if err := initializers.DB.Where("path = ?", path).Find(&form).Error; err != nil {
+	if err := initializers.DB.Where("path = ?", path).First(&form).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("unable to find forms: %v", err)})
 	}
