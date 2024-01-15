@@ -20,19 +20,21 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/workspace", middleware.DeserializeClient, CreateWorkspace)
 	api.Get("/workspace", middleware.DeserializeClient, GetWorkspaces)
 	// TODO add middleware to determine ownership of workspace
-	api.Put("/workspace/:id", middleware.DeserializeClient, UpdateWorkspace)
-	api.Delete("/workspace/:id", middleware.DeserializeClient, DeleteWorkspace)
+	api.Put("/workspace/:wsID", middleware.DeserializeClient, middleware.WorkspaceAdmin, UpdateWorkspace)
+	api.Delete("/workspace/:wsID", middleware.DeserializeClient, middleware.WorkspaceAdmin, DeleteWorkspace)
 
 	// form
-	api.Post("/workspace/:id/form", middleware.DeserializeClient, CreateForm)
-	api.Get("/workspace/:id/form", middleware.DeserializeClient, GetForms)
-	api.Get("/workspace/:id/form/:formId", GetForm)
-	api.Put("/workspace/:id/form/:formId", middleware.DeserializeClient, UpdateForm)
-	api.Delete("/workspace/:id/form/:formId", middleware.DeserializeClient, DeleteForm)
+	api.Post("/workspace/:wsID/form", middleware.DeserializeClient, middleware.WorkspaceAdmin, CreateForm)
+	api.Get("/workspace/:wsID/form", middleware.DeserializeClient, middleware.WorkspaceAdmin, GetForms)
+	api.Get("/workspace/:wsID/form/:formId", middleware.DeserializeClient, middleware.WorkspaceAdmin, GetForm)
+	api.Put("/workspace/:wsID/form/:formId", middleware.DeserializeClient, middleware.WorkspaceAdmin, UpdateForm)
+	api.Delete("/workspace/:wsID/form/:formId", middleware.DeserializeClient, middleware.WorkspaceAdmin, DeleteForm)
 
 	// permit
+	api.Get("/workspace/:wsID/form/:formId/permit", middleware.DeserializeClient, middleware.WorkspaceAdmin, GetPermits)
+
+	// submit permit
 	api.Post("/form/:formId/permit", CreatePermit)
-	api.Get("/form/:formId/permit", GetPermits)
 
 	// get form info
 	api.Get("/form/:workspacePath/:formPath", GetFormInfo)

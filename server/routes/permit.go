@@ -54,8 +54,6 @@ func CreatePermit(c *fiber.Ctx) error {
 }
 
 func GetPermits(c *fiber.Ctx) error {
-	fmt.Println("HERE")
-
 	formId, err := uuid.Parse(c.Params("formId"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(

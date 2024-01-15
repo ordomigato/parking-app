@@ -12,16 +12,15 @@ import (
 )
 
 func GetForms(c *fiber.Ctx) error {
-	wpid, err := uuid.Parse(c.Params("id"))
+	wsID, err := uuid.Parse(c.Params("wsID"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
 	}
-	fmt.Println(wpid)
 
 	forms := []models.Form{}
 
-	if err := initializers.DB.Where("workspace_id = ?", wpid).Find(&forms).Error; err != nil {
+	if err := initializers.DB.Where("workspace_id = ?", wsID).Find(&forms).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("unable to find forms: %v", err)})
 	}
@@ -44,7 +43,7 @@ func GetForm(c *fiber.Ctx) error {
 }
 
 func CreateForm(c *fiber.Ctx) error {
-	wpid, err := uuid.Parse(c.Params("id"))
+	wsID, err := uuid.Parse(c.Params("wsID"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
@@ -62,7 +61,7 @@ func CreateForm(c *fiber.Ctx) error {
 	now := time.Now()
 
 	form := models.Form{
-		WorkspaceID: wpid,
+		WorkspaceID: wsID,
 		Name:        payload.Name,
 		Path:        payload.Path,
 		// Questions:                 payload.Questions,
@@ -114,9 +113,6 @@ func UpdateForm(c *fiber.Ctx) error {
 }
 
 func DeleteForm(c *fiber.Ctx) error {
-
-	// TODO confirm user is admin of this form
-
 	formId, err := uuid.Parse(c.Params("formId"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
@@ -138,8 +134,6 @@ func GetFormInfo(c *fiber.Ctx) error {
 	path := "/" + wpPath + "/" + formPath
 
 	form := models.Form{}
-
-	fmt.Println(path)
 
 	if err := initializers.DB.Where("path = ?", path).First(&form).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(

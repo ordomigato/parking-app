@@ -34,6 +34,7 @@
                 </tr>
             </tbody>
         </table>
+        <error-display :error="error"></error-display>
     </div>
 </template>
 <script setup lang="ts">
@@ -42,6 +43,9 @@ import type { IPermit } from '@/types';
 import { handleError } from '@/utils/error';
 import { onMounted, ref, type Ref } from 'vue';
 import { convertDate } from '@/utils/date'
+import { useWorkspaceStore } from '@/stores/workspaceStore';
+
+const workspaceStore = useWorkspaceStore()
 
 const props = defineProps({
     formId: {
@@ -65,7 +69,10 @@ const handleGetPermits = async () => {
     error.value = null
     busy.value = true
     try {
-        permits.value = await getPermits(props.formId)
+        if (!workspaceStore.currentWorkspace) {
+            throw new Error('something went wrong')
+        }
+        permits.value = await getPermits(workspaceStore.currentWorkspace.workspace_id, props.formId)
     } catch (e) {
         error.value = handleError(e)
     } finally {

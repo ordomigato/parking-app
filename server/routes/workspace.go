@@ -75,7 +75,7 @@ func GetWorkspaces(c *fiber.Ctx) error {
 }
 
 func UpdateWorkspace(c *fiber.Ctx) error {
-	wpid, err := uuid.Parse(c.Params("id"))
+	wsID, err := uuid.Parse(c.Params("wsID"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
@@ -95,7 +95,7 @@ func UpdateWorkspace(c *fiber.Ctx) error {
 		// Path:      payload.Path,
 		UpdatedAt: now,
 	}
-	if err := initializers.DB.Model(&models.Workspace{}).Where("workspace_id = ?", wpid).Updates(updatedWorkspace).Error; err != nil {
+	if err := initializers.DB.Model(&models.Workspace{}).Where("workspace_id = ?", wsID).Updates(updatedWorkspace).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
 	}
@@ -109,26 +109,26 @@ func DeleteWorkspace(c *fiber.Ctx) error {
 
 	// TODO confirm user is admin of this workspace
 
-	wpid, err := uuid.Parse(c.Params("id"))
+	wsID, err := uuid.Parse(c.Params("wsID"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
 	}
 
 	// DELETE ALL FORMS UNDER THIS WORKSPACE
-	if err := initializers.DB.Delete(&models.Form{}, "workspace_id = ?", wpid).Error; err != nil {
+	if err := initializers.DB.Delete(&models.Form{}, "workspace_id = ?", wsID).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete forms from workspace: %v", err)})
 	}
 
 	// DELETE WORKSPACE
-	if err := initializers.DB.Delete(&models.Workspace{}, wpid).Error; err != nil {
+	if err := initializers.DB.Delete(&models.Workspace{}, wsID).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
 	}
 
 	// DELETE CLIENT WORKSPACE RELATIONSHIP
-	if err := initializers.DB.Delete(&models.ClientWorkspace{}, "workspace_id = ?", wpid).Error; err != nil {
+	if err := initializers.DB.Delete(&models.ClientWorkspace{}, "workspace_id = ?", wsID).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete workspace: %v", err)})
 	}

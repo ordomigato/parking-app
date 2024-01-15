@@ -57,7 +57,6 @@ func RegisterClient(c *fiber.Ctx) error {
 
 func LoginClient(c *fiber.Ctx) error {
 	loginRequest := new(models.ClientLoginRequest)
-	fmt.Print("ASDASS")
 	// Extract the credentials from the request body
 	if err := c.BodyParser(loginRequest); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
