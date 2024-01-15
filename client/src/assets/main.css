@@ -76,6 +76,8 @@ table tbody td {
 
 .card > header {
   margin-bottom: 1rem;
+  position: sticky;
+  left: 0;
 }
 
 .notice {

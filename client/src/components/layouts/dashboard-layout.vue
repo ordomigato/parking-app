@@ -36,6 +36,7 @@ import { RouterView } from 'vue-router'
         .top-nav {
             position: sticky;
             top: 0;
+            z-index: 999;
         }
         main {
             padding: 1rem;
