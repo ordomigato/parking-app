@@ -88,7 +88,7 @@ const handleRegister = async () => {
         // automatically login after registering
         await loginUser(userEmail, userPass)
         router.push({
-            name: routeNames.overview,
+            name: routeNames.workspaces,
         })
     } catch (e) {
         error.value = handleError(e);

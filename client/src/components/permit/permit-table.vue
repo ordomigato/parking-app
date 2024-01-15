@@ -23,7 +23,7 @@
                 <td>{{ permit.v_make }}</td>
                 <td>{{ permit.v_model }}</td>
                 <td>{{ permit.v_color }}</td>
-                <td>{{ permit.expiry }}</td>
+                <td>{{ convertDate(permit.expiry) }}</td>
                 <td>{{ permit.first_name }}</td>
                 <td>{{ permit.last_name }}</td>
                 <td>{{ permit.email }}</td>

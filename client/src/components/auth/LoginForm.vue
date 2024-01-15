@@ -90,7 +90,7 @@ const handleLogin = async () => {
         const { user } = await loginUser(userEmail, userPass)
         userStore.setUser(user)
         router.push({
-            name: routeNames.overview,
+            name: routeNames.workspaces,
         })
 
     } catch (e) {

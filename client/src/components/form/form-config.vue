@@ -10,7 +10,7 @@
             ></text-input>
             <text-input
                 ref="formPath"
-                :label="`Path`"
+                :label="`Form Path`"
                 :disabled="busy"
                 :defaultValue="form?.path || ''"
                 @keyup.enter="onHandleSubmit"
