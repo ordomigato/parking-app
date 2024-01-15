@@ -72,7 +72,7 @@ const toggleMobileNav = () => {
         margin-left: auto;
         .username {
             margin-right: 1rem;
-            color: white;
+            color: var(--main-color);
             max-width: 300px;
             overflow: hidden;
             text-overflow: ellipsis;

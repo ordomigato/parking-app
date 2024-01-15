@@ -57,14 +57,17 @@ const props = defineProps({
         align-items: center;
         justify-content: center;
         border-radius: 20px;
-        background-color: var(--main-color-light);
+        background-color: var(--main-color);
         transition: all 0.1s linear;
         svg {
-            fill: var(--main-color);
+            fill: white;
         }
         &:hover,
         &:focus {
-            background-color: white;
+            background-color: var(--main-color-light);
+            svg {
+                fill: var(--main-color);
+            }
         }
     }
 }
