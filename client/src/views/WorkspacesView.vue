@@ -4,24 +4,26 @@
             <h2>Workspaces</h2>
             <c-button class="ms-auto" @click="$router.push({ name: routeNames.createWorkspace })">+ Create Workspace</c-button>
         </header>
-        <table class="text-left" v-if="workspaceStore.workspaces.length">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="ws in workspaceStore.workspaces" :key="ws.workspace_id">
-                    <td>
-                        <c-button @click="() => setActiveWorkspace(ws)" variant="link">{{ ws.name }}</c-button>
-                    </td>
-                    <td>{{ convertDate(ws.created_at) }}</td>
-                    <td>{{ convertDate(ws.updated_at) }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-container" v-if="workspaceStore.workspaces.length">
+            <table class="text-left">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="ws in workspaceStore.workspaces" :key="ws.workspace_id">
+                        <td>
+                            <c-button @click="() => setActiveWorkspace(ws)" variant="link">{{ ws.name }}</c-button>
+                        </td>
+                        <td>{{ convertDate(ws.created_at) }}</td>
+                        <td>{{ convertDate(ws.updated_at) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <div v-else>
             <p>No workspaces found. Create one to get started!</p>
         </div>

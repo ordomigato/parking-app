@@ -3,24 +3,26 @@
         <header>
             <c-button class="mb-2 ms-auto" @click="$router.push({ name: routeNames.createForm })">+ Create Parking Form</c-button>
         </header>
-        <table class="text-left" v-if="forms.length">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="form in forms" :key="form.form_id">
-                    <td>
-                        <c-button @click="$router.push({ name: routeNames.form, params: { id: form.form_id }})" variant="link">{{ form.name }}</c-button>
-                    </td>
-                    <td>{{ convertDate(form.created_at) }}</td>
-                    <td>{{ convertDate(form.updated_at) }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-container" v-if="forms.length">
+            <table class="text-left">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="form in forms" :key="form.form_id">
+                        <td>
+                            <c-button @click="$router.push({ name: routeNames.form, params: { id: form.form_id }})" variant="link">{{ form.name }}</c-button>
+                        </td>
+                        <td>{{ convertDate(form.created_at) }}</td>
+                        <td>{{ convertDate(form.updated_at) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <p v-else>No forms found</p>
     </div>
 </template>
