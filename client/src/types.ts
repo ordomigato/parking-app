@@ -87,3 +87,15 @@ export interface IPermit {
     created_at: Date,
     updated_at: Date,
 }
+
+export interface IPaginatedResult<T> {
+    data: T,
+    count: number
+}
+
+export type ISortBy = 'created_at'
+export interface IPagination {
+    limit: number,
+    page: number,
+    sort: ISortBy
+}

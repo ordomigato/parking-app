@@ -36,14 +36,17 @@
         </table>
         <error-display :error="error"></error-display>
     </div>
+    <PaginationInput @queryPage="handleGetPermits" :count="count" />
 </template>
 <script setup lang="ts">
 import { getPermits } from '@/services/permit.service';
-import type { IPermit } from '@/types';
+import type { IPagination, IPermit } from '@/types';
 import { handleError } from '@/utils/error';
 import { onMounted, ref, type Ref } from 'vue';
 import { convertDate } from '@/utils/date'
 import { useWorkspaceStore } from '@/stores/workspaceStore';
+import PaginationInput from '../common/pagination-input.vue';
+import { PaginationQuery } from '@/utils/pagination';
 
 const workspaceStore = useWorkspaceStore()
 
@@ -55,6 +58,7 @@ const props = defineProps({
 })
 
 const permits: Ref<IPermit[]> = ref([])
+const count: Ref<number> = ref(0)
 
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
@@ -65,14 +69,17 @@ const isExpired = (exp: Date): boolean => {
     return expiry < now
 }
 
-const handleGetPermits = async () => {
+const handleGetPermits = async (query: IPagination) => {
     error.value = null
     busy.value = true
     try {
         if (!workspaceStore.currentWorkspace) {
             throw new Error('something went wrong')
         }
-        permits.value = await getPermits(workspaceStore.currentWorkspace.workspace_id, props.formId)
+
+        const { data, count: c } = await getPermits(workspaceStore.currentWorkspace.workspace_id, props.formId, query)
+        permits.value = data
+        count.value = c
     } catch (e) {
         error.value = handleError(e)
     } finally {
@@ -81,7 +88,7 @@ const handleGetPermits = async () => {
 }
 
 onMounted(async () => {
-    await handleGetPermits()
+    await handleGetPermits(new PaginationQuery())
 })
 </script>
 <style lang="scss" scoped>

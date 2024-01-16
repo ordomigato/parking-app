@@ -1,5 +1,6 @@
-import type { IPermit, IPermitCreateRequest } from "@/types";
+import type { IPaginatedResult, IPagination, IPermit, IPermitCreateRequest } from "@/types";
 import http from "./http.service"
+import { PaginationQuery } from "@/utils/pagination";
 
 const BASE_URL = `${import.meta.env.VITE_BASE_API_URL}/api`
 
@@ -8,7 +9,11 @@ export async function createPermit(formId: string, payload: IPermitCreateRequest
     return data;
 }
 
-export async function getPermits(workspaceId: string, formId: string): Promise<IPermit[]> {
-    const { data } = await http.get(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/permit`)
+export async function getPermits(
+    workspaceId: string,
+    formId: string,
+    p: IPagination = new PaginationQuery()
+): Promise<IPaginatedResult<IPermit[]>> {
+    const { data } = await http.get(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/permit?limit=${p.limit}&page=${p.page}&sort=${p.sort}`)
     return data;
 }
