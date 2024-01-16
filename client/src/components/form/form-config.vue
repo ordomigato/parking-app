@@ -12,7 +12,7 @@
                 ref="formPath"
                 :label="`Form Path: ${renderedFormPath}`"
                 :disabled="busy"
-                :defaultValue="form?.path || ''"
+                :defaultValue="defaultFormPathValue"
                 @keyup.enter="onHandleSubmit"
             />
             <ConstraintTypeDropdown
@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import TextInput from '@/components/global/TextInput.vue';
 import ConstraintTypeDropdown from '@/components/form/constraint-type-dropdown.vue'
-import { createForm, updateForm } from '@/services/form.service';
+import { createForm, updateForm, updateFormPath } from '@/services/form.service';
 import { ref, watch, type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
@@ -69,7 +69,19 @@ const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
 
 const renderedFormPath = computed(() => {
-    return window.origin + workspaceStore.currentWorkspace?.path + formPath.value?.value
+    if (workspaceStore.currentWorkspace) {
+        return window.origin + workspaceStore.currentWorkspace?.path + formPath.value?.value
+    } else {
+        return ''
+    }
+})
+
+const defaultFormPathValue = computed(() => {
+    if (workspaceStore.currentWorkspace && props.formInfo) {
+        return props.formInfo.path.path.replace(workspaceStore.currentWorkspace.path, "")
+    } else {
+        return ''
+    }
 })
 
 const onHandleSubmit = async () => {
@@ -83,8 +95,11 @@ const onHandleSubmit = async () => {
         if (!name) {
             throw new Error('name cannot be blank')
         }
-        if (!fPath || !validatePath(fPath)) {
+        if (!fPath) {
             throw new Error('path cannot be blank')
+        }
+        if (!validatePath(fPath)) {
+            throw new Error('Path is incorrectly formatted')
         }
         if (!ct && ct !== '') {
             throw new Error('something went wrong')
@@ -100,6 +115,9 @@ const onHandleSubmit = async () => {
         }
         if (props.formInfo) {
             await onUpdateForm(payload)
+            if (props.formInfo.path.path !== payload.path) {
+                await onUpdateFormPath(payload.path)
+            }
         } else {
             await onCreateForm(payload)
         }
@@ -117,11 +135,21 @@ const onUpdateForm = async (payload: IFormUpdateRequest) => {
     if (!form.value) {
         throw new Error('Something went wrong')
     }
-    updateForm(workspaceStore.currentWorkspace?.workspace_id, form.value.form_id, payload)
+    await updateForm(workspaceStore.currentWorkspace?.workspace_id, form.value.form_id, payload)
     form.value = {
         ...form.value,
         ...payload
     }
+}
+
+const onUpdateFormPath = async (path: string) => {
+    if (!workspaceStore.currentWorkspace!) {
+        throw new Error('Something went wrong')
+    }
+    if (!form.value) {
+        throw new Error('Something went wrong')
+    }
+    await updateFormPath(workspaceStore.currentWorkspace?.workspace_id, form.value.form_id, { path: path })
 }
 
 const onCreateForm = async (payload: IFormCreateRequest) => {
@@ -133,8 +161,13 @@ const onCreateForm = async (payload: IFormCreateRequest) => {
 }
 
 watch(() => formName.value?.value, (newVal) => {
-    if (formPath.value) {
+    if (formPath.value && !props.formInfo) {
         formPath.value.value = formatPath(newVal || '')
     }
 })
 </script>
+<style>
+.workspace-path {
+    width: fit-content;
+}
+</style>

@@ -28,7 +28,9 @@ export interface IForm {
     form_id: string,
     workspace_id: string,
     name: string,
-    path: string,
+    path: {
+        path: string
+    },
     submission_constraint_type: IFormSubmissionConstraintTypes,
     submission_constraint_limit: number,
     created_at: Date,
@@ -44,9 +46,12 @@ export interface IFormCreateRequest {
 
 export interface IFormUpdateRequest {
     name: string,
-    path: string,
     submission_constraint_type: IFormSubmissionConstraintTypes,
     submission_constraint_limit: number,
+}
+
+export interface IFormPathUpdateRequest {
+    path: string,
 }
 
 export interface IDropdownItem<S extends string, T extends string> {

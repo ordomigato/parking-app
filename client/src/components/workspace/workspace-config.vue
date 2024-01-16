@@ -60,8 +60,11 @@ const handleSubmit = async () => {
         if (!name) {
             throw new Error("Name cannot be blank")
         }
-        if (!path || !validatePath(path)) {
+        if (!path) {
             throw new Error('Path cannot be blank')
+        }
+        if (!validatePath(path)) {
+            throw new Error('Path is incorrectly formatted')
         }
         const payload = { path, name }
         if (props.isUpdate) {

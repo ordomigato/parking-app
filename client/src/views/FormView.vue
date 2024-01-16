@@ -61,7 +61,7 @@ const form: Ref<IForm | null> = ref(null)
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
 
-const formPath = computed(() => window.location.origin + form.value?.path)
+const formPath = computed(() => window.location.origin + form.value?.path.path)
 
 const onGetForm = async () => {
     busy.value = true

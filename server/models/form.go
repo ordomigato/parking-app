@@ -10,7 +10,7 @@ type Form struct {
 	FormID      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"form_id"`
 	WorkspaceID uuid.UUID `gorm:"not null" json:"workspace_id"`
 	Name        string    `gorm:"not null" json:"name,omitempty"`
-	Path        string    `gorm:"not null" json:"path"`
+	Path        Path      `gorm:"foreignKey:FormID" json:"path,omitempty"`
 	// Questions                 []Question               `gorm:"not null" json:"questions"`
 	SubmissionConstraintType  SubmissionConstraintType `json:"submission_constraint_type"`
 	SubmissionConstraintLimit uint8                    `json:"submission_constraint_limit"`
@@ -46,7 +46,6 @@ type FormCreateRequest struct {
 
 type FormUpdateRequest struct {
 	Name                      string                   `json:"name"`
-	Path                      string                   `json:"path"`
 	Questions                 []Question               `json:"questions"`
 	SubmissionConstraintType  SubmissionConstraintType `json:"submission_constraint_type"`
 	SubmissionConstraintLimit uint8                    `json:"submission_constraint_limit"`

@@ -1,4 +1,4 @@
-import type { IForm, IFormCreateRequest, IFormUpdateRequest } from "@/types";
+import type { IForm, IFormCreateRequest, IFormPathUpdateRequest, IFormUpdateRequest } from "@/types";
 import http from "./http.service"
 
 const BASE_URL = `${import.meta.env.VITE_BASE_API_URL}/api`
@@ -29,4 +29,8 @@ export async function deleteForm(workspaceId: string, formId: string): Promise<v
 export async function getFormInfo(workspacePath: string, formPath: string): Promise<IForm> {
     const { data } = await http.get(`${BASE_URL}/form/${workspacePath}/${formPath}`)
     return data;
+}
+
+export async function updateFormPath(workspaceId: string, formId: string, payload: IFormPathUpdateRequest): Promise<void> {
+    await http.put(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/path`, payload)
 }
