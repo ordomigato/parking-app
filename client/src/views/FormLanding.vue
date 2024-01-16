@@ -85,14 +85,14 @@ const permitResponse: Ref<IPermit | null> = ref(null)
 const questionRefs = ref<{[k: string]: InstanceType<typeof TextInput> }[]>([])
 
 const questions = ref([
-    new Question('first_name', 'First Name', 'firstName', 'given-name'),
-    new Question('last_name', 'Last Name', 'lastName', 'family-name'),
+    new Question('first_name', 'First Name', 'firstName', 'text', 'given-name'),
+    new Question('last_name', 'Last Name', 'lastName', 'text', 'family-name'),
     new Question('email', 'Email', 'email', 'email', 'email'),
     new Question('primary_phone', 'Phone', 'phone', 'tel', 'tel'),
-    new Question('v_plate', 'Vehicle Plate', 'vPlate'),
-    new Question('v_make', 'Vehicle Make', 'vMake'),
-    new Question('v_Model', 'Vehicle Model', 'vModel'),
-    new Question('v_color', 'Vehicle Color', 'vColor'),
+    new Question('v_plate', 'Vehicle Plate', 'vPlate', 'text'),
+    new Question('v_make', 'Vehicle Make', 'vMake', 'text'),
+    new Question('v_Model', 'Vehicle Model', 'vModel', 'text'),
+    new Question('v_color', 'Vehicle Color', 'vColor', 'text'),
     // new Question('duration', 'Duration', 'duration'),
 ])
 

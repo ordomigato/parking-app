@@ -10,7 +10,7 @@
             ></text-input>
             <text-input
                 ref="formPath"
-                :label="`Form Path`"
+                :label="`Form Path: ${renderedFormPath}`"
                 :disabled="busy"
                 :defaultValue="form?.path || ''"
                 @keyup.enter="onHandleSubmit"
@@ -40,7 +40,7 @@
 import TextInput from '@/components/global/TextInput.vue';
 import ConstraintTypeDropdown from '@/components/form/constraint-type-dropdown.vue'
 import { createForm, updateForm } from '@/services/form.service';
-import { ref, watch, type Ref } from 'vue';
+import { ref, watch, type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { IFormSubmissionConstraintTypes, type IForm, type IFormCreateRequest, type IFormUpdateRequest } from '@/types';
@@ -67,6 +67,10 @@ const form: Ref<IForm | null> = ref(props.formInfo || null)
 
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
+
+const renderedFormPath = computed(() => {
+    return window.origin + workspaceStore.currentWorkspace?.path + formPath.value?.value
+})
 
 const onHandleSubmit = async () => {
     busy.value = true
