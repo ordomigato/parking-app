@@ -24,13 +24,13 @@
                     <td>{{ permit.v_make }}</td>
                     <td>{{ permit.v_model }}</td>
                     <td>{{ permit.v_color }}</td>
-                    <td>{{ convertDate(permit.expiry) }}</td>
+                    <td>{{ convertDate(permit.expiry) }}, {{ convertTime(permit.expiry) }}</td>
                     <td>{{ permit.first_name }}</td>
                     <td>{{ permit.last_name }}</td>
                     <td>{{ permit.email }}</td>
                     <td>{{ permit.primary_phone }}</td>
-                    <td>{{ convertDate(permit.created_at) }}</td>
-                    <td>{{ convertDate(permit.updated_at) }}</td>
+                    <td>{{ convertDate(permit.created_at) }}, {{ convertTime(permit.created_at) }}</td>
+                    <td>{{ convertDate(permit.updated_at) }}, {{ convertTime(permit.updated_at) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -43,7 +43,7 @@ import { getPermits } from '@/services/permit.service';
 import type { IPagination, IPermit } from '@/types';
 import { handleError } from '@/utils/error';
 import { onMounted, ref, type Ref } from 'vue';
-import { convertDate } from '@/utils/date'
+import { convertDate, convertTime } from '@/utils/date'
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import PaginationInput from '../common/pagination-input.vue';
 import { PaginationQuery } from '@/utils/pagination';

@@ -31,8 +31,9 @@ export interface IForm {
     path: {
         path: string
     },
-    submission_constraint_type: IFormSubmissionConstraintTypes,
-    submission_constraint_limit: number,
+    duration_measurement_unit: IFormDurationMeasurementUnits,
+    duration_limit: number,
+    duration_reset_time: string
     created_at: Date,
     updated_at: Date,
 }
@@ -40,14 +41,16 @@ export interface IForm {
 export interface IFormCreateRequest {
     name: string,
     path: string,
-    submission_constraint_type: IFormSubmissionConstraintTypes,
-    submission_constraint_limit: number,
+    duration_measurement_unit: IFormDurationMeasurementUnits,
+    duration_limit: number,
+    duration_reset_time: string
 }
 
 export interface IFormUpdateRequest {
     name: string,
-    submission_constraint_type: IFormSubmissionConstraintTypes,
-    submission_constraint_limit: number,
+    duration_measurement_unit: IFormDurationMeasurementUnits,
+    duration_limit: number,
+    duration_reset_time: string
 }
 
 export interface IFormPathUpdateRequest {
@@ -59,7 +62,7 @@ export interface IDropdownItem<S extends string, T extends string> {
     name: T
 }
 
-export enum IFormSubmissionConstraintTypes {
+export enum IFormDurationMeasurementUnits {
     none = '',
     minutes = 'minutes',
     hours = 'hours',

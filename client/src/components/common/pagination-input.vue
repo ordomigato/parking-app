@@ -43,7 +43,7 @@ const pageNumber = ref<InstanceType<typeof TextInput>>()
 
 const busy = ref(false)
 
-const maxPageNumber = computed(() => Math.round(props.count / props.limit))
+const maxPageNumber = computed(() => Math.ceil(props.count / props.limit))
 
 const queryPage = () => {
     if (pageNumber.value) {

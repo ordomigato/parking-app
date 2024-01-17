@@ -7,8 +7,8 @@ import (
 )
 
 type Permit struct {
-	PermitId     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"permit_id"`
-	FormId       uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"form_id"`
+	PermitID     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"permit_id"`
+	FormID       uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"form_id"`
 	FirstName    string    `gorm:"not null" json:"first_name"`
 	LastName     string    `gorm:"not null" json:"last_name"`
 	Email        string    `gorm:"not null" json:"email"`

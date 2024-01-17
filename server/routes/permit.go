@@ -32,7 +32,7 @@ func CreatePermit(c *fiber.Ctx) error {
 	now := time.Now()
 
 	newPermit := models.Permit{
-		FormId:       formId,
+		FormID:       formId,
 		FirstName:    payload.FirstName,
 		LastName:     payload.LastName,
 		Email:        payload.Email,

@@ -2,10 +2,9 @@
     <div v-if="form">
         <div class="card">
             <header>
-                <h2>Form Info</h2>
+                <h2>{{ form.name }}</h2>
             </header>
             <div class="text-sm">
-                <p><strong>Name:</strong> {{ form.name }}</p>
                 <p><strong>ID:</strong> {{ form.form_id }}</p>
                 <p><strong>Create At:</strong> {{ convertDate(form.created_at) }}</p>
                 <p><strong>Updated At:</strong> {{ convertDate(form.updated_at) }}</p>

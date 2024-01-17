@@ -20,7 +20,7 @@ func GetForms(c *fiber.Ctx) error {
 
 	forms := []models.Form{}
 
-	if err := initializers.DB.Where("workspace_id = ?", wsID).Find(&forms).Error; err != nil {
+	if err := initializers.DB.Where("workspace_id = ?", wsID).Preload("Path").Find(&forms).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"error_message": fmt.Sprintf("unable to find forms: %v", err)})
 	}
@@ -59,13 +59,13 @@ func CreateForm(c *fiber.Ctx) error {
 	now := time.Now()
 
 	form := models.Form{
-		WorkspaceID: wsID,
-		Name:        payload.Name,
-		// Questions:                 payload.Questions,
-		SubmissionConstraintType:  payload.SubmissionConstraintType,
-		SubmissionConstraintLimit: payload.SubmissionConstraintLimit,
-		CreatedAt:                 now,
-		UpdatedAt:                 now,
+		WorkspaceID:             wsID,
+		Name:                    payload.Name,
+		DurationMeasurementUnit: payload.DurationMeasurementUnit,
+		DurationLimit:           payload.DurationLimit,
+		DurationResetTime:       payload.DurationResetTime,
+		CreatedAt:               now,
+		UpdatedAt:               now,
 	}
 
 	if err := initializers.DB.Create(&form).Error; err != nil {
@@ -105,11 +105,11 @@ func UpdateForm(c *fiber.Ctx) error {
 	now := time.Now()
 
 	form := models.Form{
-		Name: payload.Name,
-		// Questions:                 payload.Questions,
-		SubmissionConstraintType:  payload.SubmissionConstraintType,
-		SubmissionConstraintLimit: payload.SubmissionConstraintLimit,
-		UpdatedAt:                 now,
+		Name:                    payload.Name,
+		DurationMeasurementUnit: payload.DurationMeasurementUnit,
+		DurationLimit:           payload.DurationLimit,
+		DurationResetTime:       payload.DurationResetTime,
+		UpdatedAt:               now,
 	}
 
 	if err := initializers.DB.Model(&models.Form{}).Where("form_id = ?", formId).Updates(form).Error; err != nil {
@@ -135,12 +135,17 @@ func DeleteForm(c *fiber.Ctx) error {
 
 	if err := initializers.DB.Where("form_id = ? AND workspace_id = ?", formId, wsID).Delete(&models.Path{}).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("Failed to path: %v", err)})
+			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete path: %v", err)})
+	}
+
+	if err := initializers.DB.Where("form_id = ?", formId).Delete(&models.Permit{}).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete permits: %v", err)})
 	}
 
 	if err := initializers.DB.Delete(&models.Form{}, formId).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
+			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete form: %v", err)})
 	}
 
 	return c.SendStatus(http.StatusNoContent)

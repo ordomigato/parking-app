@@ -10,12 +10,12 @@
 <script setup lang="ts">
 import DropdownInput from '@/components/common/dropdown-input.vue'
 import { type Ref, ref, onMounted } from 'vue';
-import { IFormSubmissionConstraintTypes, type IDropdownItem } from '@/types'
+import { IFormDurationMeasurementUnits, type IDropdownItem } from '@/types'
 
 const props = defineProps({
     default: {
-        type: String as () => IFormSubmissionConstraintTypes,
-        default: IFormSubmissionConstraintTypes.none
+        type: String as () => IFormDurationMeasurementUnits,
+        default: IFormDurationMeasurementUnits.none
     },
     disabled: {
         type: Boolean,
@@ -23,31 +23,31 @@ const props = defineProps({
     }
 })
 
-const selected: Ref<IDropdownItem<IFormSubmissionConstraintTypes, string> | null> = ref(null)
-const submissionTypes: Ref<IDropdownItem<IFormSubmissionConstraintTypes, string>[]> = ref([
+const selected: Ref<IDropdownItem<IFormDurationMeasurementUnits, string> | null> = ref(null)
+const submissionTypes: Ref<IDropdownItem<IFormDurationMeasurementUnits, string>[]> = ref([
     {
-        value: IFormSubmissionConstraintTypes.none,
+        value: IFormDurationMeasurementUnits.none,
         name: 'None'
     },
     {
-        value: IFormSubmissionConstraintTypes.minutes,
+        value: IFormDurationMeasurementUnits.minutes,
         name: 'Minutes'
     },
     {
-        value: IFormSubmissionConstraintTypes.hours,
+        value: IFormDurationMeasurementUnits.hours,
         name: 'Hours'
     },
     {
-        value: IFormSubmissionConstraintTypes.days,
+        value: IFormDurationMeasurementUnits.days,
         name: 'Days'
     },
     {
-        value: IFormSubmissionConstraintTypes.months,
+        value: IFormDurationMeasurementUnits.months,
         name: 'Months'
     }
 ])
 
-const onSelect = (payload: IDropdownItem<IFormSubmissionConstraintTypes, string>) => {
+const onSelect = (payload: IDropdownItem<IFormDurationMeasurementUnits, string>) => {
     selected.value = payload
 }
 

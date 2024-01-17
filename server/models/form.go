@@ -7,59 +7,39 @@ import (
 )
 
 type Form struct {
-	FormID      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"form_id"`
-	WorkspaceID uuid.UUID `gorm:"not null" json:"workspace_id"`
-	Name        string    `gorm:"not null" json:"name,omitempty"`
-	Path        Path      `gorm:"foreignKey:FormID" json:"path,omitempty"`
-	// Questions                 []Question               `gorm:"not null" json:"questions"`
-	SubmissionConstraintType  SubmissionConstraintType `json:"submission_constraint_type"`
-	SubmissionConstraintLimit uint8                    `json:"submission_constraint_limit"`
-	CreatedAt                 time.Time                `gorm:"not null" json:"created_at"`
-	UpdatedAt                 time.Time                `gorm:"not null" json:"updated_at"`
+	FormID                  uuid.UUID               `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"form_id"`
+	WorkspaceID             uuid.UUID               `gorm:"not null" json:"workspace_id"`
+	Name                    string                  `gorm:"not null" json:"name,omitempty"`
+	Path                    Path                    `gorm:"foreignKey:FormID" json:"path,omitempty"`
+	Permits                 []Permit                `gorm:"foreignKey:FormID" json:"permits,omitempty"`
+	DurationMeasurementUnit DurationMeasurementUnit `json:"duration_measurement_unit"`
+	DurationLimit           uint8                   `json:"duration_limit"`
+	DurationResetTime       string                  `json:"duration_reset_time"`
+	CreatedAt               time.Time               `gorm:"not null" json:"created_at"`
+	UpdatedAt               time.Time               `gorm:"not null" json:"updated_at"`
 }
 
-type SubmissionConstraintType string
+type DurationMeasurementUnit string
 
 const (
-	None    SubmissionConstraintType = ""
-	Minutes SubmissionConstraintType = "minutes"
-	Hours   SubmissionConstraintType = "hours"
-	Days    SubmissionConstraintType = "days"
-	Months  SubmissionConstraintType = "months"
-)
-
-type QuestionType string
-
-const (
-	Text   QuestionType = "text"
-	Number QuestionType = "number"
-	Select QuestionType = "select"
+	None    DurationMeasurementUnit = ""
+	Minutes DurationMeasurementUnit = "minutes"
+	Hours   DurationMeasurementUnit = "hours"
+	Days    DurationMeasurementUnit = "days"
+	Months  DurationMeasurementUnit = "months"
 )
 
 type FormCreateRequest struct {
-	Name                      string                   `json:"name"`
-	Path                      string                   `json:"path"`
-	Questions                 []Question               `json:"questions"`
-	SubmissionConstraintType  SubmissionConstraintType `json:"submission_constraint_type"`
-	SubmissionConstraintLimit uint8                    `json:"submission_constraint_limit"`
+	Name                    string                  `json:"name"`
+	Path                    string                  `json:"path"`
+	DurationMeasurementUnit DurationMeasurementUnit `json:"duration_measurement_unit"`
+	DurationLimit           uint8                   `json:"duration_limit"`
+	DurationResetTime       string                  `json:"duration_reset_time"`
 }
 
 type FormUpdateRequest struct {
-	Name                      string                   `json:"name"`
-	Questions                 []Question               `json:"questions"`
-	SubmissionConstraintType  SubmissionConstraintType `json:"submission_constraint_type"`
-	SubmissionConstraintLimit uint8                    `json:"submission_constraint_limit"`
-}
-
-type Option struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
-
-type Question struct {
-	ID    string       `json:"id"`
-	Title string       `json:"title"`
-	Type  QuestionType `json:"type"`
-	// options are for QuestionType Select
-	Options []Option `json:"options"`
+	Name                    string                  `json:"name"`
+	DurationMeasurementUnit DurationMeasurementUnit `json:"duration_measurement_unit"`
+	DurationLimit           uint8                   `json:"duration_limit"`
+	DurationResetTime       string                  `json:"duration_reset_time"`
 }

@@ -155,6 +155,7 @@ onMounted(async() => {
 .form-landing {
     display: flex;
     min-height: 100vh;
+    min-height: 100dvh;
     justify-content: center;
     padding: 1rem;
     background-color: var(--off-white-color);

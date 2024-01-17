@@ -73,6 +73,7 @@ onMounted(() => {
     color: white;
     padding: 1rem;
     height: 100vh;
+    height: 100dvh;
     position: fixed;
     z-index: 10;
     &.mobile {

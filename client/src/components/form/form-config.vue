@@ -15,15 +15,28 @@
                 :defaultValue="defaultFormPathValue"
                 @keyup.enter="onHandleSubmit"
             />
-            <ConstraintTypeDropdown
-                ref="constraintType"
-                :default="form?.submission_constraint_type || IFormSubmissionConstraintTypes.none"
-            />
+            <div class="d-flex">
+                <text-input
+                    class="me-4"
+                    ref="durationLimit"
+                    :disabled="busy || !enableDuration"
+                    label="Duration Limit"
+                    :defaultValue="form?.duration_limit.toString() || ''"
+                    @keyup.enter="onHandleSubmit"
+                ></text-input>
+                <div>
+                    <ConstraintTypeDropdown
+                        ref="durationMeasurementUnit"
+                        :default="form?.duration_measurement_unit || IFormDurationMeasurementUnits.none"
+                    />
+                </div>
+            </div>
             <text-input
-                ref="constraintLimit"
+                ref="durationResetTime"
+                type="time"
                 :disabled="busy"
-                label="Duration Limit"
-                :defaultValue="form?.submission_constraint_limit.toString() || ''"
+                label="Duration Reset Time"
+                defaultValue="00:00"
                 @keyup.enter="onHandleSubmit"
             ></text-input>
             <error-display :error="error"></error-display>
@@ -43,7 +56,7 @@ import { createForm, updateForm, updateFormPath } from '@/services/form.service'
 import { ref, watch, type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
-import { IFormSubmissionConstraintTypes, type IForm, type IFormCreateRequest, type IFormUpdateRequest } from '@/types';
+import { IFormDurationMeasurementUnits, type IForm, type IFormCreateRequest, type IFormUpdateRequest } from '@/types';
 import { formatPath, validatePath } from '@/utils/string';
 import { handleError } from '@/utils/error';
 import { routeNames } from '@/router/routeNames';
@@ -60,8 +73,9 @@ const props = defineProps({
 
 const formName = ref<InstanceType<typeof TextInput>>()
 const formPath = ref<InstanceType<typeof TextInput>>()
-const constraintType = ref<InstanceType<typeof ConstraintTypeDropdown>>()
-const constraintLimit = ref<InstanceType<typeof TextInput>>()
+const durationMeasurementUnit = ref<InstanceType<typeof ConstraintTypeDropdown>>()
+const durationLimit = ref<InstanceType<typeof TextInput>>()
+const durationResetTime = ref<InstanceType<typeof TextInput>>()
 
 const form: Ref<IForm | null> = ref(props.formInfo || null)
 
@@ -84,14 +98,23 @@ const defaultFormPathValue = computed(() => {
     }
 })
 
+const enableDuration = computed(() => {
+    if (durationMeasurementUnit.value?.selected?.value !== "") {
+        return true
+    } else {
+        return false
+    }
+})
+
 const onHandleSubmit = async () => {
     busy.value = true
     error.value = null
     try {
         const name = formName.value?.value
         const fPath = formPath.value?.value
-        const ct = constraintType.value?.selected?.value
-        const cl = constraintLimit.value?.value
+        const ct = durationMeasurementUnit.value?.selected?.value
+        const cl = durationLimit.value?.value
+        const drt = durationResetTime.value?.value
         if (!name) {
             throw new Error('name cannot be blank')
         }
@@ -101,17 +124,15 @@ const onHandleSubmit = async () => {
         if (!validatePath(fPath)) {
             throw new Error('Path is incorrectly formatted')
         }
-        if (!ct && ct !== '') {
-            throw new Error('something went wrong')
-        }
         if (cl && isNaN(parseInt(cl))) {
             throw new Error('constraint limit must be a number')
         }
         const payload: IFormUpdateRequest | IFormCreateRequest = {
             name,
             path: `${workspaceStore.currentWorkspace?.path}${fPath}`,
-            submission_constraint_type: ct,
-            submission_constraint_limit: parseInt(cl || '0'),
+            duration_measurement_unit: ct || IFormDurationMeasurementUnits.none,
+            duration_limit: enableDuration.value ? parseInt(cl || '0') : 0,
+            duration_reset_time: drt || ''
         }
         if (props.formInfo) {
             await onUpdateForm(payload)

@@ -115,12 +115,6 @@ func DeleteWorkspace(c *fiber.Ctx) error {
 			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
 	}
 
-	// DELETE ALL FORMS UNDER THIS WORKSPACE
-	if err := initializers.DB.Delete(&models.Form{}, "workspace_id = ?", wsID).Error; err != nil {
-		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete forms from workspace: %v", err)})
-	}
-
 	// DELETE WORKSPACE
 	if err := initializers.DB.Delete(&models.Workspace{}, wsID).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
