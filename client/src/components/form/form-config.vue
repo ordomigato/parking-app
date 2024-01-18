@@ -132,7 +132,8 @@ const onHandleSubmit = async () => {
             path: `${workspaceStore.currentWorkspace?.path}${fPath}`,
             duration_measurement_unit: ct || IFormDurationMeasurementUnits.none,
             duration_limit: enableDuration.value ? parseInt(cl || '0') : 0,
-            duration_reset_time: drt || ''
+            // duration_reset_time: drt || ''
+            duration_reset_time: '1 year'
         }
         if (props.formInfo) {
             await onUpdateForm(payload)
@@ -177,8 +178,8 @@ const onCreateForm = async (payload: IFormCreateRequest) => {
     if (!workspaceStore.currentWorkspace!) {
         throw new Error('Something went wrong')
     }
-    await createForm(workspaceStore.currentWorkspace?.workspace_id, payload)
-    router.push({ name: routeNames.forms })
+    const form = await createForm(workspaceStore.currentWorkspace?.workspace_id, payload)
+    router.push({ name: routeNames.form, params: { id: form.form_id } })
 }
 
 watch(() => formName.value?.value, (newVal) => {

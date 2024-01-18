@@ -27,7 +27,21 @@ func CreatePermit(c *fiber.Ctx) error {
 		})
 	}
 
-	// TODO: Pull up all other permits that have the same Vplate in the specific form submission constraint type and see if they still can
+	form := models.Form{}
+	if err := initializers.DB.Model(&models.Form{}).Preload("Path").Where("form_id = ?", formId).First(&form).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("unable to find form: %v", err)})
+	}
+
+	recentPermits := []models.Permit{}
+	if err := initializers.DB.Model(&models.Permit{}).Where(fmt.Sprintf("created_at < %v", form.ReferenceTime)).Find(&recentPermits).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"error_message": fmt.Sprintf("unable to find previous permits: %v", err)})
+	}
+
+	fmt.Println(recentPermits)
+
+	// get all permits from a certain date (duration_reset_timer) to another
 
 	now := time.Now()
 

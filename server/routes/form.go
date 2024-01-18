@@ -63,7 +63,7 @@ func CreateForm(c *fiber.Ctx) error {
 		Name:                    payload.Name,
 		DurationMeasurementUnit: payload.DurationMeasurementUnit,
 		DurationLimit:           payload.DurationLimit,
-		DurationResetTime:       payload.DurationResetTime,
+		ReferenceTime:           payload.ReferenceTime,
 		CreatedAt:               now,
 		UpdatedAt:               now,
 	}
@@ -108,7 +108,7 @@ func UpdateForm(c *fiber.Ctx) error {
 		Name:                    payload.Name,
 		DurationMeasurementUnit: payload.DurationMeasurementUnit,
 		DurationLimit:           payload.DurationLimit,
-		DurationResetTime:       payload.DurationResetTime,
+		ReferenceTime:           payload.ReferenceTime,
 		UpdatedAt:               now,
 	}
 
