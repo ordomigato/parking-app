@@ -59,13 +59,21 @@ func CreateForm(c *fiber.Ctx) error {
 	now := time.Now()
 
 	form := models.Form{
-		WorkspaceID:             wsID,
-		Name:                    payload.Name,
-		DurationMeasurementUnit: payload.DurationMeasurementUnit,
-		DurationLimit:           payload.DurationLimit,
-		ReferenceTime:           payload.ReferenceTime,
-		CreatedAt:               now,
-		UpdatedAt:               now,
+		WorkspaceID: wsID,
+		Name:        payload.Name,
+		CycleData: models.CycleData{
+			DurationLimit: models.DurationLimit{
+				Unit:  payload.CycleData.DurationLimit.Unit,
+				Value: payload.CycleData.DurationLimit.Value,
+			},
+			ResetInterval: models.ResetInterval{
+				Unit:    payload.CycleData.ResetInterval.Unit,
+				Value:   payload.CycleData.ResetInterval.Value,
+				RefDate: payload.CycleData.ResetInterval.RefDate,
+			},
+		},
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	if err := initializers.DB.Create(&form).Error; err != nil {
@@ -105,11 +113,19 @@ func UpdateForm(c *fiber.Ctx) error {
 	now := time.Now()
 
 	form := models.Form{
-		Name:                    payload.Name,
-		DurationMeasurementUnit: payload.DurationMeasurementUnit,
-		DurationLimit:           payload.DurationLimit,
-		ReferenceTime:           payload.ReferenceTime,
-		UpdatedAt:               now,
+		Name: payload.Name,
+		CycleData: models.CycleData{
+			DurationLimit: models.DurationLimit{
+				Unit:  payload.CycleData.DurationLimit.Unit,
+				Value: payload.CycleData.DurationLimit.Value,
+			},
+			ResetInterval: models.ResetInterval{
+				Unit:    payload.CycleData.ResetInterval.Unit,
+				Value:   payload.CycleData.ResetInterval.Value,
+				RefDate: payload.CycleData.ResetInterval.RefDate,
+			},
+		},
+		UpdatedAt: now,
 	}
 
 	if err := initializers.DB.Model(&models.Form{}).Where("form_id = ?", formId).Updates(form).Error; err != nil {

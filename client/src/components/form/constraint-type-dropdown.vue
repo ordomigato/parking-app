@@ -1,15 +1,14 @@
 <template>
-    <p class="block text-sm leading-6 font-medium">Duration Type</p>
     <DropdownInput
         :selected="selected"
-        :items="submissionTypes"
+        :items="computedOptions"
         :disabled="disabled"
         @onSelect="onSelect"
     />
 </template>
 <script setup lang="ts">
 import DropdownInput from '@/components/common/dropdown-input.vue'
-import { type Ref, ref, onMounted } from 'vue';
+import { type Ref, ref, onMounted, computed } from 'vue';
 import { IFormDurationMeasurementUnits, type IDropdownItem } from '@/types'
 
 const props = defineProps({
@@ -20,6 +19,10 @@ const props = defineProps({
     disabled: {
         type: Boolean,
         default: false
+    },
+    disabledOptions: {
+        type: Array as () => IFormDurationMeasurementUnits[],
+        default: () => []
     }
 })
 
@@ -27,25 +30,29 @@ const selected: Ref<IDropdownItem<IFormDurationMeasurementUnits, string> | null>
 const submissionTypes: Ref<IDropdownItem<IFormDurationMeasurementUnits, string>[]> = ref([
     {
         value: IFormDurationMeasurementUnits.none,
-        name: 'None'
+        name: 'None',
     },
     {
         value: IFormDurationMeasurementUnits.minutes,
-        name: 'Minutes'
+        name: 'Minute(s)'
     },
     {
         value: IFormDurationMeasurementUnits.hours,
-        name: 'Hours'
+        name: 'Hour(s)'
     },
     {
         value: IFormDurationMeasurementUnits.days,
-        name: 'Days'
+        name: 'Day(s)'
     },
     {
         value: IFormDurationMeasurementUnits.months,
-        name: 'Months'
+        name: 'Month(s)'
     }
 ])
+
+const computedOptions = computed(() => {
+    return submissionTypes.value.filter(t => !props.disabledOptions.includes(t.value))
+})
 
 const onSelect = (payload: IDropdownItem<IFormDurationMeasurementUnits, string>) => {
     selected.value = payload

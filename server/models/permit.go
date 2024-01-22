@@ -31,7 +31,7 @@ type PermitCreateRequest struct {
 	VMake        string `json:"v_make"`
 	VModel       string `json:"v_model"`
 	VColor       string `json:"v_color"`
-	Duration     uint8  `json:"duration"`
+	Duration     int    `json:"duration"`
 }
 
 type PermitUpdateRequest struct {

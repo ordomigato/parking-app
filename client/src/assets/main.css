@@ -110,6 +110,14 @@ table tbody td {
   align-items: center;
 }
 
+.align-items-end {
+  align-items: end;
+}
+
+.justify-content-end {
+  justify-content: end;
+}
+
 .title-btn-combo {
   display: flex;
   align-items: center;

@@ -61,8 +61,8 @@ func GenerateCycleStartDate(
 func GenerateReferenceDate(
 	d time.Time,
 ) (time.Time, error) {
-	// set year to sometime before now to ensure reference date is always old.
-	rd := time.Date(2000, d.Month(), d.Day(), d.Hour(), d.Minute(), 0, 0, d.Location())
+	// set year to sometime before now to ensure reference date is always older than current date.
+	rd := time.Date(d.Year(), d.Month(), d.Day(), d.Hour(), d.Minute(), 0, 0, d.Location())
 	// minus by one year to ensure refence date is
 	return rd, nil
 }

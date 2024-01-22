@@ -1,44 +1,81 @@
 <template>
     <div>
         <div>
-            <text-input
-                ref="formName"
-                :disabled="busy"
-                label="Form Name"
-                :defaultValue="form?.name || ''"
-                @keyup.enter="onHandleSubmit"
-            ></text-input>
-            <text-input
-                ref="formPath"
-                :label="`Form Path: ${renderedFormPath}`"
-                :disabled="busy"
-                :defaultValue="defaultFormPathValue"
-                @keyup.enter="onHandleSubmit"
-            />
-            <div class="d-flex">
+            <div class="mb-4">
                 <text-input
-                    class="me-4"
-                    ref="durationLimit"
-                    :disabled="busy || !enableDuration"
-                    label="Duration Limit"
-                    :defaultValue="form?.duration_limit.toString() || ''"
+                    ref="formName"
+                    :disabled="busy"
+                    label="Form Name"
+                    :defaultValue="form?.name || ''"
                     @keyup.enter="onHandleSubmit"
                 ></text-input>
-                <div>
-                    <ConstraintTypeDropdown
-                        ref="durationMeasurementUnit"
-                        :default="form?.duration_measurement_unit || IFormDurationMeasurementUnits.none"
+                <text-input
+                    ref="formPath"
+                    :label="`Form Path: ${renderedFormPath}`"
+                    :disabled="busy"
+                    :defaultValue="defaultFormPathValue"
+                    @keyup.enter="onHandleSubmit"
+                />
+                <label class="d-flex align-items-center">
+                    <span class="text-sm leading-6 font-medium me-2">Enable cycle constraints:</span>
+                    <input
+                        type="checkbox"
+                        v-model="enableCycle"
                     />
+                </label>
+                <div v-if="enableCycle" class="p-2">
+                    <div class="d-flex align-items-end">
+                        <text-input
+                            class="me-4"
+                            ref="durationIntervalLimit"
+                            :disabled="busy || !enableCycle"
+                            label="Cycle Interval"
+                            :defaultValue="form?.cycle_data.reset_interval.value.toString() || '1'"
+                            @keyup.enter="onHandleSubmit"
+                        ></text-input>
+                        <div>
+                            <ConstraintTypeDropdown
+                                ref="durationIntervalMeasurementUnit"
+                                :disabledOptions="[
+                                    IFormDurationMeasurementUnits.none,
+                                    IFormDurationMeasurementUnits.minutes,
+                                    IFormDurationMeasurementUnits.hours,
+                                ]"
+                                :default="form?.cycle_data.reset_interval.unit || IFormDurationMeasurementUnits.months"
+                                :disabled="busy || !enableCycle"
+                            />
+                        </div>
+                    </div>
+                    <text-input
+                        ref="durationResetTime"
+                        type="time"
+                        :disabled="busy || !enableCycle"
+                        label="Cycle Reset Time"
+                        defaultValue="00:00"
+                        @keyup.enter="onHandleSubmit"
+                    ></text-input>
+                    <div class="d-flex align-items-end">
+                        <text-input
+                            class="me-4"
+                            ref="durationLimit"
+                            :disabled="busy || !enableCycle"
+                            label="Duration Limit"
+                            :defaultValue="form?.cycle_data.duration_limit.value.toString() || ''"
+                            @keyup.enter="onHandleSubmit"
+                        ></text-input>
+                        <div>
+                            <ConstraintTypeDropdown
+                                ref="durationMeasurementUnit"
+                                :disabledOptions="[
+                                    IFormDurationMeasurementUnits.none,
+                                ]"
+                                :default="form?.cycle_data.duration_limit.unit || IFormDurationMeasurementUnits.hours"
+                                :disabled="busy || !enableCycle"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
-            <text-input
-                ref="durationResetTime"
-                type="time"
-                :disabled="busy"
-                label="Duration Reset Time"
-                defaultValue="00:00"
-                @keyup.enter="onHandleSubmit"
-            ></text-input>
             <error-display :error="error"></error-display>
             <c-button
                 @click="onHandleSubmit"
@@ -53,7 +90,7 @@
 import TextInput from '@/components/global/TextInput.vue';
 import ConstraintTypeDropdown from '@/components/form/constraint-type-dropdown.vue'
 import { createForm, updateForm, updateFormPath } from '@/services/form.service';
-import { ref, watch, type Ref, computed } from 'vue';
+import { ref, watch, type Ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { IFormDurationMeasurementUnits, type IForm, type IFormCreateRequest, type IFormUpdateRequest } from '@/types';
@@ -73,6 +110,9 @@ const props = defineProps({
 
 const formName = ref<InstanceType<typeof TextInput>>()
 const formPath = ref<InstanceType<typeof TextInput>>()
+const enableCycle = ref(false)
+const durationIntervalMeasurementUnit = ref<InstanceType<typeof ConstraintTypeDropdown>>()
+const durationIntervalLimit = ref<InstanceType<typeof TextInput>>()
 const durationMeasurementUnit = ref<InstanceType<typeof ConstraintTypeDropdown>>()
 const durationLimit = ref<InstanceType<typeof TextInput>>()
 const durationResetTime = ref<InstanceType<typeof TextInput>>()
@@ -98,22 +138,16 @@ const defaultFormPathValue = computed(() => {
     }
 })
 
-const enableDuration = computed(() => {
-    if (durationMeasurementUnit.value?.selected?.value !== "") {
-        return true
-    } else {
-        return false
-    }
-})
-
 const onHandleSubmit = async () => {
     busy.value = true
     error.value = null
     try {
         const name = formName.value?.value
         const fPath = formPath.value?.value
-        const ct = durationMeasurementUnit.value?.selected?.value
-        const cl = durationLimit.value?.value
+        const dimu = durationIntervalMeasurementUnit.value?.selected?.value
+        const dil = durationIntervalLimit.value?.value
+        const du = durationMeasurementUnit.value?.selected?.value
+        const dl = durationLimit.value?.value
         const drt = durationResetTime.value?.value
         if (!name) {
             throw new Error('name cannot be blank')
@@ -124,16 +158,23 @@ const onHandleSubmit = async () => {
         if (!validatePath(fPath)) {
             throw new Error('Path is incorrectly formatted')
         }
-        if (cl && isNaN(parseInt(cl))) {
+        if (dl && isNaN(parseInt(dl))) {
             throw new Error('constraint limit must be a number')
         }
         const payload: IFormUpdateRequest | IFormCreateRequest = {
             name,
             path: `${workspaceStore.currentWorkspace?.path}${fPath}`,
-            duration_measurement_unit: ct || IFormDurationMeasurementUnits.none,
-            duration_limit: enableDuration.value ? parseInt(cl || '0') : 0,
-            // duration_reset_time: drt || ''
-            duration_reset_time: '1 year'
+            cycle_data: {
+                duration_limit: {
+                    value: enableCycle.value ? parseInt(dl || '0') : 0,
+                    unit: du || IFormDurationMeasurementUnits.none,
+                },
+                reset_interval: {
+                    value: dil ? parseInt(dil) : 0,
+                    unit: dimu || IFormDurationMeasurementUnits.none,
+                    reference_date: new Date(Date.now()).toISOString()
+                }
+            }
         }
         if (props.formInfo) {
             await onUpdateForm(payload)
@@ -185,6 +226,12 @@ const onCreateForm = async (payload: IFormCreateRequest) => {
 watch(() => formName.value?.value, (newVal) => {
     if (formPath.value && !props.formInfo) {
         formPath.value.value = formatPath(newVal || '')
+    }
+})
+
+onMounted(() => {
+    if (props.formInfo?.cycle_data.duration_limit.value) {
+        enableCycle.value = true
     }
 })
 </script>
