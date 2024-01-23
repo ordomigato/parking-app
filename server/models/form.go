@@ -22,17 +22,17 @@ type Form struct {
 }
 
 // Value Marshal
-func (a CycleData) Value() (driver.Value, error) {
-	return json.Marshal(a)
+func (c CycleData) Value() (driver.Value, error) {
+	return json.Marshal(c)
 }
 
 // Scan Unmarshal
-func (a *CycleData) Scan(value interface{}) error {
+func (c *CycleData) Scan(value interface{}) error {
 	b, ok := value.([]byte)
 	if !ok {
 		return errors.New("type assertion to []byte failed")
 	}
-	return json.Unmarshal(b, &a)
+	return json.Unmarshal(b, &c)
 }
 
 type CycleData struct {

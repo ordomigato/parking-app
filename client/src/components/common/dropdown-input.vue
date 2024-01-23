@@ -69,7 +69,7 @@ const onSelect = (payload: IDropdownItem<any, any>) => {
         border-radius: 0.375rem;
         border: 1px solid rgb(209 213 219);
         &.open {
-            border-bottom: none;
+            border-bottom: 1px solid transparent;
             border-radius: 0.375rem 0.375rem 0 0;
         }
     }
@@ -84,6 +84,7 @@ const onSelect = (payload: IDropdownItem<any, any>) => {
         max-height: 4rem;
         overflow: hidden;
         overflow-y: auto;
+        z-index: 1;
         li {
             padding: 0 0.5rem;
             cursor: pointer;

@@ -94,6 +94,14 @@ table tbody td {
   margin-bottom: 1rem;
 }
 
+.label {
+    line-height: 1.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: block;
+    white-space: nowrap;
+}
+
 .danger-text {
   color: var(--danger-color);
 }

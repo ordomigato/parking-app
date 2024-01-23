@@ -133,7 +133,7 @@ func UpdateForm(c *fiber.Ctx) error {
 			&fiber.Map{"error_message": fmt.Sprintf("unable to update form: %v", err)})
 	}
 
-	return c.JSON(form)
+	return c.SendStatus(http.StatusNoContent)
 }
 
 func DeleteForm(c *fiber.Ctx) error {

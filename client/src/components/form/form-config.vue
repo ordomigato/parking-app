@@ -24,12 +24,13 @@
                     />
                 </label>
                 <div v-if="enableCycle" class="p-2">
+                    <p class="label">Cycle Interval</p>
                     <div class="d-flex align-items-end">
                         <text-input
                             class="me-4"
                             ref="durationIntervalLimit"
+                            type="number"
                             :disabled="busy || !enableCycle"
-                            label="Cycle Interval"
                             :defaultValue="form?.cycle_data.reset_interval.value.toString() || '1'"
                             @keyup.enter="onHandleSubmit"
                         ></text-input>
@@ -46,18 +47,33 @@
                             />
                         </div>
                     </div>
-                    <text-input
-                        ref="durationResetTime"
-                        type="time"
-                        :disabled="busy || !enableCycle"
-                        label="Cycle Reset Time"
-                        defaultValue="00:00"
-                        @keyup.enter="onHandleSubmit"
-                    ></text-input>
+                    <div v-if="durationIntervalMeasurementUnit?.selected?.value === IFormDurationMeasurementUnits.months">
+                        <p class="label">Cycle Reset Day + Time</p>
+                        <div class="d-flex">
+                            <text-input
+                                ref="durationResetDay"
+                                type="number"
+                                :disabled="busy || !enableCycle"
+                                :min="1"
+                                :max="31"
+                                defaultValue="1"
+                                @keyup.enter="onHandleSubmit"
+                            ></text-input>
+                            <div class="at-container"><span>@</span></div>
+                            <text-input
+                                ref="durationResetTime"
+                                type="time"
+                                :disabled="busy || !enableCycle"
+                                defaultValue="00:00"
+                                @keyup.enter="onHandleSubmit"
+                            ></text-input>
+                        </div>
+                    </div>
                     <div class="d-flex align-items-end">
                         <text-input
                             class="me-4"
                             ref="durationLimit"
+                            type="number"
                             :disabled="busy || !enableCycle"
                             label="Duration Limit"
                             :defaultValue="form?.cycle_data.duration_limit.value.toString() || ''"
@@ -115,6 +131,7 @@ const durationIntervalMeasurementUnit = ref<InstanceType<typeof ConstraintTypeDr
 const durationIntervalLimit = ref<InstanceType<typeof TextInput>>()
 const durationMeasurementUnit = ref<InstanceType<typeof ConstraintTypeDropdown>>()
 const durationLimit = ref<InstanceType<typeof TextInput>>()
+const durationResetDay = ref<InstanceType<typeof TextInput>>()
 const durationResetTime = ref<InstanceType<typeof TextInput>>()
 
 const form: Ref<IForm | null> = ref(props.formInfo || null)
@@ -148,7 +165,19 @@ const onHandleSubmit = async () => {
         const dil = durationIntervalLimit.value?.value
         const du = durationMeasurementUnit.value?.selected?.value
         const dl = durationLimit.value?.value
+        const drd = durationResetDay.value?.value
         const drt = durationResetTime.value?.value
+    
+        // configure reference reset date + time
+        const refDate = new Date()
+        const day = drd ? parseInt(drd) : 1
+        const [ hour, min ] = drt ? drt.split(":").map(v => parseInt(v)) : [0, 0]
+        refDate.setHours(hour)
+        refDate.setMinutes(min)
+        refDate.setSeconds(0)
+        refDate.setMilliseconds(0)
+        refDate.setDate(day)
+
         if (!name) {
             throw new Error('name cannot be blank')
         }
@@ -172,7 +201,7 @@ const onHandleSubmit = async () => {
                 reset_interval: {
                     value: dil ? parseInt(dil) : 0,
                     unit: dimu || IFormDurationMeasurementUnits.none,
-                    reference_date: new Date(Date.now()).toISOString()
+                    reference_date: refDate.toISOString()
                 }
             }
         }
@@ -238,5 +267,8 @@ onMounted(() => {
 <style>
 .workspace-path {
     width: fit-content;
+}
+.at-container {
+    padding: 0.25rem 1rem;
 }
 </style>

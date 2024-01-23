@@ -1,11 +1,12 @@
 <template>
     <label class="block mb-4">
-        <span class="block text-sm leading-6 font-medium">{{ props.label }}</span>
+        <span class="label">{{ props.label }}</span>
         <input
-            class="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             :type="props.type"
             :autocomplete="props.autocomplete"
             :disabled="disabled"
+            :min="min"
+            :max="max"
             v-model="value"
         />
     </label>
@@ -33,7 +34,15 @@ const props = defineProps({
     defaultValue: {
         type: String,
         default: ''
-    }
+    },
+    min: {
+        type: Number,
+        default: 0,
+    },
+    max: {
+        type: Number,
+        default: 0,
+    },
 })
 
 const value = ref(props.defaultValue)
@@ -42,3 +51,13 @@ defineExpose({
     value,
 })
 </script>
+<style lang="scss" scoped>
+input {
+    width: 100%;
+    min-width: 100px;
+    padding: 0.375rem 0.5rem;
+    border: 1px solid rgb(209, 213, 219);
+    border-radius: 0.375rem;
+
+}
+</style>
