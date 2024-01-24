@@ -36,6 +36,7 @@ func (c *CycleData) Scan(value interface{}) error {
 }
 
 type CycleData struct {
+	EnableCycle   bool          `json:"enable_cycle"`
 	DurationLimit DurationLimit `json:"duration_limit"`
 	ResetInterval ResetInterval `json:"reset_interval"`
 }

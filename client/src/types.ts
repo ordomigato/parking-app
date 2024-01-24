@@ -25,6 +25,7 @@ export interface IWorkspaceUpdateRequest {
 }
 
 export interface CycleData {
+    enable_cycle: boolean
     duration_limit: {
         unit: IFormDurationMeasurementUnits,
         value: number
@@ -112,4 +113,12 @@ export interface IPagination {
     limit: number,
     page: number,
     sort: ISortBy
+}
+
+export type ToastStatus = "success" | "warning" | "error";
+
+export interface IToast {
+  text: string;
+  status: ToastStatus;
+  id: number;
 }

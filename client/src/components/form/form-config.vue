@@ -30,6 +30,7 @@
                             class="me-4"
                             ref="durationIntervalLimit"
                             type="number"
+                            :min="1"
                             :disabled="busy || !enableCycle"
                             :defaultValue="form?.cycle_data.reset_interval.value.toString() || '1'"
                             @keyup.enter="onHandleSubmit"
@@ -48,7 +49,7 @@
                         </div>
                     </div>
                     <div v-if="durationIntervalMeasurementUnit?.selected?.value === IFormDurationMeasurementUnits.months">
-                        <p class="label">Cycle Reset Day + Time</p>
+                        <p class="label">Cycle Reset Day (of month) + Time</p>
                         <div class="d-flex">
                             <text-input
                                 ref="durationResetDay"
@@ -74,17 +75,16 @@
                             class="me-4"
                             ref="durationLimit"
                             type="number"
+                            :min="1"
                             :disabled="busy || !enableCycle"
                             label="Duration Limit"
-                            :defaultValue="form?.cycle_data.duration_limit.value.toString() || ''"
+                            :defaultValue="form?.cycle_data.duration_limit.value.toString() || '1'"
                             @keyup.enter="onHandleSubmit"
                         ></text-input>
                         <div>
                             <ConstraintTypeDropdown
                                 ref="durationMeasurementUnit"
-                                :disabledOptions="[
-                                    IFormDurationMeasurementUnits.none,
-                                ]"
+                                :disabledOptions="durationLimitDisableOptions"
                                 :default="form?.cycle_data.duration_limit.unit || IFormDurationMeasurementUnits.hours"
                                 :disabled="busy || !enableCycle"
                             />
@@ -113,9 +113,12 @@ import { IFormDurationMeasurementUnits, type IForm, type IFormCreateRequest, typ
 import { formatPath, validatePath } from '@/utils/string';
 import { handleError } from '@/utils/error';
 import { routeNames } from '@/router/routeNames';
+import { useToastStore } from '@/stores/toastStore';
+
 
 const router = useRouter()
 const workspaceStore = useWorkspaceStore()
+const toastStore = useToastStore()
 
 const props = defineProps({
     formInfo: {
@@ -153,6 +156,18 @@ const defaultFormPathValue = computed(() => {
     } else {
         return ''
     }
+})
+
+const durationLimitDisableOptions = computed(() => {
+    let disabledOptions = [ IFormDurationMeasurementUnits.none ]
+    if (durationIntervalMeasurementUnit.value?.selected?.value === IFormDurationMeasurementUnits.months) {
+        disabledOptions.push(IFormDurationMeasurementUnits.months)
+    }
+    if (durationIntervalMeasurementUnit.value?.selected?.value === IFormDurationMeasurementUnits.days) {
+        disabledOptions.push(IFormDurationMeasurementUnits.months)
+        disabledOptions.push(IFormDurationMeasurementUnits.days)
+    }
+    return disabledOptions
 })
 
 const onHandleSubmit = async () => {
@@ -194,6 +209,7 @@ const onHandleSubmit = async () => {
             name,
             path: `${workspaceStore.currentWorkspace?.path}${fPath}`,
             cycle_data: {
+                enable_cycle: enableCycle.value,
                 duration_limit: {
                     value: enableCycle.value ? parseInt(dl || '0') : 0,
                     unit: du || IFormDurationMeasurementUnits.none,
@@ -228,6 +244,7 @@ const onUpdateForm = async (payload: IFormUpdateRequest) => {
         throw new Error('Something went wrong')
     }
     await updateForm(workspaceStore.currentWorkspace?.workspace_id, form.value.form_id, payload)
+    toastStore.updateState('Form Successfully Updated', 'success')
     form.value = {
         ...form.value,
         ...payload
@@ -249,6 +266,7 @@ const onCreateForm = async (payload: IFormCreateRequest) => {
         throw new Error('Something went wrong')
     }
     const form = await createForm(workspaceStore.currentWorkspace?.workspace_id, payload)
+    toastStore.updateState('Form Successfully Created', 'success')
     router.push({ name: routeNames.form, params: { id: form.form_id } })
 }
 
@@ -259,7 +277,7 @@ watch(() => formName.value?.value, (newVal) => {
 })
 
 onMounted(() => {
-    if (props.formInfo?.cycle_data.duration_limit.value) {
+    if (props.formInfo?.cycle_data.enable_cycle) {
         enableCycle.value = true
     }
 })

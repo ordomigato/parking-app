@@ -111,19 +111,12 @@ func UpdateForm(c *fiber.Ctx) error {
 
 	now := time.Now()
 
+	fmt.Println("WEEEEEEE")
+	fmt.Println(payload.CycleData)
+
 	form := models.Form{
-		Name: payload.Name,
-		CycleData: models.CycleData{
-			DurationLimit: models.DurationLimit{
-				Unit:  payload.CycleData.DurationLimit.Unit,
-				Value: payload.CycleData.DurationLimit.Value,
-			},
-			ResetInterval: models.ResetInterval{
-				Unit:    payload.CycleData.ResetInterval.Unit,
-				Value:   payload.CycleData.ResetInterval.Value,
-				RefDate: payload.CycleData.ResetInterval.RefDate,
-			},
-		},
+		Name:      payload.Name,
+		CycleData: payload.CycleData,
 		UpdatedAt: now,
 	}
 
