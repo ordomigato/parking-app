@@ -18,7 +18,12 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="permit in permits" :key="permit.permit_id" :class="isExpired(permit.expiry) ? 'expired' : ''">
+                <tr
+                    @click="() => handleDeletePermits(permit.permit_id)"
+                    v-for="permit in permits"
+                    :key="permit.permit_id"
+                    :class="`permit ${isExpired(permit.expiry) ? 'expired' : ''}`"
+                >
                     <td>{{ permit.permit_id }}</td>
                     <td>{{ permit.v_plate }}</td>
                     <td>{{ permit.v_make }}</td>
@@ -39,7 +44,7 @@
     <PaginationInput @queryPage="handleGetPermits" :count="count" />
 </template>
 <script setup lang="ts">
-import { getPermits } from '@/services/permit.service';
+import { getPermits, deletePermit } from '@/services/permit.service';
 import type { IPagination, IPermit } from '@/types';
 import { handleError } from '@/utils/error';
 import { onMounted, ref, type Ref } from 'vue';
@@ -47,8 +52,10 @@ import { convertDate, convertTime } from '@/utils/date'
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import PaginationInput from '../common/pagination-input.vue';
 import { PaginationQuery } from '@/utils/pagination';
+import { useToastStore } from '@/stores/toastStore';
 
 const workspaceStore = useWorkspaceStore()
+const toastStore = useToastStore()
 
 const props = defineProps({
     formId: {
@@ -87,12 +94,32 @@ const handleGetPermits = async (query: IPagination) => {
     }
 }
 
+const handleDeletePermits = async (permitId: string) => {
+    error.value = null
+    busy.value = true
+    try {
+        if (!workspaceStore.currentWorkspace) {
+            throw new Error('something went wrong')
+        }
+        await deletePermit(workspaceStore.currentWorkspace.workspace_id, props.formId, permitId)
+        permits.value = permits.value.filter(p => p.permit_id !== permitId)
+        toastStore.updateState("Successfully deleted permit", "success")
+    } catch (e) {
+        error.value = handleError(e)
+    } finally {
+        busy.value = false
+    }
+}
+
 onMounted(async () => {
     await handleGetPermits(new PaginationQuery())
 })
 </script>
 <style lang="scss" scoped>
-.expired {
-    background-color: #fecaca;
+.permit {
+    cursor: pointer;
+    &.expired {
+        background-color: #fecaca;
+    }
 }
 </style>

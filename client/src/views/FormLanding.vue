@@ -14,10 +14,20 @@
                             :label="q.label"
                             :ref="(el) => (questionRefs[q.id] = el)"
                             :type="q.type"
+                            :min="q.min"
+                            :max="q.max"
                             :autocomplete="q.autocomplete"
+                            :defaultValue="q.defaultValue"
                             @keyup.enter="submitPermit"
                         />
                     </template>
+                    <label class="d-flex align-items-center justify-content-center py-4">
+                        <input
+                            type="checkbox"
+                            v-model="rememberMe"
+                        />
+                        <span class="ms-2">Remember me?</span>
+                    </label>
                     <error-display :error="error"></error-display>
                     <c-button
                         class="w-100"
@@ -29,13 +39,13 @@
                     <div class="notice">
                         <p>Your parking permit has been created!</p>
                     </div>
-                    <p><strong>Expiry: </strong>{{ convertDate(permitResponse.expiry) }}</p>
+                    <p><strong>Expiry: </strong>{{ convertDate(permitResponse.expiry) }} @ {{ convertTime(permitResponse.expiry) }}</p>
                     <p><strong>Plate Number: </strong>{{ permitResponse.v_plate }}</p>
                     <p><strong>Vehicle: </strong>{{ permitResponse.v_make }} {{ permitResponse.v_model }} ({{ permitResponse.v_color }})</p>
                     <p><strong>Name: </strong>{{ permitResponse.first_name }} {{ permitResponse.last_name }}</p>
                     <p><strong>Email: </strong>{{ permitResponse.email }}</p>
                     <p><strong>Phone: </strong>{{ permitResponse.primary_phone }}</p>
-                    <p><strong>Created: </strong>{{ convertDate(permitResponse.created_at) }}</p>
+                    <p><strong>Created: </strong>{{ convertDate(permitResponse.created_at) }} @ {{ convertTime(permitResponse.created_at) }}</p>
                 </div>
             </div>
             <div v-else>
@@ -46,7 +56,7 @@
 </template>
 <script setup lang="ts">
 import TextInput from '@/components/global/TextInput.vue';
-import { convertDate } from '@/utils/date';
+import { convertDate, convertTime } from '@/utils/date';
 import { getFormInfo } from '@/services/form.service';
 import { createPermit } from '@/services/permit.service';
 import type { IForm, IPermit, IPermitCreateRequest } from '@/types';
@@ -60,11 +70,15 @@ class Question {
     ref: string
     type: string
     autocomplete: string
+    defaultValue: string
+    min: number | undefined
+    max: number | undefined
 
     constructor(
         id: string,
         label: string,
         ref: string,
+        defaultValue = '',
         type = '',
         autocomplete = 'off'
     ) {
@@ -73,6 +87,19 @@ class Question {
         this.ref = ref
         this.type = type
         this.autocomplete = autocomplete
+        this.defaultValue = defaultValue
+    }
+
+    setMin(num: number) {
+        this.min = num
+    }
+
+    setMax(num: number) {
+        this.max = num
+    }
+
+    setDefaultValue(val: string) {
+        this.defaultValue = val
     }
 }
 
@@ -84,17 +111,9 @@ const permitResponse: Ref<IPermit | null> = ref(null)
 // const questionRefs = ref({})
 const questionRefs = ref<{[k: string]: InstanceType<typeof TextInput> }[]>([])
 
-const questions = ref([
-    new Question('first_name', 'First Name', 'firstName', 'text', 'given-name'),
-    new Question('last_name', 'Last Name', 'lastName', 'text', 'family-name'),
-    new Question('email', 'Email', 'email', 'email', 'email'),
-    new Question('primary_phone', 'Phone', 'phone', 'tel', 'tel'),
-    new Question('v_plate', 'Vehicle Plate', 'vPlate', 'text'),
-    new Question('v_make', 'Vehicle Make', 'vMake', 'text'),
-    new Question('v_Model', 'Vehicle Model', 'vModel', 'text'),
-    new Question('v_color', 'Vehicle Color', 'vColor', 'text'),
-    // new Question('duration', 'Duration', 'duration'),
-])
+const questions: Ref<Question[]> = ref([])
+
+const rememberMe: Ref<boolean> = ref(false)
 
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
@@ -115,16 +134,31 @@ const submitPermit = async () => {
             v_plate: '',
             v_make: '',
             v_model: '',
-            v_color: ''
+            v_color: '',
+            duration: 1,
         }
         questions.value.forEach((q) => {
             const val = questionRefs.value[q.id].value
             if (!val) {
                 throw new Error(`${q.label} cannot be blank`)
             }
-            payload[q.id] = val
+            console.log(q.type)
+            if (q.type === 'number') {
+                payload[q.id] = parseInt(val)
+            } else {
+                payload[q.id] = val
+            }
         })
         permitResponse.value = await createPermit(form.value?.form_id, payload)
+
+        // save info locally for easier creation
+        if (rememberMe.value) {
+            localStorage.setItem(
+                'customer_info', JSON.stringify(payload)
+            )
+        } else {
+            localStorage.removeItem('customer_info')
+        }
     } catch (e) {
         error.value = handleError(e)
     } finally {
@@ -136,7 +170,6 @@ const handleGetFormInfo = async () => {
     busy.value = true
     error.value = null
     try {
-        // TODO submit permit
         const wpPath = route.params.workspacePath as string
         const formPath = route.params.formPath as string
         form.value = await getFormInfo(wpPath, formPath)
@@ -149,6 +182,31 @@ const handleGetFormInfo = async () => {
 
 onMounted(async() => {
     await handleGetFormInfo()
+
+    // handle remember me
+    const cInfo = localStorage.getItem('customer_info')
+    const c: IPermitCreateRequest = cInfo ? JSON.parse(cInfo) : null
+
+    questions.value = [
+        new Question('first_name', 'First Name', 'firstName', c.first_name, 'text', 'given-name'),
+        new Question('last_name', 'Last Name', 'lastName', c.last_name, 'text', 'family-name'),
+        new Question('email', 'Email', 'email', c.email, 'email', 'email'),
+        new Question('primary_phone', 'Phone', 'phone', c.primary_phone, 'tel', 'tel'),
+        new Question('v_plate', 'Vehicle Plate', 'vPlate', c.v_plate, 'text'),
+        new Question('v_make', 'Vehicle Make', 'vMake', c.v_make, 'text'),
+        new Question('v_model', 'Vehicle Model', 'vModel', c.v_model, 'text'),
+        new Question('v_color', 'Vehicle Color', 'vColor', c.v_color, 'text'),
+    ]
+
+    if (form.value?.cycle_data.enable_cycle) {
+        const durationQuestion = new Question('duration', `Duration (${form.value?.cycle_data.duration_limit.unit})`, 'duration', '1', 'number')
+        durationQuestion.setMin(1)
+        durationQuestion.setMax(form.value.cycle_data.duration_limit.value)
+        questions.value = [
+            ...questions.value,
+            durationQuestion
+        ]
+    }
 })
 </script>
 <style lang="scss" scoped>

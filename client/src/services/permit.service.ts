@@ -17,3 +17,7 @@ export async function getPermits(
     const { data } = await http.get(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/permit?limit=${p.limit}&page=${p.page}&sort=${p.sort}`)
     return data;
 }
+
+export async function deletePermit(workspaceId: string, formId: string, permitId: string): Promise<void> {
+    await http.delete(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/permit/${permitId}`)
+}

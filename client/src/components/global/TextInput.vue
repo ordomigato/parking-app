@@ -5,8 +5,8 @@
             :type="props.type"
             :autocomplete="props.autocomplete"
             :disabled="disabled"
-            :min="min"
-            :max="max"
+            :min="min?.toString()"
+            :max="max?.toString()"
             v-model="value"
         />
     </label>
@@ -36,12 +36,12 @@ const props = defineProps({
         default: ''
     },
     min: {
-        type: Number,
-        default: 0,
+        type: Number || undefined,
+        default: undefined,
     },
     max: {
-        type: Number,
-        default: 0,
+        type: Number || undefined,
+        default: undefined,
     },
 })
 

@@ -86,6 +86,7 @@ export interface IPermitCreateRequest {
     v_make: string,
     v_model: string,
     v_color: string,
+    duration: number,
 }
 
 export interface IPermit {
