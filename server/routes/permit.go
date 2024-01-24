@@ -13,24 +13,23 @@ import (
 )
 
 func CreatePermit(c *fiber.Ctx) error {
-	formId, err := uuid.Parse(c.Params("formId"))
+	formid, err := uuid.Parse(c.Params("formid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("id is not a uuid: %v", formid)))
 	}
 
 	payload := new(models.PermitCreateRequest)
 	// Extract the credentials from the request body
 	if err := c.BodyParser(payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error_message": err.Error(),
-		})
+		return c.Status(fiber.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse(err.Error()))
 	}
 
 	form := models.Form{}
-	if err := initializers.DB.Model(&models.Form{}).Preload("Path").Where("form_id = ?", formId).First(&form).Error; err != nil {
+	if err := initializers.DB.Model(&models.Form{}).Preload("Path").Where("form_id = ?", formid).First(&form).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to find form: %v", err)})
+			utils.GenerateServerErrorResponse(("unable to find form")))
 	}
 
 	// recentPermits := []models.Permit{}
@@ -46,7 +45,7 @@ func CreatePermit(c *fiber.Ctx) error {
 	now := time.Now()
 
 	newPermit := models.Permit{
-		FormID:       formId,
+		FormID:       formid,
 		FirstName:    payload.FirstName,
 		LastName:     payload.LastName,
 		Email:        payload.Email,
@@ -62,30 +61,30 @@ func CreatePermit(c *fiber.Ctx) error {
 
 	if err := initializers.DB.Create(&newPermit).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to create permit: %v", err)})
+			utils.GenerateServerErrorResponse("unable to create permit"))
 	}
 
 	return c.JSON(newPermit)
 }
 
 func GetPermits(c *fiber.Ctx) error {
-	formId, err := uuid.Parse(c.Params("formId"))
+	formid, err := uuid.Parse(c.Params("formid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("id is not a uuid: %v", formid)))
 	}
 
 	permits := []models.Permit{}
 
-	if err := initializers.DB.Scopes(utils.Paginate(c)).Where("form_id = ?", formId).Find(&permits).Error; err != nil {
+	if err := initializers.DB.Scopes(utils.Paginate(c)).Where("form_id = ?", formid).Find(&permits).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to find permits: %v", err)})
+			utils.GenerateServerErrorResponse("unable to find permits"))
 	}
 
 	var count int64
-	if err := initializers.DB.Model(&models.Permit{}).Where("form_id = ?", formId).Count(&count).Error; err != nil {
+	if err := initializers.DB.Model(&models.Permit{}).Where("form_id = ?", formid).Count(&count).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to count permits: %v", err)})
+			utils.GenerateServerErrorResponse("unable to count permits"))
 	}
 
 	return c.JSON(fiber.Map{

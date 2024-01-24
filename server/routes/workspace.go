@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -9,15 +10,15 @@ import (
 	"github.com/google/uuid"
 	"github.com/ordomigato/parking-app/initializers"
 	"github.com/ordomigato/parking-app/models"
+	"github.com/ordomigato/parking-app/utils"
+	"gorm.io/gorm"
 )
 
 func CreateWorkspace(c *fiber.Ctx) error {
 	payload := new(models.WorkspaceCreateRequest)
-	// Extract the credentials from the request body
 	if err := c.BodyParser(payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error_message": err.Error(),
-		})
+		return c.Status(fiber.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse(err.Error()))
 	}
 
 	now := time.Now()
@@ -30,11 +31,13 @@ func CreateWorkspace(c *fiber.Ctx) error {
 	}
 
 	if err := initializers.DB.Create(&newWorkspace).Error; err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return c.Status(http.StatusBadRequest).JSON(
+				utils.GenerateServerErrorResponse("Unable to create workspace. Path has already been claimed."))
+		}
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to create workspace: %v", err)})
+			utils.GenerateServerErrorResponse("unable to create workspace"))
 	}
-
-	// result := initializers.DB.Where("role_name <> ?", "Admin").Find(models.Role{})
 
 	newclientWorkspace := models.ClientWorkspace{
 		WorkspaceID: newWorkspace.WorkspaceID,
@@ -44,7 +47,7 @@ func CreateWorkspace(c *fiber.Ctx) error {
 	if err := initializers.DB.Create(&newclientWorkspace).Error; err != nil {
 		initializers.DB.Delete(&newWorkspace)
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": "Unable to create client workspace relationship"})
+			utils.GenerateServerErrorResponse("Unable to create client workspace relationship"))
 	}
 
 	return c.JSON(newWorkspace)
@@ -57,7 +60,7 @@ func GetWorkspaces(c *fiber.Ctx) error {
 	clientWorkspaces := []models.ClientWorkspace{}
 	if err := initializers.DB.Find(&clientWorkspaces, "client_id = ?", clientId).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": "Unable to find client workspace relationship"})
+			utils.GenerateServerErrorResponse("Unable to find client workspace relationship"))
 	}
 	workspaces := []models.Workspace{}
 	workspaceIds := []uuid.UUID{}
@@ -68,24 +71,23 @@ func GetWorkspaces(c *fiber.Ctx) error {
 
 	if err := initializers.DB.Find(&workspaces, workspaceIds).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to find workspaces: %v", err)})
+			utils.GenerateServerErrorResponse("unable to find workspaces"))
 	}
 
 	return c.JSON(workspaces)
 }
 
 func UpdateWorkspace(c *fiber.Ctx) error {
-	wsID, err := uuid.Parse(c.Params("wsID"))
+	wsid, err := uuid.Parse(c.Params("wsid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("id is not a uuid: %v", wsid)))
 	}
 
 	payload := new(models.WorkspaceUpdateRequest)
 	if err := c.BodyParser(payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error_message": err.Error(),
-		})
+		return c.Status(fiber.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse(err.Error()))
 	}
 
 	now := time.Now()
@@ -95,9 +97,9 @@ func UpdateWorkspace(c *fiber.Ctx) error {
 		// Path:      payload.Path,
 		UpdatedAt: now,
 	}
-	if err := initializers.DB.Model(&models.Workspace{}).Where("workspace_id = ?", wsID).Updates(updatedWorkspace).Error; err != nil {
+	if err := initializers.DB.Model(&models.Workspace{}).Where("workspace_id = ?", wsid).Updates(updatedWorkspace).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
+			utils.GenerateServerErrorResponse("Failed to delete"))
 	}
 
 	// TODO: Update all forms paths if path has changed
@@ -109,22 +111,26 @@ func DeleteWorkspace(c *fiber.Ctx) error {
 
 	// TODO confirm user is admin of this workspace
 
-	wsID, err := uuid.Parse(c.Params("wsID"))
+	wsid, err := uuid.Parse(c.Params("wsid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("id is not a uuid: %v", wsid)))
 	}
 
 	// DELETE WORKSPACE
-	if err := initializers.DB.Delete(&models.Workspace{}, wsID).Error; err != nil {
+	if err := initializers.DB.Delete(&models.Workspace{}, wsid).Error; err != nil {
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			return c.Status(http.StatusBadRequest).JSON(
+				utils.GenerateServerErrorResponse("Failed to delete workspace. Please ensure all forms are deleted first."))
+		}
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete: %v", err)})
+			utils.GenerateServerErrorResponse(("Failed to delete workspace")))
 	}
 
 	// DELETE CLIENT WORKSPACE RELATIONSHIP
-	if err := initializers.DB.Delete(&models.ClientWorkspace{}, "workspace_id = ?", wsID).Error; err != nil {
+	if err := initializers.DB.Delete(&models.ClientWorkspace{}, "workspace_id = ?", wsid).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete workspace: %v", err)})
+			utils.GenerateServerErrorResponse(("Failed to delete client workspace relation")))
 	}
 	return c.SendStatus(http.StatusNoContent)
 }

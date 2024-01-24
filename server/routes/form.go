@@ -9,57 +9,57 @@ import (
 	"github.com/google/uuid"
 	"github.com/ordomigato/parking-app/initializers"
 	"github.com/ordomigato/parking-app/models"
+	"github.com/ordomigato/parking-app/utils"
 )
 
 func GetForms(c *fiber.Ctx) error {
-	wsID, err := uuid.Parse(c.Params("wsID"))
+	wsid, err := uuid.Parse(c.Params("wsid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("id is not a uuid: %v", wsid)))
 	}
 
 	forms := []models.Form{}
 
-	if err := initializers.DB.Where("workspace_id = ?", wsID).Preload("Path").Find(&forms).Error; err != nil {
+	if err := initializers.DB.Where("workspace_id = ?", wsid).Preload("Path").Find(&forms).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to find forms: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("unable to find forms: %v", wsid)))
 	}
 
 	return c.JSON(forms)
 }
 
 func GetForm(c *fiber.Ctx) error {
-	formId, err := uuid.Parse(c.Params("formId"))
+	formid, err := uuid.Parse(c.Params("formid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("id is not a uuid: %v", err)))
 	}
 	form := models.Form{}
-	if err := initializers.DB.Model(&models.Form{}).Preload("Path").Where("form_id = ?", formId).First(&form).Error; err != nil {
+	if err := initializers.DB.Model(&models.Form{}).Preload("Path").Where("form_id = ?", formid).First(&form).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to find form: %v", err)})
+			utils.GenerateServerErrorResponse("unable to find form"))
 	}
 	return c.JSON(form)
 }
 
 func CreateForm(c *fiber.Ctx) error {
-	wsID, err := uuid.Parse(c.Params("wsID"))
+	wsid, err := uuid.Parse(c.Params("wsid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("id is not a uuid: %v", err)))
 	}
 
 	payload := new(models.FormCreateRequest)
 	if err := c.BodyParser(payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error_message": err.Error(),
-		})
+		return c.Status(fiber.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse(err.Error()))
 	}
 
 	now := time.Now()
 
 	form := models.Form{
-		WorkspaceID: wsID,
+		WorkspaceID: wsid,
 		Name:        payload.Name,
 		CycleData: models.CycleData{
 			DurationLimit: models.DurationLimit{
@@ -78,7 +78,7 @@ func CreateForm(c *fiber.Ctx) error {
 
 	if err := initializers.DB.Create(&form).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to find forms: %v", err)})
+			utils.GenerateServerErrorResponse("unable to find forms"))
 	}
 
 	p := payload.Path
@@ -86,28 +86,27 @@ func CreateForm(c *fiber.Ctx) error {
 	// update path
 	path := models.Path{
 		Path:        p,
-		WorkspaceID: wsID,
+		WorkspaceID: wsid,
 		FormID:      form.FormID,
 	}
 	if err := initializers.DB.Create(&path).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to create path: %v", err)})
+			utils.GenerateServerErrorResponse("unable to create path"))
 	}
 	return c.JSON(form)
 }
 
 func UpdateForm(c *fiber.Ctx) error {
-	formId, err := uuid.Parse(c.Params("formId"))
+	formid, err := uuid.Parse(c.Params("formid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("form id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("form id is not a uuid: %v", formid)))
 	}
 
 	payload := new(models.FormUpdateRequest)
 	if err := c.BodyParser(payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error_message": err.Error(),
-		})
+		return c.Status(fiber.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse(err.Error()))
 	}
 
 	now := time.Now()
@@ -128,40 +127,40 @@ func UpdateForm(c *fiber.Ctx) error {
 		UpdatedAt: now,
 	}
 
-	if err := initializers.DB.Model(&models.Form{}).Where("form_id = ?", formId).Updates(form).Error; err != nil {
+	if err := initializers.DB.Model(&models.Form{}).Where("form_id = ?", formid).Updates(form).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to update form: %v", err)})
+			utils.GenerateServerErrorResponse("unable to update form"))
 	}
 
 	return c.SendStatus(http.StatusNoContent)
 }
 
 func DeleteForm(c *fiber.Ctx) error {
-	formId, err := uuid.Parse(c.Params("formId"))
+	formid, err := uuid.Parse(c.Params("formid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("form_id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("form_id is not a uuid: %v", formid)))
 	}
 
-	wsID, err := uuid.Parse(c.Params("wsID"))
+	wsid, err := uuid.Parse(c.Params("wsid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("workspace id is not a uuid: %v", err)})
+			utils.GenerateServerErrorResponse(fmt.Sprintf("workspace id is not a uuid: %v", wsid)))
 	}
 
-	if err := initializers.DB.Where("form_id = ? AND workspace_id = ?", formId, wsID).Delete(&models.Path{}).Error; err != nil {
+	if err := initializers.DB.Where("form_id = ? AND workspace_id = ?", formid, wsid).Delete(&models.Path{}).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete path: %v", err)})
+			utils.GenerateServerErrorResponse("Failed to delete path"))
 	}
 
-	if err := initializers.DB.Where("form_id = ?", formId).Delete(&models.Permit{}).Error; err != nil {
+	if err := initializers.DB.Where("form_id = ?", formid).Delete(&models.Permit{}).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete permits: %v", err)})
+			utils.GenerateServerErrorResponse("Failed to delete permits"))
 	}
 
-	if err := initializers.DB.Delete(&models.Form{}, formId).Error; err != nil {
+	if err := initializers.DB.Delete(&models.Form{}, formid).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("Failed to delete form: %v", err)})
+			utils.GenerateServerErrorResponse("Failed to delete form"))
 	}
 
 	return c.SendStatus(http.StatusNoContent)
@@ -177,14 +176,14 @@ func GetFormInfo(c *fiber.Ctx) error {
 
 	if err := initializers.DB.Where("path = ?", p).First(&path).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to find forms: %v", err)})
+			utils.GenerateServerErrorResponse("unable to find form via path"))
 	}
 
 	form := models.Form{}
 
 	if err := initializers.DB.Where("form_id = ?", path.FormID).First(&form).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"error_message": fmt.Sprintf("unable to find forms: %v", err)})
+			utils.GenerateServerErrorResponse("unable to find form"))
 	}
 
 	return c.JSON(&form)

@@ -31,8 +31,8 @@ export async function loginUser(username: string, password: string): Promise<ILo
 
 export async function getStatus(): Promise<boolean> {
     try {
-        const { data } = await http.get(`${BASE_URL}/status`)
-        return data.status === "success"
+        const resp = await http.get(`${BASE_URL}/status`)
+        return resp.status === 200
     } catch (e) {
         return false;
     }
