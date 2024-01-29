@@ -61,7 +61,6 @@ const onSelect = (payload: IDropdownItem<any, any>) => {
     position: relative;
     user-select: none;
     margin-bottom: 1rem;
-    font-size: 0.85rem;
     line-height: 1.5rem;
     min-width: 100px;
     .dropdown-btn {
@@ -81,7 +80,7 @@ const onSelect = (payload: IDropdownItem<any, any>) => {
         border: 1px solid rgb(209 213 219);
         border-top: none;
         border-radius: 0 0 0.375rem 0.375rem;
-        max-height: 4rem;
+        max-height: 6rem;
         overflow: hidden;
         overflow-y: auto;
         z-index: 1;

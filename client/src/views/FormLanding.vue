@@ -39,7 +39,7 @@
                     <div class="notice">
                         <p>Your parking permit has been created!</p>
                     </div>
-                    <p><strong>Expiry: </strong>{{ convertDate(permitResponse.expiry) }} @ {{ convertTime(permitResponse.expiry) }}</p>
+                    <p v-if="permitResponse.expiry"><strong>Expiry: </strong>{{ convertDate(permitResponse.expiry) }} @ {{ convertTime(permitResponse.expiry) }}</p>
                     <p><strong>Plate Number: </strong>{{ permitResponse.v_plate }}</p>
                     <p><strong>Vehicle: </strong>{{ permitResponse.v_make }} {{ permitResponse.v_model }} ({{ permitResponse.v_color }})</p>
                     <p><strong>Name: </strong>{{ permitResponse.first_name }} {{ permitResponse.last_name }}</p>
@@ -186,19 +186,20 @@ onMounted(async() => {
     // handle remember me
     const cInfo = localStorage.getItem('customer_info')
     const c: IPermitCreateRequest = cInfo ? JSON.parse(cInfo) : null
+    rememberMe.value = !!c
 
     questions.value = [
-        new Question('first_name', 'First Name', 'firstName', c.first_name, 'text', 'given-name'),
-        new Question('last_name', 'Last Name', 'lastName', c.last_name, 'text', 'family-name'),
-        new Question('email', 'Email', 'email', c.email, 'email', 'email'),
-        new Question('primary_phone', 'Phone', 'phone', c.primary_phone, 'tel', 'tel'),
-        new Question('v_plate', 'Vehicle Plate', 'vPlate', c.v_plate, 'text'),
-        new Question('v_make', 'Vehicle Make', 'vMake', c.v_make, 'text'),
-        new Question('v_model', 'Vehicle Model', 'vModel', c.v_model, 'text'),
-        new Question('v_color', 'Vehicle Color', 'vColor', c.v_color, 'text'),
+        new Question('first_name', 'First Name', 'firstName', c ? c.first_name : '', 'text', 'given-name'),
+        new Question('last_name', 'Last Name', 'lastName', c ? c.last_name : '', 'text', 'family-name'),
+        new Question('email', 'Email', 'email', c ? c.email : '', 'email', 'email'),
+        new Question('primary_phone', 'Phone', 'phone', c ? c.primary_phone : '', 'tel', 'tel'),
+        new Question('v_plate', 'Vehicle Plate', 'vPlate', c ? c.v_plate : '', 'text'),
+        new Question('v_make', 'Vehicle Make', 'vMake', c ? c.v_make : '', 'text'),
+        new Question('v_model', 'Vehicle Model', 'vModel', c ? c.v_model : '', 'text'),
+        new Question('v_color', 'Vehicle Color', 'vColor', c ? c.v_color : '', 'text'),
     ]
 
-    if (form.value?.cycle_data.enable_cycle) {
+    if (form.value?.cycle_data?.enable_cycle) {
         const durationQuestion = new Question('duration', `Duration (${form.value?.cycle_data.duration_limit.unit})`, 'duration', '1', 'number')
         durationQuestion.setMin(1)
         durationQuestion.setMax(form.value.cycle_data.duration_limit.value)

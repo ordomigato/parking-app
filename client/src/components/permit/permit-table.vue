@@ -29,7 +29,8 @@
                     <td>{{ permit.v_make }}</td>
                     <td>{{ permit.v_model }}</td>
                     <td>{{ permit.v_color }}</td>
-                    <td>{{ convertDate(permit.expiry) }}, {{ convertTime(permit.expiry) }}</td>
+                    <td  v-if="permit.expiry">{{ convertDate(permit.expiry) }}, {{ convertTime(permit.expiry) }}</td>
+                    <td v-else></td>
                     <td>{{ permit.first_name }}</td>
                     <td>{{ permit.last_name }}</td>
                     <td>{{ permit.email }}</td>
@@ -71,6 +72,9 @@ const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
 
 const isExpired = (exp: Date): boolean => {
+    if (!exp) {
+        return false
+    }
     const expiry = new Date(exp)
     const now = new Date(Date.now())
     return expiry < now

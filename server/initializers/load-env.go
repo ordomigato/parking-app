@@ -10,6 +10,7 @@ type Config struct {
 	DBUserPassword string `mapstructure:"DB_PASSWORD"`
 	DBName         string `mapstructure:"DB_NAME"`
 	DBPort         string `mapstructure:"DB_PORT"`
+	TimeZone       string `mapstructure:"TIME_ZONE"`
 
 	JwtSecret    string        `mapstructure:"JWT_SECRET"`
 	JwtExpiresIn time.Duration `mapstructure:"JWT_EXPIRED_IN"`

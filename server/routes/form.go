@@ -10,6 +10,7 @@ import (
 	"github.com/ordomigato/parking-app/initializers"
 	"github.com/ordomigato/parking-app/models"
 	"github.com/ordomigato/parking-app/utils"
+	"gorm.io/gorm"
 )
 
 func GetForms(c *fiber.Ctx) error {
@@ -61,19 +62,16 @@ func CreateForm(c *fiber.Ctx) error {
 	form := models.Form{
 		WorkspaceID: wsid,
 		Name:        payload.Name,
-		CycleData: models.CycleData{
-			DurationLimit: models.DurationLimit{
-				Unit:  payload.CycleData.DurationLimit.Unit,
-				Value: payload.CycleData.DurationLimit.Value,
-			},
-			ResetInterval: models.ResetInterval{
-				Unit:    payload.CycleData.ResetInterval.Unit,
-				Value:   payload.CycleData.ResetInterval.Value,
-				RefDate: payload.CycleData.ResetInterval.RefDate,
-			},
-		},
-		CreatedAt: now,
-		UpdatedAt: now,
+		CreatedAt:   now,
+		UpdatedAt:   now,
+	}
+
+	if payload.CycleData != nil {
+		form.CycleData.DurationLimit.Value = payload.CycleData.DurationLimit.Value
+		form.CycleData.DurationLimit.Unit = payload.CycleData.DurationLimit.Unit
+		form.CycleData.ResetInterval.Value = payload.CycleData.ResetInterval.Value
+		form.CycleData.ResetInterval.Unit = payload.CycleData.ResetInterval.Unit
+		form.CycleData.ResetInterval.RefDate = payload.CycleData.ResetInterval.RefDate
 	}
 
 	if err := initializers.DB.Create(&form).Error; err != nil {
@@ -123,6 +121,13 @@ func UpdateForm(c *fiber.Ctx) error {
 	if err := initializers.DB.Model(&models.Form{}).Where("form_id = ?", formid).Updates(form).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			utils.GenerateServerErrorResponse("unable to update form"))
+	}
+
+	if payload.CycleData == nil {
+		if err := initializers.DB.Model(&models.Form{}).Where("form_id = ?", formid).Update("cycle_data", gorm.Expr("NULL")).Error; err != nil {
+			return c.Status(http.StatusBadRequest).JSON(
+				utils.GenerateServerErrorResponse("unable to force null cycle data"))
+		}
 	}
 
 	return c.SendStatus(http.StatusNoContent)

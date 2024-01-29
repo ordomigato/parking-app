@@ -24,17 +24,19 @@ export interface IWorkspaceUpdateRequest {
     path: string,
 }
 
-export interface CycleData {
+export interface IDurationUnitMeasurement {
+    unit: IFormDurationMeasurementUnits,
+    value: number
+}
+
+export interface IResetInterval extends IDurationUnitMeasurement {
+    reference_date: Date
+}
+
+export interface ICycleData {
     enable_cycle: boolean
-    duration_limit: {
-        unit: IFormDurationMeasurementUnits,
-        value: number
-    }
-    reset_interval: {
-        unit: IFormDurationMeasurementUnits,
-        value: number
-        reference_date: string // Date
-    }
+    duration_limit: IDurationUnitMeasurement,
+    reset_interval: IResetInterval,
 }
 
 export interface IForm {
@@ -44,7 +46,7 @@ export interface IForm {
     path: {
         path: string
     },
-    cycle_data: CycleData,
+    cycle_data: ICycleData | null,
     created_at: Date,
     updated_at: Date,
 }
@@ -52,12 +54,12 @@ export interface IForm {
 export interface IFormCreateRequest {
     name: string,
     path: string,
-    cycle_data: CycleData,
+    cycle_data: ICycleData | null,
 }
 
 export interface IFormUpdateRequest {
     name: string,
-    cycle_data: CycleData,
+    cycle_data: ICycleData | null,
 }
 
 export interface IFormPathUpdateRequest {

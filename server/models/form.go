@@ -16,9 +16,9 @@ type Form struct {
 	Path        Path      `gorm:"foreignKey:FormID" json:"path,omitempty"`
 	Permits     []Permit  `gorm:"foreignKey:FormID" json:"permits,omitempty"`
 	// Note: example - 12 day, per 1 month
-	CycleData CycleData `gorm:"type:jsonb" json:"cycle_data"`
-	CreatedAt time.Time `gorm:"not null" json:"created_at"`
-	UpdatedAt time.Time `gorm:"not null" json:"updated_at"`
+	CycleData *CycleData `gorm:"type:jsonb" json:"cycle_data"`
+	CreatedAt time.Time  `gorm:"not null" json:"created_at"`
+	UpdatedAt time.Time  `gorm:"not null" json:"updated_at"`
 }
 
 // Value Marshal
@@ -36,7 +36,6 @@ func (c *CycleData) Scan(value interface{}) error {
 }
 
 type CycleData struct {
-	EnableCycle   bool          `json:"enable_cycle"`
 	DurationLimit DurationLimit `json:"duration_limit"`
 	ResetInterval ResetInterval `json:"reset_interval"`
 }
@@ -64,12 +63,12 @@ const (
 )
 
 type FormCreateRequest struct {
-	Name      string    `json:"name"`
-	Path      string    `json:"path"`
-	CycleData CycleData `json:"cycle_data"`
+	Name      string     `json:"name"`
+	Path      string     `json:"path"`
+	CycleData *CycleData `json:"cycle_data"`
 }
 
 type FormUpdateRequest struct {
-	Name      string    `json:"name"`
-	CycleData CycleData `json:"cycle_data"`
+	Name      string     `json:"name"`
+	CycleData *CycleData `json:"cycle_data"`
 }

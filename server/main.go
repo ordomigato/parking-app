@@ -20,7 +20,8 @@ func init() {
 		DBUserPassword: os.Getenv("DB_PASS"),
 		DBUserName:     os.Getenv("DB_USER"),
 		// DBSSLMode:  os.Getenv("DB_SSLMODE"),
-		DBName: os.Getenv("DB_NAME"),
+		DBName:   os.Getenv("DB_NAME"),
+		TimeZone: os.Getenv("TIME_ZONE"),
 	}
 
 	initializers.ConnectDB(config)

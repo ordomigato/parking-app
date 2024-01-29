@@ -13,6 +13,53 @@ import (
 	"github.com/ordomigato/parking-app/utils"
 )
 
+func checkRecentPermits(
+	rp []models.Permit,
+	csd time.Time,
+	now time.Time,
+	payload models.PermitCreateRequest,
+	f models.Form,
+) error {
+	if len(rp) > 0 {
+		totalDuration := 0
+		// loop through permits and add up values
+		for i := 0; i < len(rp); i++ {
+			p := rp[i]
+
+			if p.Expiry != nil {
+				// handle if permit is not expired
+				if p.Expiry.After(now) {
+					// TODO attempt to add on to permit expiry
+					return fmt.Errorf("a permit for plate %s already exists", payload.VPlate)
+				}
+
+				var delta time.Duration
+
+				if p.CreatedAt.Before(csd) {
+					delta = csd.Sub(*p.Expiry)
+				} else {
+					delta = p.CreatedAt.Sub(*p.Expiry)
+				}
+
+				switch f.CycleData.DurationLimit.Unit {
+				case models.Minutes:
+					totalDuration += int(delta.Minutes())
+				case models.Hours:
+					totalDuration += int(delta.Hours())
+				case models.Days:
+					totalDuration += int(delta.Hours() / 24)
+				}
+			}
+		}
+
+		if totalDuration >= f.CycleData.DurationLimit.Value {
+			return fmt.Errorf("plate %v has already exceed the maximum available duration", payload.VPlate)
+		}
+	}
+
+	return nil
+}
+
 func CreatePermit(c *fiber.Ctx) error {
 	formid, err := uuid.Parse(c.Params("formid"))
 	if err != nil {
@@ -42,30 +89,35 @@ func CreatePermit(c *fiber.Ctx) error {
 			utils.GenerateServerErrorResponse((err.Error())))
 	}
 
-	// if (form.CycleData.)
+	if form.CycleData != nil {
+		// // check if entered duration is bigger than possible duration
+		// if payload.Duration > form.CycleData.DurationLimit.Value {
+		// 	return c.Status(http.StatusBadRequest).JSON(
+		// 		utils.GenerateServerErrorResponse("duration is too large"))
+		// }
+		// // check if entered duration is too small
+		// if payload.Duration < 0 {
+		// 	return c.Status(http.StatusBadRequest).JSON(
+		// 		utils.GenerateServerErrorResponse("duration is too small"))
+		// }
+		// check recent permits
+		recentPermits := []models.Permit{}
 
-	recentPermits := []models.Permit{}
-	cycleStateDate := utils.GenerateCycleStartDate(
-		form.CycleData.ResetInterval.Value,
-		form.CycleData.ResetInterval.Unit,
-		form.CycleData.ResetInterval.RefDate,
-		now,
-	)
-	if err := initializers.DB.Model(&models.Permit{}).Where("created_at > ? AND expiry > ? AND v_plate = ?", cycleStateDate, cycleStateDate, payload.VPlate).Find(&recentPermits).Error; err != nil {
-		fmt.Println(err)
-		return c.Status(http.StatusBadRequest).JSON(
-			utils.GenerateServerErrorResponse("unable to find previous permits"))
-	}
+		cycleStartDate := utils.GenerateCycleStartDate(
+			form.CycleData.ResetInterval.Value,
+			form.CycleData.ResetInterval.Unit,
+			form.CycleData.ResetInterval.RefDate,
+			now,
+		)
+		if err := initializers.DB.Model(&models.Permit{}).Where("created_at > ? AND expiry > ? AND v_plate = ?", cycleStartDate, cycleStartDate, payload.VPlate).Find(&recentPermits).Error; err != nil {
+			fmt.Println(err)
+			return c.Status(http.StatusBadRequest).JSON(
+				utils.GenerateServerErrorResponse("unable to find previous permits"))
+		}
 
-	if len(recentPermits) > 0 {
-		// loop through permits and add up values
-		for i := 0; i < len(recentPermits); i++ {
-			// handle if permit is not expired
-			if recentPermits[i].Expiry.After(now) {
-				// TODO attempt to add on to permit expiry
-				return c.Status(http.StatusBadRequest).JSON(
-					utils.GenerateServerErrorResponse(fmt.Sprintf("a permit for plate %s already exists", payload.VPlate)))
-			}
+		if err := checkRecentPermits(recentPermits, cycleStartDate, now, *payload, form); err != nil {
+			return c.Status(http.StatusBadRequest).JSON(
+				utils.GenerateServerErrorResponse(err.Error()))
 		}
 	}
 
@@ -118,7 +170,12 @@ func GetPermits(c *fiber.Ctx) error {
 	})
 }
 
-func CalculateExpiryDate(cd models.CycleData, ct time.Time, d int) (time.Time, error) {
+func CalculateExpiryDate(cd *models.CycleData, ct time.Time, d int) (*time.Time, error) {
+	if cd == nil {
+		// set time to zero
+		return nil, nil
+	}
+
 	switch cd.ResetInterval.Unit {
 	case models.Months:
 		switch cd.DurationLimit.Unit {
@@ -143,7 +200,7 @@ func CalculateExpiryDate(cd models.CycleData, ct time.Time, d int) (time.Time, e
 		}
 	}
 
-	return ct, fmt.Errorf("cycle data combination is incorrect")
+	return nil, nil
 }
 
 func DeletePermit(c *fiber.Ctx) error {
@@ -173,7 +230,7 @@ func DeletePermit(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusNoContent)
 }
 
-func CalculateExpiryForDaysInMonth(rt time.Time, ct time.Time, d int) time.Time {
+func CalculateExpiryForDaysInMonth(rt time.Time, ct time.Time, d int) *time.Time {
 	exp := time.Date(
 		ct.Year(),
 		ct.Month(),
@@ -184,10 +241,10 @@ func CalculateExpiryForDaysInMonth(rt time.Time, ct time.Time, d int) time.Time 
 		rt.Nanosecond(),
 		rt.Location(),
 	)
-	return exp
+	return &exp
 }
 
-func CalculateExpiryForHoursInMonth(rt time.Time, ct time.Time, d int) time.Time {
+func CalculateExpiryForHoursInMonth(rt time.Time, ct time.Time, d int) *time.Time {
 	exp := time.Date(
 		ct.Year(),
 		ct.Month(),
@@ -198,10 +255,10 @@ func CalculateExpiryForHoursInMonth(rt time.Time, ct time.Time, d int) time.Time
 		rt.Nanosecond(),
 		rt.Location(),
 	)
-	return exp
+	return &exp
 }
 
-func CalculateExpiryForMinutesInMonth(rt time.Time, ct time.Time, d int) time.Time {
+func CalculateExpiryForMinutesInMonth(rt time.Time, ct time.Time, d int) *time.Time {
 	exp := time.Date(
 		ct.Year(),
 		ct.Month(),
@@ -212,5 +269,5 @@ func CalculateExpiryForMinutesInMonth(rt time.Time, ct time.Time, d int) time.Ti
 		rt.Nanosecond(),
 		rt.Location(),
 	)
-	return exp
+	return &exp
 }
