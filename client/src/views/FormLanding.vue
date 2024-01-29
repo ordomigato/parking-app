@@ -18,7 +18,6 @@
                             :max="q.max"
                             :autocomplete="q.autocomplete"
                             :defaultValue="q.defaultValue"
-                            @keyup.enter="submitPermit"
                         />
                     </template>
                     <label class="d-flex align-items-center justify-content-center py-4">
@@ -142,7 +141,6 @@ const submitPermit = async () => {
             if (!val) {
                 throw new Error(`${q.label} cannot be blank`)
             }
-            console.log(q.type)
             if (q.type === 'number') {
                 payload[q.id] = parseInt(val)
             } else {
@@ -200,7 +198,7 @@ onMounted(async() => {
     ]
 
     if (form.value?.cycle_data) {
-        const durationQuestion = new Question('duration', `Duration (${form.value?.cycle_data.duration_limit.unit})`, 'duration', '1', 'number')
+        const durationQuestion = new Question('duration', `Duration (${form.value?.cycle_data.duration_limit.unit}) (Max: ${form.value.cycle_data.duration_limit.value})`, 'duration', '1', 'number')
         durationQuestion.setMin(1)
         durationQuestion.setMax(form.value.cycle_data.duration_limit.value)
         questions.value = [

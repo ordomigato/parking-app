@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -21,7 +22,7 @@ func checkRecentPermits(
 	f models.Form,
 ) error {
 	if len(rp) > 0 {
-		totalDuration := 0
+		totalDuration := 0.0
 		// loop through permits and add up values
 		for i := 0; i < len(rp); i++ {
 			p := rp[i]
@@ -43,17 +44,21 @@ func checkRecentPermits(
 
 				switch f.CycleData.DurationLimit.Unit {
 				case models.Minutes:
-					totalDuration += int(delta.Minutes())
+					totalDuration += math.Abs(delta.Minutes())
 				case models.Hours:
-					totalDuration += int(delta.Hours())
+					totalDuration += math.Abs(delta.Hours())
 				case models.Days:
-					totalDuration += int(delta.Hours() / 24)
+					totalDuration += math.Abs(delta.Hours() / 24)
 				}
 			}
 		}
 
-		if totalDuration >= f.CycleData.DurationLimit.Value {
+		if int(totalDuration) >= f.CycleData.DurationLimit.Value {
 			return fmt.Errorf("plate %v has already exceed the maximum available duration", payload.VPlate)
+		}
+
+		if int(totalDuration)+payload.Duration > f.CycleData.DurationLimit.Value {
+			return fmt.Errorf("plate %v does not have enough time left for the requested duration", payload.VPlate)
 		}
 	}
 
@@ -90,16 +95,16 @@ func CreatePermit(c *fiber.Ctx) error {
 	}
 
 	if form.CycleData != nil {
-		// // check if entered duration is bigger than possible duration
-		// if payload.Duration > form.CycleData.DurationLimit.Value {
-		// 	return c.Status(http.StatusBadRequest).JSON(
-		// 		utils.GenerateServerErrorResponse("duration is too large"))
-		// }
-		// // check if entered duration is too small
-		// if payload.Duration < 0 {
-		// 	return c.Status(http.StatusBadRequest).JSON(
-		// 		utils.GenerateServerErrorResponse("duration is too small"))
-		// }
+		// check if entered duration is bigger than possible duration
+		if payload.Duration > form.CycleData.DurationLimit.Value {
+			return c.Status(http.StatusBadRequest).JSON(
+				utils.GenerateServerErrorResponse("duration is too large"))
+		}
+		// check if entered duration is too small
+		if payload.Duration < 0 {
+			return c.Status(http.StatusBadRequest).JSON(
+				utils.GenerateServerErrorResponse("duration is too small"))
+		}
 		// check recent permits
 		recentPermits := []models.Permit{}
 
@@ -284,8 +289,8 @@ func CalculateExpiryForMinutesInMonth(rt time.Time, ct time.Time, d int) *time.T
 		ct.Day(),
 		ct.Hour(),
 		ct.Minute()+d,
-		rt.Second(),
-		rt.Nanosecond(),
+		ct.Second(),
+		ct.Nanosecond(),
 		rt.Location(),
 	)
 	return &exp
