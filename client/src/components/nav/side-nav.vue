@@ -9,7 +9,7 @@
                     <CrossIcon />
                 </c-button>
             </div>
-            <p class="text-sm">MENU</p>
+            <p class="text-sm">General</p>
             <ul v-if="workspaceStore.currentWorkspace">
                 <li class="nav-item" v-for="i in navItems" :key="i.to">
                     <router-link class="text-sm" :to="i.to" @click="() => emit('close')">{{ i.name }}</router-link>

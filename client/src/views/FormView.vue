@@ -12,8 +12,9 @@
             </div>
         </div>
         <div class="card">
-            <header>
+            <header class="title-btn-combo">
                 <h2>Parking Permits</h2>
+                <c-button @click="onDownloadCSV">Download CSV</c-button>
             </header>
             <PermitTable
                 :formId="form.form_id"
@@ -48,15 +49,20 @@ import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { handleError } from '@/utils/error';
 import { computed, onMounted, ref, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { type IForm } from '@/types';
+import { type IForm, type IPermit } from '@/types';
 import router from '@/router';
 import { routeNames } from '@/router/routeNames';
 import { convertDate } from '@/utils/date'
+import { downloadPermits } from '@/services/permit.service';
+import { mkConfig, generateCsv, download } from "export-to-csv";
+
+const csvConfig = mkConfig({ useKeysAsHeaders: true });
 
 const route = useRoute()
 const workspaceStore = useWorkspaceStore()
 
 const form: Ref<IForm | null> = ref(null)
+const permits: Ref<IPermit[] | null> = ref(null)
 
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
@@ -90,6 +96,37 @@ const onDeleteForm = async () => {
         }
         await deleteForm(workspaceStore.currentWorkspace?.workspace_id, form.value.form_id)
         router.push({ name: routeNames.forms })
+    } catch (e) {
+        error.value = handleError(e)
+    } finally {
+        busy.value = false
+    }
+}
+
+const onDownloadCSV = async () => {
+    busy.value = true
+    error.value = null
+    try {
+        if (!workspaceStore.currentWorkspace!) {
+            throw new Error('Something went wrong')
+        }
+        if (!form.value) {
+            throw new Error('Something went wrong')
+        }
+        // guard to block potential spamming
+        if (!permits.value) {
+            permits.value = await downloadPermits(
+                workspaceStore.currentWorkspace!.workspace_id,
+                form.value!.form_id,
+                {
+                    from: form.value.created_at,
+                    to: new Date().toISOString()
+                }
+            )
+        }
+
+        const csv = generateCsv(csvConfig)(permits.value)
+        download(csvConfig)(csv)
     } catch (e) {
         error.value = handleError(e)
     } finally {

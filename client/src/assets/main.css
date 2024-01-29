@@ -148,6 +148,10 @@ table tbody td {
   margin-right: 1rem;
 }
 
+.title-btn-combo button {
+  margin-left: auto;
+}
+
 @keyframes animateIn {
   from {
     opacity: 0;

@@ -2,7 +2,7 @@
     <div class="card">
         <header class="title-btn-combo">
             <h2>Workspaces</h2>
-            <c-button class="ms-auto" @click="$router.push({ name: routeNames.createWorkspace })">+ Create Workspace</c-button>
+            <c-button @click="$router.push({ name: routeNames.createWorkspace })">+ Create Workspace</c-button>
         </header>
         <div class="table-container" v-if="workspaceStore.workspaces.length">
             <table class="text-left">

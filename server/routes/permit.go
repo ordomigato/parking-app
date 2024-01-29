@@ -229,6 +229,26 @@ func DeletePermit(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusNoContent)
 }
 
+func DownloadPermits(c *fiber.Ctx) error {
+	formid, err := uuid.Parse(c.Params("formid"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse(fmt.Sprintf("form_id is not a uuid: %v", formid)))
+	}
+
+	from := c.Query("from")
+	to := c.Query("to")
+
+	permits := []models.Permit{}
+
+	if err := initializers.DB.Scopes(utils.Paginate(c)).Where("form_id = ? AND created_at > ? AND created_at < ?", formid, from, to).Find(&permits).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse("unable to find permits"))
+	}
+
+	return c.JSON(permits)
+}
+
 func CalculateExpiryForDaysInMonth(rt time.Time, ct time.Time, d int) *time.Time {
 	exp := time.Date(
 		ct.Year(),

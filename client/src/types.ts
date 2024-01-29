@@ -105,6 +105,11 @@ export interface IPermit {
     updated_at: Date,
 }
 
+export interface IDownloadPermitRequest {
+    from: string,
+    to: string,
+}
+
 export interface IPaginatedResult<T> {
     data: T,
     count: number

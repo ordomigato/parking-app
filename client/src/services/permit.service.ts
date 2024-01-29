@@ -1,4 +1,4 @@
-import type { IPaginatedResult, IPagination, IPermit, IPermitCreateRequest } from "@/types";
+import type { IDownloadPermitRequest, IPaginatedResult, IPagination, IPermit, IPermitCreateRequest } from "@/types";
 import http from "./http.service"
 import { PaginationQuery } from "@/utils/pagination";
 
@@ -15,6 +15,15 @@ export async function getPermits(
     p: IPagination = new PaginationQuery()
 ): Promise<IPaginatedResult<IPermit[]>> {
     const { data } = await http.get(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/permit?limit=${p.limit}&page=${p.page}&sort=${p.sort}`)
+    return data;
+}
+
+export async function downloadPermits(
+    workspaceId: string,
+    formId: string,
+    payload: IDownloadPermitRequest
+): Promise<IPermit[]> {
+    const { data } = await http.get(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/permit/download?from=${payload.from}&to=${payload.to}`)
     return data;
 }
 
