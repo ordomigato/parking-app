@@ -34,7 +34,6 @@ export interface IResetInterval extends IDurationUnitMeasurement {
 }
 
 export interface ICycleData {
-    enable_cycle: boolean
     duration_limit: IDurationUnitMeasurement,
     reset_interval: IResetInterval,
 }

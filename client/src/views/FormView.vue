@@ -6,7 +6,7 @@
             </header>
             <div class="text-sm">
                 <p><strong>ID:</strong> {{ form.form_id }}</p>
-                <p><strong>Create At:</strong> {{ convertDate(form.created_at) }}</p>
+                <p><strong>Created At:</strong> {{ convertDate(form.created_at) }}</p>
                 <p><strong>Updated At:</strong> {{ convertDate(form.updated_at) }}</p>
                 <p><strong>Path:</strong> <a class="link" :href="formPath" target="_blank">{{ formPath }}</a></p>
             </div>
@@ -32,6 +32,7 @@
             <c-button
                 :disabled="busy"
                 @click="onDeleteForm"
+                danger
             >
                 Delete Form
             </c-button>

@@ -16,21 +16,10 @@
                     :defaultValue="defaultFormPathValue"
                     @keyup.enter="onHandleSubmit"
                 />
-                <label class="d-flex align-items-center">
-                    <span class="text-sm leading-6 font-medium me-2">Enable cycle constraint:</span>
-                    <input
-                        type="checkbox"
-                        v-model="enableCycle"
-                    />
-                </label>
-                <div>
-                    <FormConstraint
-                        v-if="enableCycle"
-                        class="section"
-                        ref="cycleData"
-                        :cycleData="props.formInfo.cycle_data"
-                    />
-                </div>
+                <FormConstraint
+                    ref="cycleData"
+                    :cycleData="props.formInfo.cycle_data"
+                />
             </div>
             <error-display :error="error"></error-display>
             <c-button
@@ -46,7 +35,7 @@
 import TextInput from '@/components/global/TextInput.vue';
 import FormConstraint from './form-constraint.vue';
 import { createForm, updateForm, updateFormPath } from '@/services/form.service';
-import { ref, watch, type Ref, computed, onMounted } from 'vue';
+import { ref, watch, type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { type IForm, type IFormCreateRequest, type IFormUpdateRequest } from '@/types';
@@ -69,7 +58,6 @@ const props = defineProps({
 
 const formName = ref<InstanceType<typeof TextInput>>()
 const formPath = ref<InstanceType<typeof TextInput>>()
-const enableCycle = ref(false)
 const cycleData = ref<InstanceType<typeof FormConstraint>>()
 
 const form: Ref<IForm | null> = ref(props.formInfo || null)
@@ -167,12 +155,6 @@ const onCreateForm = async (payload: IFormCreateRequest) => {
 watch(() => formName.value?.value, (newVal) => {
     if (formPath.value && !props.formInfo) {
         formPath.value.value = formatPath(newVal || '')
-    }
-})
-
-onMounted(() => {
-    if (props.formInfo?.cycle_data?.enable_cycle) {
-        enableCycle.value = true
     }
 })
 </script>

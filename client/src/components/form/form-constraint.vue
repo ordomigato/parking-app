@@ -1,49 +1,58 @@
 <template>
     <div>
-        <p class="label">Max Cycle Duration</p>
-        <div class="options-container">
+        <label class="d-flex align-items-center">
+            <span class="text-sm leading-6 font-medium me-2">Enable cycle constraint:</span>
+            <input
+                type="checkbox"
+                v-model="enableCycle"
+            />
+        </label>
+        <div v-if="enableCycle" class="section">
+            <p class="label">Max Cycle Duration</p>
+            <div class="options-container">
+                <text-input
+                    ref="selectedDurationLimit"
+                    :defaultValue="props.cycleData?.duration_limit.value.toString() || '1'"
+                    @keyup.enter="onHandleContinue"
+                />
+                <DropdownInput
+                    :selected="selectedDurationLimitUnit"
+                    :items="durationLimitUnits"
+                    :disabled="props.disabled"
+                    @onSelect="onSelectedDurationLimitUnit"
+                />
+                <p class="text-center">per</p>
+                <DropdownInput
+                    :selected="selectedResetIntervalUnit"
+                    :items="resetIntervalUnits"
+                    :disabled="props.disabled"
+                    @onSelect="onSelectedResetIntervalUnit"
+                />
+            </div>
+            <p class="label">Reset Time</p>
             <text-input
-                ref="selectedDurationLimit"
-                :defaultValue="props.cycleData?.duration_limit.value.toString() || '1'"
-                @keyup.enter="onHandleContinue"
+                ref="time"
+                type="time"
+                :defaultValue="getDefaultTime(
+                    props.cycleData
+                    ? new Date(props.cycleData.reset_interval.reference_date)
+                    : null
+                )"
             />
-            <DropdownInput
-                :selected="selectedDurationLimitUnit"
-                :items="durationLimitUnits"
-                :disabled="props.disabled"
-                @onSelect="onSelectedDurationLimitUnit"
-            />
-            <p class="text-center">per</p>
-            <DropdownInput
-                :selected="selectedResetIntervalUnit"
-                :items="resetIntervalUnits"
-                :disabled="props.disabled"
-                @onSelect="onSelectedResetIntervalUnit"
-            />
+            <text-input
+                ref="dayOfMonth"
+                v-if="enableDayOfMonth"
+                type="number"
+                label="Reset Day"
+                :min="1"
+                :max="31"
+                :defaultValue="getDefaultDay(
+                    props.cycleData
+                    ? new Date(props.cycleData.reset_interval.reference_date)
+                    : null
+                )"
+            ></text-input>
         </div>
-        <p class="label">Reset Time</p>
-        <text-input
-            ref="time"
-            type="time"
-            :defaultValue="getDefaultTime(
-                props.cycleData
-                 ? new Date(props.cycleData.reset_interval.reference_date)
-                 : null
-            )"
-        />
-        <text-input
-            ref="dayOfMonth"
-            v-if="enableDayOfMonth"
-            type="number"
-            label="Day of Month"
-            :min="1"
-            :max="31"
-            :defaultValue="getDefaultDay(
-                props.cycleData
-                 ? new Date(props.cycleData.reset_interval.reference_date)
-                 : null
-            )"
-        ></text-input>
     </div>
 </template>
 <script setup lang="ts">
@@ -93,6 +102,7 @@ const props = defineProps({
 
 const emit = defineEmits(['next'])
 
+const enableCycle = ref(false)
 const selectedResetIntervalUnit: Ref<IUnitDropdownItem | null> = ref(null)
 const selectedDurationLimitUnit: Ref<IUnitDropdownItem | null> = ref(null)
 const selectedDurationLimit = ref<InstanceType<typeof TextInput>>()
@@ -197,7 +207,6 @@ const getData = (): ICycleData => {
         throw new Error('duration limit data is not properly configured')
     }
     return {
-        enable_cycle: true,
         reset_interval: computedResetInterval.value,
         duration_limit: computedDurationLimit.value,
     }
@@ -205,8 +214,16 @@ const getData = (): ICycleData => {
 
 onMounted(() => {
     // set default values
-    selectedResetIntervalUnit.value = resetIntervalUnitOptions.find(o => o.value === props.cycleData?.reset_interval.unit) || null
-    selectedDurationLimitUnit.value = durationUnitOptions.find(o => o.value === props.cycleData?.duration_limit.unit) || null
+    selectedResetIntervalUnit.value =
+        resetIntervalUnitOptions.find(o => o.value === props.cycleData?.reset_interval.unit)
+        || resetIntervalUnitOptions[1]
+    selectedDurationLimitUnit.value =
+        durationUnitOptions.find(o => o.value === props.cycleData?.duration_limit.unit)
+        || durationUnitOptions[2]
+
+    if (props.cycleData) {
+        enableCycle.value = true
+    }
 })
 
 defineExpose({
@@ -218,10 +235,8 @@ defineExpose({
 .options-container {
     display: flex;
     flex-direction: column;
-    // align-items: center;
     p {
         margin-bottom: 1rem;
-        // padding: 0 1rem;
     }
 }
 </style>

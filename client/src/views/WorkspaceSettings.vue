@@ -9,6 +9,7 @@
             <c-button
                 :disabled="busy"
                 @click="onDeleteWorkspace"
+                danger
             >
                 Delete Workspace
             </c-button>

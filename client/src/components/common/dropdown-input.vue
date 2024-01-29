@@ -6,7 +6,7 @@
             @click="toggleOpen"
             @keyup.enter="toggleOpen"
         >
-            {{ props.selected ? props.selected.name : "Select" }}
+            {{ props.selected ? props.selected.name : "Select" }}<span class="arrow"></span>
         </div>
         <div class="dropdown" v-if="open">
             <ul>
@@ -70,6 +70,21 @@ const onSelect = (payload: IDropdownItem<any, any>) => {
         &.open {
             border-bottom: 1px solid transparent;
             border-radius: 0.375rem 0.375rem 0 0;
+            .arrow {
+                transform: translate(0, -50%) rotate(180deg);
+            }
+        }
+        .arrow {
+            width: 4px;
+            height: 4px;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid rgb(209, 213, 219);
+
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translate(0, -50%);
         }
     }
     .dropdown {

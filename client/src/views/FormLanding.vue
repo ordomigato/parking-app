@@ -199,7 +199,7 @@ onMounted(async() => {
         new Question('v_color', 'Vehicle Color', 'vColor', c ? c.v_color : '', 'text'),
     ]
 
-    if (form.value?.cycle_data?.enable_cycle) {
+    if (form.value?.cycle_data) {
         const durationQuestion = new Question('duration', `Duration (${form.value?.cycle_data.duration_limit.unit})`, 'duration', '1', 'number')
         durationQuestion.setMin(1)
         durationQuestion.setMax(form.value.cycle_data.duration_limit.value)

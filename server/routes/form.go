@@ -109,9 +109,6 @@ func UpdateForm(c *fiber.Ctx) error {
 
 	now := time.Now()
 
-	fmt.Println("WEEEEEEE")
-	fmt.Println(payload.CycleData)
-
 	form := models.Form{
 		Name:      payload.Name,
 		CycleData: payload.CycleData,

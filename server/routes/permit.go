@@ -110,7 +110,6 @@ func CreatePermit(c *fiber.Ctx) error {
 			now,
 		)
 		if err := initializers.DB.Model(&models.Permit{}).Where("created_at > ? AND expiry > ? AND v_plate = ?", cycleStartDate, cycleStartDate, payload.VPlate).Find(&recentPermits).Error; err != nil {
-			fmt.Println(err)
 			return c.Status(http.StatusBadRequest).JSON(
 				utils.GenerateServerErrorResponse("unable to find previous permits"))
 		}

@@ -1,6 +1,6 @@
 <template>
     <button
-        :class="`btn ${props.variant}`"
+        :class="`btn ${props.variant} ${props.danger ? 'danger' : ''}`"
         :disabled="disabled"
     >
         <slot></slot>
@@ -12,6 +12,10 @@ const props = defineProps({
         type: String,
         validator: (val: string) => ['block', 'link', 'icon'].includes(val),
         default: 'block'
+    },
+    danger: {
+        type: Boolean,
+        default: false,
     },
     fullWidth: {
         type: Boolean,
@@ -68,6 +72,15 @@ const props = defineProps({
             svg {
                 fill: var(--main-color);
             }
+        }
+    }
+    &.danger {
+        border-color: var(--danger-color);
+        background-color: var(--danger-color);
+        &:hover,
+        &:focus {
+            background-color: white;
+            color: var(--danger-color);
         }
     }
 }
