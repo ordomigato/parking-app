@@ -119,8 +119,8 @@ const onDownloadCSV = async () => {
                 workspaceStore.currentWorkspace!.workspace_id,
                 form.value!.form_id,
                 {
-                    from: form.value.created_at,
-                    to: new Date().toISOString()
+                    from: new Date(form.value.created_at).toISOString(),
+                    to: new Date().toISOString(),
                 }
             )
         }
