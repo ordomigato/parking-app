@@ -18,7 +18,7 @@
         <c-button
             @click="handleSubmit"
             @keyup.enter="handleSubmit"
-            :disabled="busy"
+            :disabled="busy || !hasChanged"
         >
             {{ isUpdate ? "Save" : "Create" }}
         </c-button>
@@ -27,15 +27,17 @@
 <script setup lang="ts">
 import TextInput from '@/components/global/TextInput.vue';
 import { handleError } from '@/utils/error';
-import { ref, watch, type Ref } from 'vue';
+import { ref, watch, type Ref, computed, type ComputedRef } from 'vue';
 import { updateWorkspace, createWorkspace } from '@/services/workspace.service'
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useRouter } from 'vue-router';
 import { routeNames } from '@/router/routeNames';
 import { formatPath, validatePath } from '@/utils/string';
 import type { IWorkspaceCreateRequest, IWorkspaceUpdateRequest } from '@/types'
+import { useToastStore } from '@/stores/toastStore';
 
 const workspaceStore = useWorkspaceStore()
+const toastStore = useToastStore()
 const router = useRouter()
 
 const workspaceName = ref<InstanceType<typeof TextInput>>()
@@ -51,7 +53,14 @@ const props = defineProps({
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
 
+const hasChanged: ComputedRef<boolean> = computed(() => {
+    return workspaceName.value?.value !== workspaceStore.currentWorkspace?.name
+})
+
 const handleSubmit = async () => {
+    if (!hasChanged.value) {
+        return
+    }
     error.value = null
     busy.value = true
     try {
@@ -88,12 +97,14 @@ const onUpdateWorkspace = async (payload: IWorkspaceUpdateRequest) => {
         ...workspaceStore.currentWorkspace,
         ...payload,
     })
+    toastStore.updateState("Successfully Updated Workspace", "success")
 }
 
 const onCreateWorkspace = async (payload: IWorkspaceCreateRequest) => {
     const resp = await createWorkspace(payload)
     workspaceStore.setActiveWorkspace(resp)
     router.push({ name: routeNames.dashboard })
+    toastStore.updateState("Successfully Created Workspace", "success")
 }
 
 watch(() => workspaceName.value?.value, (newVal) => {

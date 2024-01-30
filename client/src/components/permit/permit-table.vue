@@ -107,7 +107,7 @@ const handleDeletePermits = async (permitId: string) => {
         }
         await deletePermit(workspaceStore.currentWorkspace.workspace_id, props.formId, permitId)
         permits.value = permits.value.filter(p => p.permit_id !== permitId)
-        toastStore.updateState("Successfully deleted permit", "success")
+        toastStore.updateState("Successfully Deleted Permit", "success")
     } catch (e) {
         error.value = handleError(e)
     } finally {

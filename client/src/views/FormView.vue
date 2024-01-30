@@ -27,31 +27,20 @@
             <FormConfig v-if="form" :formInfo="form" />
         </div>
         <div class="card">
-            <header>
-                <h2 class="danger-text">Danger Zone</h2>
-            </header>
-            <c-button
-                :disabled="busy"
-                @click="onDeleteForm"
-                danger
-            >
-                Delete Form
-            </c-button>
-            <error-display :error="error"></error-display>
+            <DeleteForm :form="form" />
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import FormConfig from '@/components/form/form-config.vue';
+import DeleteForm from '@/components/form/delete-form.vue';
 import PermitTable from '@/components/permit/permit-table.vue'
-import { getForm, deleteForm } from '@/services/form.service';
+import { getForm } from '@/services/form.service';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { handleError } from '@/utils/error';
 import { computed, onMounted, ref, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { type IForm, type IPermit } from '@/types';
-import router from '@/router';
-import { routeNames } from '@/router/routeNames';
 import { convertDate } from '@/utils/date'
 import { downloadPermits } from '@/services/permit.service';
 import { mkConfig, generateCsv, download } from "export-to-csv";
@@ -77,25 +66,6 @@ const onGetForm = async () => {
             throw new Error('Something went wrong')
         }
         form.value = await getForm(workspaceStore.currentWorkspace?.workspace_id, route.params.id as string)
-    } catch (e) {
-        error.value = handleError(e)
-    } finally {
-        busy.value = false
-    }
-}
-
-const onDeleteForm = async () => {
-    busy.value = true
-    error.value = null
-    try {
-        if (!workspaceStore.currentWorkspace!) {
-            throw new Error('Something went wrong')
-        }
-        if (!form.value) {
-            throw new Error('Something went wrong')
-        }
-        await deleteForm(workspaceStore.currentWorkspace?.workspace_id, form.value.form_id)
-        router.push({ name: routeNames.forms })
     } catch (e) {
         error.value = handleError(e)
     } finally {

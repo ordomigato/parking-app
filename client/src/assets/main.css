@@ -28,6 +28,10 @@ label {
   color: var(--font-color);
 }
 
+p {
+  font-size: 0.875rem;
+}
+
 h2 {
   font-weight: 600;
   margin-bottom: 0.5rem;
@@ -115,6 +119,23 @@ table tbody td {
 
 .danger-text {
   color: var(--danger-color);
+}
+
+.modal-delete-container footer {
+  display: flex;
+  padding-top: 1rem;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.modal-delete-container footer button:first-of-type {
+  margin-right: 0.5rem;
+}
+
+.modal-delete-container section {
+  p {
+    margin-bottom: 1rem;
+  }
 }
 
 .w-100 {

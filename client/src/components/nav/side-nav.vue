@@ -94,8 +94,11 @@ onMounted(() => {
         padding: 0.25rem 0.5rem;
         border-radius: 4px;
         margin-bottom: 0.25rem;
-        &:hover {
+        &:hover:not(.router-link-active) {
             background-color: #164e63;
+        }
+        &.router-link-active {
+            opacity: 0.25;
         }
     }
     p {

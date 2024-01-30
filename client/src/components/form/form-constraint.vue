@@ -199,12 +199,12 @@ const onHandleContinue = () => {
     emit('next')
 }
 
-const getData = (): ICycleData => {
+const getData = (): ICycleData | null => {
     if (!computedResetInterval.value) {
-        throw new Error('reset interval data is not properly configured')
+        return null
     }
     if (!computedDurationLimit.value) {
-        throw new Error('duration limit data is not properly configured')
+        return null
     }
     return {
         reset_interval: computedResetInterval.value,

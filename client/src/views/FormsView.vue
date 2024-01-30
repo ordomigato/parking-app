@@ -23,7 +23,7 @@
                 </tbody>
             </table>
         </div>
-        <p v-else>No forms found</p>
+        <p v-else>No forms found.</p>
     </div>
 </template>
 <script setup lang="ts">

@@ -1,6 +1,11 @@
 <template>
     <button
-        :class="`btn ${props.variant} ${props.danger ? 'danger' : ''}`"
+        :class="`
+            btn
+            ${props.variant}
+            ${props.danger ? 'danger' : ''}
+            ${props.inverse ? 'inverse' : ''}
+        `"
         :disabled="disabled"
     >
         <slot></slot>
@@ -14,6 +19,10 @@ const props = defineProps({
         default: 'block'
     },
     danger: {
+        type: Boolean,
+        default: false,
+    },
+    inverse: {
         type: Boolean,
         default: false,
     },
@@ -37,8 +46,8 @@ const props = defineProps({
         border: 1px solid var(--main-color);
         border-radius: 4px;
         transition: all 0.1s linear;
-        &:hover,
-        &:focus {
+        &:hover:not(:disabled),
+        &:focus:not(:disabled) {
             background-color: white;
             color: var(--main-color);
         }
@@ -66,8 +75,8 @@ const props = defineProps({
         svg {
             fill: white;
         }
-        &:hover,
-        &:focus {
+        &:hover:not(:disabled),
+        &:focus:not(:disabled) {
             background-color: var(--main-color-light);
             svg {
                 fill: var(--main-color);
@@ -77,10 +86,21 @@ const props = defineProps({
     &.danger {
         border-color: var(--danger-color);
         background-color: var(--danger-color);
-        &:hover,
-        &:focus {
+        &:hover:not(:disabled),
+        &:focus:not(:disabled) {
             background-color: white;
             color: var(--danger-color);
+        }
+        &.inverse {
+            background-color: white;
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            &:hover:not(:disabled),
+            &:focus:not(:disabled) {
+                border-color: var(--danger-color);
+                background-color: var(--danger-color);
+                color: white;
+            }
         }
     }
 }

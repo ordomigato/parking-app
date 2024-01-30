@@ -18,7 +18,7 @@
                 />
                 <FormConstraint
                     ref="cycleData"
-                    :cycleData="props.formInfo.cycle_data"
+                    :cycleData="props.formInfo?.cycle_data"
                 />
             </div>
             <error-display :error="error"></error-display>
