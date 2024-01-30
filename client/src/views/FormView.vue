@@ -14,11 +14,48 @@
         <div class="card">
             <header class="title-btn-combo">
                 <h2>Parking Permits</h2>
-                <c-button @click="onDownloadCSV">Download CSV</c-button>
+                <c-button @click="downloadCSVModalOpen = true">Download CSV</c-button>
             </header>
             <PermitTable
                 :formId="form.form_id"
             />
+            <ModalPopup
+                v-if="downloadCSVModalOpen"
+            >
+                <div class="modal-delete-container">
+                    <header>
+                        Download Permits (CSV)
+                    </header>
+                    <section>
+                        <text-input
+                            ref="from"
+                            label="from"
+                            type="datetime-local"
+                        />
+                        <text-input
+                            ref="to"
+                            label="to"
+                            type="datetime-local"
+                        />
+                    </section>
+                    <error-display :error="error"></error-display>
+                    <footer>
+                        <c-button
+                            :disabled="busy"
+                            @click="downloadCSVModalOpen = false"
+                            inverse
+                        >
+                            Cancel
+                        </c-button>
+                        <c-button
+                            :disabled="busy"
+                            @click="onDownloadCSV"
+                        >
+                            Download
+                        </c-button>
+                    </footer>
+                </div>
+            </ModalPopup>
         </div>
         <div class="card">
             <header>
@@ -32,6 +69,7 @@
     </div>
 </template>
 <script setup lang="ts">
+import TextInput from '@/components/global/TextInput.vue'
 import FormConfig from '@/components/form/form-config.vue';
 import DeleteForm from '@/components/form/delete-form.vue';
 import PermitTable from '@/components/permit/permit-table.vue'
@@ -44,6 +82,7 @@ import { type IForm, type IPermit } from '@/types';
 import { convertDate } from '@/utils/date'
 import { downloadPermits } from '@/services/permit.service';
 import { mkConfig, generateCsv, download } from "export-to-csv";
+import ModalPopup from '@/components/common/modal-popup.vue';
 
 const csvConfig = mkConfig({ useKeysAsHeaders: true });
 
@@ -51,7 +90,11 @@ const route = useRoute()
 const workspaceStore = useWorkspaceStore()
 
 const form: Ref<IForm | null> = ref(null)
-const permits: Ref<IPermit[] | null> = ref(null)
+const permits: Ref<IPermit[]> = ref([])
+
+const downloadCSVModalOpen = ref(false)
+const from = ref<InstanceType<typeof TextInput>>()
+const to = ref<InstanceType<typeof TextInput>>()
 
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
@@ -83,20 +126,30 @@ const onDownloadCSV = async () => {
         if (!form.value) {
             throw new Error('Something went wrong')
         }
+        if (!from.value?.value) {
+            throw new Error('Please select a from date')
+        }
+        if (!to.value?.value) {
+            throw new Error('Please select a to date')
+        }
         // guard to block potential spamming
-        if (!permits.value) {
+        if (permits.value?.length === 0) {
             permits.value = await downloadPermits(
                 workspaceStore.currentWorkspace!.workspace_id,
                 form.value!.form_id,
                 {
-                    from: new Date(form.value.created_at).toISOString(),
-                    to: new Date().toISOString(),
+                    from: new Date(from.value.value).toISOString(),
+                    to: new Date(to.value.value).toISOString(),
                 }
             )
-        }
 
-        const csv = generateCsv(csvConfig)(permits.value)
-        download(csvConfig)(csv)
+            if (permits.value?.length === 0) {
+                throw new Error('No permits were found between these dates.')
+            }
+
+            const csv = generateCsv(csvConfig)(permits.value)
+            download(csvConfig)(csv)
+        }
     } catch (e) {
         error.value = handleError(e)
     } finally {
