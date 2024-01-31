@@ -17,8 +17,7 @@
                 <h2>Delete workspace</h2>
             </header>
             <section>
-                <p>Are you sure you wish to delete this workspace?</p>
-                <p>This action cannot be undone.</p>
+                <p>Are you sure you wish to delete this workspace? This action cannot be undone.</p>
                 <text-input
                     ref="confirmText"
                     label='Please type "confirm" to proceed'
@@ -29,7 +28,7 @@
             <footer>
                 <c-button
                     :disabled="busy"
-                    @click="deleteModalOpen = false"
+                    @click="deleteModalOpen = false; error = null"
                     danger
                     inverse
                 >
