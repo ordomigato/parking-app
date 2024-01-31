@@ -53,7 +53,7 @@ const toggleMobileNav = () => {
 <style lang="scss" scoped>
 .top-nav {
     height: 48px;
-    background-color: var(--main-color-light);
+    background-color: var(--off-white-color);
     color: white;
     display: flex;
     align-items: center;

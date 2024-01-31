@@ -12,7 +12,7 @@
     </label>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     label: {
@@ -43,9 +43,19 @@ const props = defineProps({
         type: Number || undefined,
         default: undefined,
     },
+    uppercase: {
+        type: Boolean,
+        default: false,
+    },
 })
 
 const value = ref(props.defaultValue)
+
+watch(value, (val) => {
+    if (props.uppercase) {
+        value.value = val.toUpperCase()
+    }
+})
 
 defineExpose({
     value,

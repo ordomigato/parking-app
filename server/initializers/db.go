@@ -57,6 +57,12 @@ func ConnectDB(config *Config) {
 		os.Exit(1)
 	}
 
+	err = DB.AutoMigrate(&models.Blacklist{})
+	if err != nil {
+		log.Fatal("Blacklist Migration Failed:  \n", err.Error())
+		os.Exit(1)
+	}
+
 	// newRole := models.Role{
 	// 	RoleName: "Admin",
 	// }

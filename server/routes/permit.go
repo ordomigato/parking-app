@@ -87,6 +87,13 @@ func CreatePermit(c *fiber.Ctx) error {
 			utils.GenerateServerErrorResponse(("unable to find form")))
 	}
 
+	bl := initializers.DB.Where("form_id = ? AND v_plate = ?", formid, payload.VPlate).Find(&models.Blacklist{})
+
+	if bl.RowsAffected > 0 {
+		return c.Status(http.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse("Plate has been blacklisted"))
+	}
+
 	now := time.Now()
 	exp, err := CalculateExpiryDate(form.CycleData, now, payload.Duration)
 	if err != nil {

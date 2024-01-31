@@ -10,7 +10,7 @@
   --main-color-light: #06b6d4;
   --main-color-dark: #083344;
 
-  --off-white-color: #f0fdfa;
+  --off-white-color: #faf5ff;
   --danger-color: #e11d48;
   --success-color: #16a34a;
 
@@ -49,6 +49,10 @@ h2 {
   border: 1px solid var(--main-color-light);
   border-radius: 4px;
   overflow-x: auto;
+}
+
+.table-container tbody tr:nth-child(odd) {
+  background-color: #cffafe;
 }
 
 table {

@@ -1,7 +1,7 @@
 <template>
     <footer>
         <div class="controls">
-            <span>Page: </span>
+            <p>Page: </p>
             <text-input
                 class="page-input"
                 :disabled="busy"
@@ -10,7 +10,7 @@
                 :defaultValue="props.defaultPage"
                 @keyup.enter="queryPage"
             />
-            <span>of {{ maxPageNumber }}</span>
+            <p>of {{ maxPageNumber }}</p>
         </div>
         <div class="results">
             <p>Results: {{ count }}</p>
@@ -70,7 +70,6 @@ footer {
     left: 0;
     display: flex;
     align-items: center;
-    // justify-content: center;
     white-space: nowrap;
     .controls {
         display: flex;
@@ -79,6 +78,7 @@ footer {
     }
     .results {
         margin-left: auto;
+        padding-left: 1rem;
     }
     label {
         margin: 0 1rem;

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="form">
+    <div v-if="form && workspaceStore.currentWorkspace">
         <div class="card">
             <header>
                 <h2>{{ form.name }}</h2>
@@ -64,6 +64,12 @@
             <FormConfig v-if="form" :formInfo="form" />
         </div>
         <div class="card">
+            <BlacklistList
+                :workspaceId="workspaceStore.currentWorkspace.workspace_id"
+                :formId="form.form_id"
+            />
+        </div>
+        <div class="card">
             <DeleteForm :form="form" />
         </div>
     </div>
@@ -83,6 +89,7 @@ import { convertDate } from '@/utils/date'
 import { downloadPermits } from '@/services/permit.service';
 import { mkConfig, generateCsv, download } from "export-to-csv";
 import ModalPopup from '@/components/common/modal-popup.vue';
+import BlacklistList from '@/components/form/blacklist-list.vue';
 
 const csvConfig = mkConfig({ useKeysAsHeaders: true });
 

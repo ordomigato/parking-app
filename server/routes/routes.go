@@ -43,6 +43,11 @@ func SetupRoutes(app *fiber.App) {
 	// get form info
 	api.Get("/form/:workspacePath/:formPath", GetFormInfo)
 
+	// blacklist
+	api.Get("/workspace/:wsid/form/:formid/blacklist", middleware.DeserializeClient, middleware.WorkspaceAdmin, GetBlacklist)
+	api.Post("/workspace/:wsid/form/:formid/blacklist", middleware.DeserializeClient, middleware.WorkspaceAdmin, CreateBlacklistEntry)
+	api.Delete("/workspace/:wsid/form/:formid/blacklist/:plate", middleware.DeserializeClient, middleware.WorkspaceAdmin, DeleteBlacklistEntry)
+
 	api.All("*", func(c *fiber.Ctx) error {
 		path := c.Path()
 		return c.Status(fiber.StatusNotFound).JSON(

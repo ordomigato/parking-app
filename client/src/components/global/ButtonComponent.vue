@@ -54,6 +54,17 @@ const props = defineProps({
         &:disabled {
             opacity: 0.5;
         }
+        &.inverse {
+            background-color: white;
+            border-color: var(--main-color);
+            color: var(--main-color);
+            &:hover:not(:disabled),
+            &:focus:not(:disabled) {
+                border-color: var(--main-color);
+                background-color: var(--main-color);
+                color: white;
+            }
+        }
     }
 
     &.link {
