@@ -1,6 +1,7 @@
 export interface IClient {
     client_id: string,
     username: string,
+    verified: boolean,
     created_at: Date,
     updated_at: Date,
     last_login: Date,

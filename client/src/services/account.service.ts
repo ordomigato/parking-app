@@ -44,6 +44,14 @@ export async function logout() {
     return data;
 }
 
+export async function verifyEmail(username: string, otp: string): Promise<void> {
+    const payload = {
+        username,
+        otp,
+    }
+    await http.post(`${BASE_URL}/email/verify`, payload)
+}
+
 export function clearStoreState() {
     const userStore = useUserStore()
     const workspaceStore = useWorkspaceStore()

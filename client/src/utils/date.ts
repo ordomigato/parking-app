@@ -13,3 +13,7 @@ export function convertTime(date: Date): string {
     const t = new Date(date).toLocaleTimeString()
     return t
 }
+
+export function convertDateTime(date: Date): string {
+    return `${convertDate(date)} ${convertTime(date)}`
+}

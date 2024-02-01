@@ -1,8 +1,16 @@
 package utils
 
 type ServerErrorResponse struct {
-	ErrorMessage string `json:"error_message"`
+	ErrorMessage string    `json:"error_message"`
+	ErrorCode    ErrorCode `json:"error_code"`
 }
+
+type ErrorCode string
+
+const (
+	ServerError          = "ServerError"
+	EmailAlreadyVerified = "email_already_verified"
+)
 
 func GenerateServerErrorResponse(msg string) ServerErrorResponse {
 	if msg == "" {
@@ -10,5 +18,6 @@ func GenerateServerErrorResponse(msg string) ServerErrorResponse {
 	}
 	return ServerErrorResponse{
 		ErrorMessage: msg,
+		// ErrorCode:    code,
 	}
 }

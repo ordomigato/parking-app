@@ -14,6 +14,11 @@ const router = createRouter({
       component: AuthView
     },
     {
+      path: '/verify/email',
+      name: routeNames.verifyEmail,
+      component: () => import('../views/VerifyEmail.vue')
+    },
+    {
       path: '/:workspacePath/:formPath',
       name: routeNames.formLanding,
       component: () => import('../views/FormLanding.vue')

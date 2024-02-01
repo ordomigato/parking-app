@@ -16,6 +16,7 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/login", LoginClient)
 	api.Get("/logout", middleware.DeserializeClient, LogoutClient)
 	api.Get("/status", middleware.DeserializeClient, ClientStatus)
+	api.Post("/email/verify", VerifyClient)
 
 	// workspace
 	api.Post("/workspace", middleware.DeserializeClient, CreateWorkspace)

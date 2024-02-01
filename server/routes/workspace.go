@@ -56,12 +56,16 @@ func CreateWorkspace(c *fiber.Ctx) error {
 func GetWorkspaces(c *fiber.Ctx) error {
 	clientId := c.Locals("client").(models.ClientResponse).ClientID
 
+	fmt.Println(clientId)
+
 	// TODO - clean this up with a single query
 	clientWorkspaces := []models.ClientWorkspace{}
 	if err := initializers.DB.Find(&clientWorkspaces, "client_id = ?", clientId).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			utils.GenerateServerErrorResponse("Unable to find client workspace relationship"))
 	}
+
+	fmt.Println(clientWorkspaces)
 	workspaces := []models.Workspace{}
 	workspaceIds := []uuid.UUID{}
 
@@ -69,10 +73,12 @@ func GetWorkspaces(c *fiber.Ctx) error {
 		workspaceIds = append(workspaceIds, cw.WorkspaceID)
 	}
 
-	if err := initializers.DB.Find(&workspaces, workspaceIds).Error; err != nil {
+	if err := initializers.DB.Where("workspace_id = ?", workspaceIds).Find(&workspaces).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			utils.GenerateServerErrorResponse("unable to find workspaces"))
 	}
+	fmt.Println(workspaceIds)
+	fmt.Println(workspaces)
 
 	return c.JSON(workspaces)
 }

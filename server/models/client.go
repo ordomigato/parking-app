@@ -10,7 +10,7 @@ type Client struct {
 	ClientID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"client_id"`
 	Username         string    `gorm:"uniqueIndex;not null" json:"username"`
 	Password         string    `gorm:"not null" json:"password,omitempty"`
-	VerificationCode string    `json:"verification_code"`
+	VerificationCode string    `gorm:"null" json:"verification_code"`
 	Verified         bool      `gorm:"not null" json:"verified"`
 	CreatedAt        time.Time `gorm:"not null" json:"created_at"`
 	UpdatedAt        time.Time `gorm:"not null" json:"updated_at"`
@@ -35,6 +35,11 @@ type ClientRegisterRequest struct {
 type ClientLoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type VerifyClientRequest struct {
+	Username string `json:"username"`
+	OTP      string `json:"otp"`
 }
 
 func FilterClientRecord(client *Client) ClientResponse {

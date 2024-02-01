@@ -48,8 +48,10 @@ import { handleError } from '../../utils/error';
 import { loginUser, registerUser } from '../../services/account.service'
 import { useRouter } from 'vue-router';
 import { routeNames } from '@/router/routeNames';
+import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const emit = defineEmits(['changeView'])
 
@@ -85,8 +87,8 @@ const handleRegister = async () => {
         }
 
         await registerUser(userEmail, userPass, userConfPass)
-        // automatically login after registering
-        await loginUser(userEmail, userPass)
+        const { user } = await loginUser(userEmail, userPass)
+        userStore.setUser(user)
         router.push({
             name: routeNames.workspaces,
         })
