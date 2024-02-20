@@ -35,7 +35,7 @@
                     Cancel
                 </c-button>
                 <c-button
-                    :disabled="busy"
+                    :disabled="busy || confirmText?.value !== 'confirm'"
                     @click="onDeleteForm"
                     danger
                 >

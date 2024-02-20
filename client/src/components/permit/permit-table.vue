@@ -1,4 +1,8 @@
 <template>
+    <SearchBar
+        :disabled="busy"
+        @onSearch="onSearch"
+    />
     <div class="table-container">
         <table>
             <thead>
@@ -54,6 +58,7 @@ import { useWorkspaceStore } from '@/stores/workspaceStore';
 import PaginationInput from '../common/pagination-input.vue';
 import { PaginationQuery } from '@/utils/pagination';
 import { useToastStore } from '@/stores/toastStore';
+import SearchBar from '../common/search-bar.vue';
 
 const workspaceStore = useWorkspaceStore()
 const toastStore = useToastStore()
@@ -71,6 +76,10 @@ const count: Ref<number> = ref(0)
 const error: Ref<Error | null> = ref(null)
 const busy: Ref<boolean> = ref(false)
 
+const onSearch = (val: string) => {
+    handleGetPermits(new PaginationQuery(), val)
+}
+
 const isExpired = (exp: Date): boolean => {
     if (!exp) {
         return false
@@ -80,7 +89,7 @@ const isExpired = (exp: Date): boolean => {
     return expiry < now
 }
 
-const handleGetPermits = async (query: IPagination) => {
+const handleGetPermits = async (query: IPagination, search?: string) => {
     error.value = null
     busy.value = true
     try {
@@ -88,7 +97,7 @@ const handleGetPermits = async (query: IPagination) => {
             throw new Error('something went wrong')
         }
 
-        const { data, count: c } = await getPermits(workspaceStore.currentWorkspace.workspace_id, props.formId, query)
+        const { data, count: c } = await getPermits(workspaceStore.currentWorkspace.workspace_id, props.formId, query, search)
         permits.value = data
         count.value = c
     } catch (e) {

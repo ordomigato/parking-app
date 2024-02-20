@@ -12,9 +12,14 @@ export async function createPermit(formId: string, payload: IPermitCreateRequest
 export async function getPermits(
     workspaceId: string,
     formId: string,
-    p: IPagination = new PaginationQuery()
+    p: IPagination = new PaginationQuery(),
+    search?: string,
 ): Promise<IPaginatedResult<IPermit[]>> {
-    const { data } = await http.get(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/permit?limit=${p.limit}&page=${p.page}&sort=${p.sort}`)
+    let q = `limit=${p.limit}&page=${p.page}&sort=${p.sort}`
+    if (search) {
+        q = q + `&search=${search}`
+    }
+    const { data } = await http.get(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/permit?${q}`)
     return data;
 }
 

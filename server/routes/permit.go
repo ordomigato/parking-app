@@ -164,7 +164,25 @@ func GetPermits(c *fiber.Ctx) error {
 
 	permits := []models.Permit{}
 
-	if err := initializers.DB.Scopes(utils.Paginate(c)).Where("form_id = ?", formid).Find(&permits).Error; err != nil {
+	sqlWhere := fmt.Sprintf("form_id = '%s'", formid)
+
+	if s := c.Query("search"); s != "" {
+		// TODO export to utility function
+		col := []string{"v_plate", "v_model", "v_make", "v_color", "first_name", "last_name", "email", "primary_phone"}
+		colSql := fmt.Sprintf(" AND v_plate ILIKE '%%%s%%'", s)
+
+		for i := 0; i < len(col); i++ {
+			if i == 0 {
+				colSql = colSql + fmt.Sprintf(" AND %s ILIKE '%%%s%%'", col[i], s)
+			} else {
+				colSql = colSql + fmt.Sprintf(" OR %s ILIKE '%%%s%%'", col[i], s)
+			}
+		}
+
+		sqlWhere = sqlWhere + colSql
+	}
+
+	if err := initializers.DB.Scopes(utils.Paginate(c)).Where(sqlWhere).Find(&permits).Error; err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			utils.GenerateServerErrorResponse("unable to find permits"))
 	}

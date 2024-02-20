@@ -3,6 +3,7 @@
         <span class="label">{{ props.label }}</span>
         <input
             :type="props.type"
+            :placeholder="placeholder"
             :autocomplete="props.autocomplete"
             :disabled="disabled"
             :min="min?.toString()"
@@ -22,6 +23,10 @@ const props = defineProps({
     type: {
         type: String,
         default: 'text',
+    },
+    placeholder: {
+        type: String,
+        default: '',
     },
     autocomplete: {
         type: String,
@@ -65,7 +70,7 @@ defineExpose({
 input {
     width: 100%;
     min-width: 100px;
-    padding: 0.375rem 0.5rem;
+    padding:  0.25rem 0.5rem;
     border: 1px solid rgb(209, 213, 219);
     border-radius: 0.375rem;
 
