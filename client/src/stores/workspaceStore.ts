@@ -1,12 +1,13 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { IWorkspace } from '@/types'
+import type { IForm, IWorkspace } from '@/types'
 
 const STORE_NAME = 'workspace'
 
 export const useWorkspaceStore = defineStore(STORE_NAME, () => {
   const workspaces: Ref<IWorkspace[]> = ref([])
   const currentWorkspace: Ref<IWorkspace | null> = ref(null)
+  const currentForm: Ref<IForm | null> = ref(null)
   function setWorkspaces(ws: IWorkspace[]) {
     workspaces.value = ws
   }
@@ -16,6 +17,11 @@ export const useWorkspaceStore = defineStore(STORE_NAME, () => {
 
     updateLocalState()
   }
+
+  function setCurrentForm(form: IForm | null) {
+    currentForm.value = form
+  }
+
   function updateLocalState() {
     localStorage.setItem(STORE_NAME, JSON.stringify({
         currentWorkspace: currentWorkspace.value
@@ -36,7 +42,9 @@ export const useWorkspaceStore = defineStore(STORE_NAME, () => {
   return {
     workspaces,
     currentWorkspace,
+    currentForm,
     setWorkspaces,
-    setActiveWorkspace
+    setActiveWorkspace,
+    setCurrentForm,
   }
 })

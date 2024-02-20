@@ -17,6 +17,10 @@
   --link-color: #0284c7;
 }
 
+body {
+  font-size: 0.875rem;
+}
+
 p,
 h1,
 h2,

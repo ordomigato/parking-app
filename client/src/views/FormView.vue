@@ -108,21 +108,6 @@ const busy: Ref<boolean> = ref(false)
 
 const formPath = computed(() => window.location.origin + form.value?.path.path)
 
-const onGetForm = async () => {
-    busy.value = true
-    error.value = null
-    try {
-        if (!workspaceStore.currentWorkspace!) {
-            throw new Error('Something went wrong')
-        }
-        form.value = await getForm(workspaceStore.currentWorkspace?.workspace_id, route.params.id as string)
-    } catch (e) {
-        error.value = handleError(e)
-    } finally {
-        busy.value = false
-    }
-}
-
 const onDownloadCSV = async () => {
     busy.value = true
     error.value = null
@@ -164,8 +149,8 @@ const onDownloadCSV = async () => {
     }
 }
 
-onMounted(async() => {
-    await onGetForm()
+onMounted(() => {
+    form.value = workspaceStore.currentForm
 })
 
 </script>

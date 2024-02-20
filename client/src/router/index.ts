@@ -4,6 +4,7 @@ import { routeNames } from './routeNames'
 import { getStatus } from '@/services/account.service'
 import { getWorkspaces } from '@/services/workspace.service'
 import { useWorkspaceStore } from '@/stores/workspaceStore'
+import { getForm } from '@/services/form.service'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -94,6 +95,18 @@ router.beforeEach(async(to, from, next) => {
     const workspaceStore = useWorkspaceStore()
     const wp = await getWorkspaces()
     workspaceStore.setWorkspaces(wp)
+
+    // Reset current form
+    workspaceStore.setCurrentForm(null)
+    // get form if on form specific path
+    if (to.name === routeNames.form) {
+      if (!workspaceStore.currentWorkspace?.workspace_id) {
+        router.push({ name: routeNames.workspaces})
+      } else {
+        const form = await getForm(workspaceStore.currentWorkspace.workspace_id, to.params.id as string)
+        workspaceStore.setCurrentForm(form)
+      }
+    }
   }
   next()
 })
