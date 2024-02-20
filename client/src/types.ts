@@ -106,6 +106,22 @@ export interface IPermit {
     updated_at: Date,
 }
 
+export interface IFormattedPermit {
+    [k: string]: string,
+    permit_id: string,
+    first_name: string,
+    last_name: string,
+    email: string,
+    primary_phone: string,
+    v_plate: string,
+    v_make: string,
+    v_model: string,
+    v_color: string,
+    expiry: string,
+    created_at: string,
+    updated_at: string,
+}
+
 export interface IDownloadPermitRequest {
     from: string,
     to: string,
@@ -129,4 +145,10 @@ export interface IToast {
   text: string;
   status: ToastStatus;
   id: number;
+}
+
+export interface IColumn {
+    name: string,
+    value: string,
+    visible: boolean,
 }
