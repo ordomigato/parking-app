@@ -87,6 +87,7 @@ func CreatePermit(c *fiber.Ctx) error {
 			utils.GenerateServerErrorResponse(("unable to find form")))
 	}
 
+	// check blacklist
 	bl := initializers.DB.Where("form_id = ? AND v_plate = ?", formid, payload.VPlate).Find(&models.Blacklist{})
 
 	if bl.RowsAffected > 0 {
@@ -94,6 +95,7 @@ func CreatePermit(c *fiber.Ctx) error {
 			utils.GenerateServerErrorResponse("Plate has been blacklisted"))
 	}
 
+	// setup expiry
 	now := time.Now()
 	exp, err := CalculateExpiryDate(form.CycleData, now, payload.Duration)
 	if err != nil {
@@ -153,6 +155,29 @@ func CreatePermit(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(newPermit)
+}
+
+func GetPermit(c *fiber.Ctx) error {
+	formid, err := uuid.Parse(c.Params("formid"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse(fmt.Sprintf("id is not a uuid: %v", formid)))
+	}
+
+	permitid, err := uuid.Parse(c.Params("permitid"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse(fmt.Sprintf("id is not a uuid: %v", formid)))
+	}
+
+	permit := models.Permit{}
+
+	if err := initializers.DB.Model(&models.Permit{}).Where("form_id = ? AND permit_id = ?", formid, permitid).First(&permit).Error; err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			utils.GenerateServerErrorResponse("unable to find permit"))
+	}
+
+	return c.JSON(permit)
 }
 
 func GetPermits(c *fiber.Ctx) error {

@@ -24,10 +24,13 @@
             </thead>
             <tbody>
                 <tr
-                    @click="() => handleDeletePermits(permit.permit_id)"
                     v-for="permit in permits"
                     :key="permit.permit_id"
                     :class="`permit ${isExpired(new Date(permit.expiry)) ? 'expired' : ''}`"
+                    @click="$router.push({ name: 'permit', params: {
+                        id: $route.params.id,
+                        permitId: permit.permit_id
+                    }})"
                 >
                     <td
                         v-for="(data, i) in filteredPermit(permit)"
@@ -132,22 +135,22 @@ const handleGetPermits = async (query: IPagination, search?: string) => {
     }
 }
 
-const handleDeletePermits = async (permitId: string) => {
-    error.value = null
-    busy.value = true
-    try {
-        if (!workspaceStore.currentWorkspace) {
-            throw new Error('something went wrong')
-        }
-        await deletePermit(workspaceStore.currentWorkspace.workspace_id, props.formId, permitId)
-        permits.value = permits.value.filter(p => p.permit_id !== permitId)
-        toastStore.updateState("Successfully Deleted Permit", "success")
-    } catch (e) {
-        error.value = handleError(e)
-    } finally {
-        busy.value = false
-    }
-}
+// const handleDeletePermits = async (permitId: string) => {
+//     error.value = null
+//     busy.value = true
+//     try {
+//         if (!workspaceStore.currentWorkspace) {
+//             throw new Error('something went wrong')
+//         }
+//         await deletePermit(workspaceStore.currentWorkspace.workspace_id, props.formId, permitId)
+//         permits.value = permits.value.filter(p => p.permit_id !== permitId)
+//         toastStore.updateState("Successfully Deleted Permit", "success")
+//     } catch (e) {
+//         error.value = handleError(e)
+//     } finally {
+//         busy.value = false
+//     }
+// }
 
 onMounted(async () => {
     await handleGetPermits(new PaginationQuery())

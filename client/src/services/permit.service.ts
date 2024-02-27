@@ -23,6 +23,15 @@ export async function getPermits(
     return data;
 }
 
+export async function getPermit(
+    workspaceId: string,
+    formId: string,
+    permitId: string,
+): Promise<IPermit> {
+    const { data } = await http.get(`${BASE_URL}/workspace/${workspaceId}/form/${formId}/permit/${permitId}`)
+    return data;
+}
+
 export async function downloadPermits(
     workspaceId: string,
     formId: string,

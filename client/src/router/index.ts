@@ -73,6 +73,11 @@ const router = createRouter({
           name: routeNames.createForm,
           component: () => import('../views/CreateForm.vue')
         },
+        {
+          path: '/dashboard/form/:id/permit/:permitId',
+          name: routeNames.permit,
+          component: () => import('../views/PermitView.vue')
+        }
       ]
     }
   ]

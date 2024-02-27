@@ -12,6 +12,8 @@ export enum routeNames {
     form = 'form',
     createForm = 'create-form',
 
+    permit = 'permit',
+
     formLanding = 'form-landing',
 
     verifyEmail = 'verify-email',
