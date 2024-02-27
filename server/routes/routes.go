@@ -36,6 +36,7 @@ func SetupRoutes(app *fiber.App) {
 	// permit
 	api.Get("/workspace/:wsid/form/:formid/permit", middleware.DeserializeClient, middleware.WorkspaceAdmin, GetPermits)
 	api.Get("workspace/:wsid/form/:formid/permit/:permitid", middleware.DeserializeClient, middleware.WorkspaceAdmin, GetPermit)
+	api.Post("workspace/:wsid/form/:formid/permit/:permitid", middleware.DeserializeClient, middleware.WorkspaceAdmin, GetPermit)
 
 	api.Get("/workspace/:wsid/form/:formid/permit/download", middleware.DeserializeClient, middleware.WorkspaceAdmin, DownloadPermits)
 	api.Delete("/workspace/:wsid/form/:formid/permit/:permitid", middleware.DeserializeClient, middleware.WorkspaceAdmin, DeletePermit)

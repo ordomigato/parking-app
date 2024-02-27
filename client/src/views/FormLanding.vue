@@ -4,7 +4,21 @@
             <div v-if="form">
                 <header>
                     <h2>{{ form.name }}</h2>
+                    <p>
+                        Limit: 
+                        {{ form.cycle_data?.duration_limit.value }}
+                        {{ form.cycle_data?.duration_limit.unit }}
+                        per
+                        {{ form.cycle_data?.reset_interval.value }}
+                        {{ form.cycle_data?.reset_interval.unit }}
+                    </p>
+                    <p v-if="form.cycle_data?.reset_interval">
+                        Reset Date: {{ getResetDate(form.cycle_data?.reset_interval) }}
+                    </p>
                 </header>
+                <br />
+                <hr />
+                <br />
                 <form
                     v-if="!permitResponse"
                     @submit.prevent="submitPermit"
@@ -38,7 +52,7 @@
                     <div class="notice">
                         <p>Your parking permit has been created!</p>
                     </div>
-                    <p v-if="permitResponse.expiry"><strong>Expiry: </strong>{{ convertDate(permitResponse.expiry) }} @ {{ convertTime(permitResponse.expiry) }}</p>
+                    <p v-if="permitResponse.end_date"><strong>Expiry: </strong>{{ convertDate(permitResponse.end_date) }} @ {{ convertTime(permitResponse.end_date) }}</p>
                     <p><strong>Plate Number: </strong>{{ permitResponse.v_plate }}</p>
                     <p><strong>Vehicle: </strong>{{ permitResponse.v_make }} {{ permitResponse.v_model }} ({{ permitResponse.v_color }})</p>
                     <p><strong>Name: </strong>{{ permitResponse.first_name }} {{ permitResponse.last_name }}</p>
@@ -55,7 +69,7 @@
 </template>
 <script setup lang="ts">
 import TextInput from '@/components/global/TextInput.vue';
-import { convertDate, convertTime } from '@/utils/date';
+import { convertDate, convertTime, getResetDate } from '@/utils/date';
 import { getFormInfo } from '@/services/form.service';
 import { createPermit } from '@/services/permit.service';
 import type { IForm, IPermit, IPermitCreateRequest } from '@/types';
@@ -134,7 +148,8 @@ const submitPermit = async () => {
             v_make: '',
             v_model: '',
             v_color: '',
-            duration: 1,
+            end_date: new Date(),
+            start_date: new Date(),
         }
         questions.value.forEach((q) => {
             const val = questionRefs.value[q.id].value
@@ -143,6 +158,8 @@ const submitPermit = async () => {
             }
             if (q.type === 'number') {
                 payload[q.id] = parseInt(val)
+            } else if (q.type === 'datetime-local') {
+                payload[q.id] = new Date(val)
             } else {
                 payload[q.id] = val
             }
@@ -198,12 +215,11 @@ onMounted(async() => {
     ]
 
     if (form.value?.cycle_data) {
-        const durationQuestion = new Question('duration', `Duration (${form.value?.cycle_data.duration_limit.unit}) (Max: ${form.value.cycle_data.duration_limit.value})`, 'duration', '1', 'number')
-        durationQuestion.setMin(1)
-        durationQuestion.setMax(form.value.cycle_data.duration_limit.value)
+        // const durationQuestion = new Question('duration', `Duration (${form.value?.cycle_data.duration_limit.unit}) (Max: ${form.value.cycle_data.duration_limit.value})`, 'duration', '1', 'number')
         questions.value = [
             ...questions.value,
-            durationQuestion
+            new Question('start_date', 'Start Date', 'startDate', '', 'datetime-local'),
+            new Question('end_date', 'End Date', 'endDate', '', 'datetime-local')
         ]
     }
 })

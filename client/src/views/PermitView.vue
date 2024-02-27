@@ -3,7 +3,9 @@
         <div class="card">
             <div class="permit-data">
                 <p><strong>Permit:</strong> {{ permit.permit_id }}</p>
-                <p><strong>Expiry:</strong> {{ permit.expiry ? permit.expiry : 'None' }}</p>
+                <h3>General</h3>
+                <p v-if="permit.start_date"><strong>Start Date:</strong> {{ permit.start_date }}</p>
+                <p v-if="permit.end_date"><strong>End Date:</strong> {{ permit.end_date }}</p>
                 <p><strong>Submitted:</strong> {{ permit.created_at }}</p>
                 <p><strong>Updated:</strong> {{ permit.updated_at }}</p>
                 <h3>Vehicle</h3>

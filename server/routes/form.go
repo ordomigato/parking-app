@@ -95,6 +95,7 @@ func CreateForm(c *fiber.Ctx) error {
 }
 
 func UpdateForm(c *fiber.Ctx) error {
+
 	formid, err := uuid.Parse(c.Params("formid"))
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
@@ -106,6 +107,8 @@ func UpdateForm(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			utils.GenerateServerErrorResponse(err.Error()))
 	}
+
+	fmt.Println(payload.CycleData)
 
 	now := time.Now()
 

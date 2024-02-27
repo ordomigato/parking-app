@@ -33,7 +33,7 @@
             <text-input
                 ref="time"
                 type="time"
-                :defaultValue="getDefaultTime(
+                :defaultValue="formatTime(
                     props.cycleData
                     ? new Date(props.cycleData.reset_interval.reference_date)
                     : null
@@ -58,6 +58,7 @@
 <script setup lang="ts">
 import TextInput from '@/components/global/TextInput.vue';
 import DropdownInput from '@/components/common/dropdown-input.vue'
+import { formatTime } from '@/utils/format'
 import { IFormDurationMeasurementUnits, type IDropdownItem, type IDurationUnitMeasurement, type ICycleData, type IResetInterval } from '@/types'
 import { computed, ref, type ComputedRef, type Ref, onMounted } from 'vue';
 
@@ -152,13 +153,13 @@ const computedResetInterval: ComputedRef<IResetInterval | null> = computed(() =>
         return {
             unit: IFormDurationMeasurementUnits.days,
             value: 1,
-            reference_date: refDate,
+            reference_date: refDate.toISOString(),
         }
     case IFormDurationMeasurementUnits.months:
         return {
             unit: IFormDurationMeasurementUnits.months,
             value: 1,
-            reference_date: refDate,
+            reference_date: refDate.toISOString(),
         }
     default:
         return null
@@ -184,15 +185,6 @@ const getDefaultDay = (date: Date | null) => {
         return '1'
     }
     return date.getDate().toString()
-}
-
-const getDefaultTime = (date: Date | null) => {
-    if (!date) {
-        return '00:00'
-    }
-    const hour = ("0" + date.getHours()).slice(-2)
-    const min = ("0" + date.getMinutes()).slice(-2)
-    return `${hour}:${min}`
 }
 
 const onHandleContinue = () => {

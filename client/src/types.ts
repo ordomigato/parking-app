@@ -31,7 +31,7 @@ export interface IDurationUnitMeasurement {
 }
 
 export interface IResetInterval extends IDurationUnitMeasurement {
-    reference_date: Date
+    reference_date: string
 }
 
 export interface ICycleData {
@@ -47,8 +47,8 @@ export interface IForm {
         path: string
     },
     cycle_data: ICycleData | null,
-    created_at: Date,
-    updated_at: Date,
+    created_at: string,
+    updated_at: string,
 }
 
 export interface IFormCreateRequest {
@@ -88,7 +88,8 @@ export interface IPermitCreateRequest {
     v_make: string,
     v_model: string,
     v_color: string,
-    duration: number,
+    start_date: Date,
+    end_date: Date,
 }
 
 export interface IPermit {
@@ -101,7 +102,8 @@ export interface IPermit {
     v_make: string,
     v_model: string,
     v_color: string,
-    expiry: Date,
+    start_date: Date,
+    end_date: Date,
     created_at: Date,
     updated_at: Date,
 }
@@ -117,7 +119,8 @@ export interface IFormattedPermit {
     v_make: string,
     v_model: string,
     v_color: string,
-    expiry: string,
+    start_date: string,
+    end_date: string,
     created_at: string,
     updated_at: string,
 }

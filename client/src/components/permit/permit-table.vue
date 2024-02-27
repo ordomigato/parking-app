@@ -26,7 +26,7 @@
                 <tr
                     v-for="permit in permits"
                     :key="permit.permit_id"
-                    :class="`permit ${isExpired(new Date(permit.expiry)) ? 'expired' : ''}`"
+                    :class="`permit ${isExpired(new Date(permit.end_date)) ? 'expired' : ''}`"
                     @click="$router.push({ name: 'permit', params: {
                         id: $route.params.id,
                         permitId: permit.permit_id
@@ -106,23 +106,33 @@ const handleGetPermits = async (query: IPagination, search?: string) => {
         permits.value = formatPermits(data)
         count.value = c
         const tableColumnsLocalSave = loadLocal(LocalSettings.PermitTableFilter)
+        const supportedCols = [
+            "permit_id",
+            "v_plate",
+            "start_date",
+            "end_date",
+            "v_make",
+            "v_model",
+            "v_color",
+            "first_name",
+            "last_name",
+            "email",
+            "primary_phone",
+            "created_at",
+            "updated_at"
+        ]
         if (tableColumnsLocalSave) {
-            tableColumns.value = JSON.parse(tableColumnsLocalSave)
+            const localSave: IColumn[] = JSON.parse(tableColumnsLocalSave)
+            const savedCols = new Set(localSave.map(c => c.value))
+            tableColumns.value = supportedCols.map(c => {
+                return {
+                    name: c,
+                    value: c,
+                    visible: savedCols.has(c),
+                }
+            })
         } else {
-            tableColumns.value = [
-                "permit_id",
-                "v_plate",
-                "expiry",
-                "v_make",
-                "v_model",
-                "v_color",
-                "first_name",
-                "last_name",
-                "email",
-                "primary_phone",
-                "created_at",
-                "updated_at"
-            ].map(c => ({
+            tableColumns.value = supportedCols.map(c => ({
                 name: c,
                 value: c,
                 visible: true,
