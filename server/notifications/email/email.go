@@ -19,7 +19,6 @@ type EmailMessage struct {
 }
 
 func SendEMail(config *initializers.Config, msg EmailMessage) {
-	fmt.Println("SENDING EMAIL")
 	auth := smtp.PlainAuth(
 		"",
 		config.MailUsername,
@@ -51,7 +50,4 @@ func SendEMail(config *initializers.Config, msg EmailMessage) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-
-	fmt.Println("EMAIL SENT")
-
 }

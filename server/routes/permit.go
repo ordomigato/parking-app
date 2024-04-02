@@ -14,53 +14,52 @@ import (
 	"github.com/ordomigato/parking-app/utils"
 )
 
+func getAbsoluteDuration(f models.Form, startDate time.Time, endDate time.Time) int {
+	startEndDelta := getTimeDuration(startDate, endDate)
+	duration := 0.0
+
+	switch f.CycleData.DurationLimit.Unit {
+	case models.Minutes:
+		duration = math.Abs(startEndDelta.Minutes())
+	case models.Hours:
+		duration = math.Abs(startEndDelta.Hours())
+	case models.Days:
+		duration = math.Abs(startEndDelta.Hours() / 24)
+	}
+
+	return int(duration)
+}
+
+func getTimeDuration(startDate time.Time, endDate time.Time) time.Duration {
+	return startDate.Sub(endDate)
+}
+
 func checkRecentPermits(
 	rp []models.Permit,
-	csd time.Time,
-	now time.Time,
+	cycleStartDate time.Time,
 	payload models.PermitCreateRequest,
 	f models.Form,
 ) error {
 	if len(rp) > 0 {
-		totalDuration := 0.0
-		duration := 0.0
-		startEndDelta := payload.StartDate.Sub(*payload.EndDate)
+		requestedDuration := getAbsoluteDuration(f, *payload.StartDate, *payload.EndDate)
 
-		// get duration of submitted permit
-		switch f.CycleData.DurationLimit.Unit {
-		case models.Minutes:
-			duration = math.Abs(startEndDelta.Minutes())
-		case models.Hours:
-			duration = math.Abs(startEndDelta.Hours())
-		case models.Days:
-			duration = math.Abs(startEndDelta.Hours() / 24)
-		}
 		// loop through permits and add up values
+		totalDuration := 0
 		for i := 0; i < len(rp); i++ {
 			p := rp[i]
 
 			if p.EndDate != nil {
+				fmt.Println(p.EndDate)
 				// handle if permit is not expired
-				if p.EndDate.After(now) {
-					// TODO attempt to add on to permit expiry
-					return fmt.Errorf("a permit for plate %s already exists", payload.VPlate)
+				if p.EndDate.After(*payload.StartDate) {
+					return fmt.Errorf("a permit for plate %s already exists until %s", payload.VPlate, p.EndDate.Format("Mon Jan 2 15:04"))
 				}
 
-				var delta time.Duration
-
-				if p.StartDate.Before(csd) {
-					delta = csd.Sub(*p.EndDate)
+				// if permit started before cycle start resets, use cycle start date
+				if p.StartDate.Before(cycleStartDate) {
+					totalDuration += getAbsoluteDuration(f, cycleStartDate, *p.EndDate)
 				} else {
-					delta = p.StartDate.Sub(*p.EndDate)
-				}
-
-				switch f.CycleData.DurationLimit.Unit {
-				case models.Minutes:
-					totalDuration += math.Abs(delta.Minutes())
-				case models.Hours:
-					totalDuration += math.Abs(delta.Hours())
-				case models.Days:
-					totalDuration += math.Abs(delta.Hours() / 24)
+					totalDuration += getAbsoluteDuration(f, *p.StartDate, *p.EndDate)
 				}
 			}
 		}
@@ -69,7 +68,7 @@ func checkRecentPermits(
 			return fmt.Errorf("plate %v has already exceed the maximum available duration", payload.VPlate)
 		}
 
-		if int(totalDuration)+int(duration) > f.CycleData.DurationLimit.Value {
+		if int(totalDuration)+requestedDuration > f.CycleData.DurationLimit.Value {
 			return fmt.Errorf("plate %v does not have enough time left for the requested duration", payload.VPlate)
 		}
 	}
@@ -109,21 +108,15 @@ func CreatePermit(c *fiber.Ctx) error {
 
 	// setup expiry
 	now := time.Now()
-	// exp, err := CalculateExpiryDate(form.CycleData, now, payload.Duration)
-	duration := 1
+	fmt.Println(payload.EndDate)
+	duration := getAbsoluteDuration(form, *payload.StartDate, *payload.EndDate)
+	fmt.Println(payload.EndDate)
+	fmt.Println(duration)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			utils.GenerateServerErrorResponse((err.Error())))
 	}
 
-	fmt.Println("HERER")
-
-	// endDate, err := time.Parse(payload.EndDate, payload.EndDate)
-	// if err != nil {
-	// 	return fmt.Errorf("end date is incorrect: %s", err)
-	// }
-	// fmt.Println("HERER")
-	// startDate, err := time.Parse(payload.StartDate, payload.StartDate)
 	if err != nil {
 		return fmt.Errorf("start date is incorrect: %s", err)
 	}
@@ -153,7 +146,7 @@ func CreatePermit(c *fiber.Ctx) error {
 				utils.GenerateServerErrorResponse("unable to find previous permits"))
 		}
 
-		if err := checkRecentPermits(recentPermits, cycleStartDate, now, *payload, form); err != nil {
+		if err := checkRecentPermits(recentPermits, cycleStartDate, *payload, form); err != nil {
 			return c.Status(http.StatusBadRequest).JSON(
 				utils.GenerateServerErrorResponse(err.Error()))
 		}

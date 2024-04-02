@@ -20,9 +20,13 @@
                 <p><strong>Phone:</strong> {{ permit.primary_phone }}</p>
             </div>
         </div>
+        <div class="card">
+            <DeletePermit :permit="permit" />
+        </div>
     </div>
 </template>
 <script setup lang="ts">
+import DeletePermit from '@/components/permit/delete-permit.vue';
 import { getPermit } from '@/services/permit.service';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import type { IFormattedPermit } from '@/types';
