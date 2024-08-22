@@ -66,12 +66,21 @@ func CreateForm(c *fiber.Ctx) error {
 		UpdatedAt:   now,
 	}
 
+	fmt.Println(payload.CycleData.DurationLimit)
+
 	if payload.CycleData != nil {
-		form.CycleData.DurationLimit.Value = payload.CycleData.DurationLimit.Value
-		form.CycleData.DurationLimit.Unit = payload.CycleData.DurationLimit.Unit
-		form.CycleData.ResetInterval.Value = payload.CycleData.ResetInterval.Value
-		form.CycleData.ResetInterval.Unit = payload.CycleData.ResetInterval.Unit
-		form.CycleData.ResetInterval.RefDate = payload.CycleData.ResetInterval.RefDate
+		cd := models.CycleData{
+			DurationLimit: models.DurationLimit{
+				Value: payload.CycleData.DurationLimit.Value,
+				Unit:  payload.CycleData.DurationLimit.Unit,
+			},
+			ResetInterval: models.ResetInterval{
+				Value:   payload.CycleData.ResetInterval.Value,
+				Unit:    payload.CycleData.ResetInterval.Unit,
+				RefDate: payload.CycleData.ResetInterval.RefDate,
+			},
+		}
+		form.CycleData = &cd
 	}
 
 	if err := initializers.DB.Create(&form).Error; err != nil {
